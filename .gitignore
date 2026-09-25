@@ -1,12 +1,47 @@
-Library/
-Temp/
-.vscode/
-Logs/
-UserSettings/
-Packages/
-*.sln
+# Unity-generated folders
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# IDE settings and generated project files
+/.vscode/
+/.vs/
+/.idea/
 *.csproj
-*.sln
-*.userprefs
 *.unityproj
-*.DS_Store
+*.sln
+*.slnx
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.opendb
+*.VC.db
+
+# Crash reports and generated debugging information
+sysinfo.txt
+*.stackdump
+/Assets/StreamingAssets/aa.meta
+/Assets/StreamingAssets/aa/
+
+# Local environment and signing credentials
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Keep Assets (including .meta files), Packages, and ProjectSettings tracked.
