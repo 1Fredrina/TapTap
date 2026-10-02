@@ -14,7 +14,7 @@ public class UIManager
 
     private UIManager()
     {
-        GameObject canvas=GameObject.Instantiate(Resources.Load<GameObject>("UI/Canvas"));
+        GameObject canvas=GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/UI/Canvas"));
         canvasTrans = canvas.transform;
         GameObject.DontDestroyOnLoad(canvas);
     }
@@ -26,7 +26,7 @@ public class UIManager
         {
             return panelDic[panelName] as T;
         }
-        GameObject panelObj = GameObject.Instantiate(Resources.Load<GameObject>("UI/" + panelName));
+        GameObject panelObj = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/UI/" + panelName));
         panelObj.transform.SetParent(canvasTrans, false);
         T panel = panelObj.GetComponent<T>();
         panelDic.Add(panelName, panel);
