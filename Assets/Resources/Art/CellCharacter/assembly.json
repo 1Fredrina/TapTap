@@ -1,0 +1,200 @@
+{
+  "canvasSize": {
+    "w": 300,
+    "h": 300
+  },
+  "coordinateSystem": "image pixels, top-left origin, Y down",
+  "rootPixels": [
+    150,
+    236
+  ],
+  "visibleBounds": {
+    "x": 23,
+    "y": 43,
+    "w": 242,
+    "h": 193
+  },
+  "atlas": {
+    "image": "character_atlas.png",
+    "w": 512,
+    "h": 256,
+    "premultipliedAlpha": false,
+    "extrude": 2,
+    "margin": 4
+  },
+  "drawOrderBackToFront": [
+    "tail_weapon",
+    "leg_left",
+    "leg_right",
+    "body",
+    "nucleus",
+    "hair"
+  ],
+  "excludedSources": [
+    "整体预览图.jpg"
+  ],
+  "regions": [
+    {
+      "name": "tail_weapon",
+      "source": "尾巴（武器.png",
+      "frame": {
+        "x": 381,
+        "y": 4,
+        "w": 88,
+        "h": 89
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 23,
+        "y": 115,
+        "w": 88,
+        "h": 89
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 300
+      },
+      "pivotPixels": [
+        106,
+        177
+      ],
+      "sourceRgbaSha256": "4b245ee0f14530a52fd1b9bdce2107ce299212300373b52065d9f1eca6035189"
+    },
+    {
+      "name": "leg_left",
+      "source": "左腿.png",
+      "frame": {
+        "x": 79,
+        "y": 175,
+        "w": 54,
+        "h": 47
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 113,
+        "y": 189,
+        "w": 54,
+        "h": 47
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 300
+      },
+      "pivotPixels": [
+        140,
+        201
+      ],
+      "sourceRgbaSha256": "7248402dc8e8e832b0630283d6bf4236a88fa561f5a3e8519c2ed2450e15c601"
+    },
+    {
+      "name": "leg_right",
+      "source": "右腿.png",
+      "frame": {
+        "x": 141,
+        "y": 175,
+        "w": 45,
+        "h": 52
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 204,
+        "y": 184,
+        "w": 45,
+        "h": 52
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 300
+      },
+      "pivotPixels": [
+        226,
+        199
+      ],
+      "sourceRgbaSha256": "abcbd374ad8aa1e93c7ec7ed64968caf26547ba768d7a061a7066a43df23cad1"
+    },
+    {
+      "name": "body",
+      "source": "身体.png",
+      "frame": {
+        "x": 4,
+        "y": 4,
+        "w": 175,
+        "h": 163
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 90,
+        "y": 58,
+        "w": 175,
+        "h": 163
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 300
+      },
+      "pivotPixels": [
+        174,
+        151
+      ],
+      "sourceRgbaSha256": "aa1ec512e4a98772ebec1f7a32413075087088145deb98184f9afa5a601c01ba"
+    },
+    {
+      "name": "nucleus",
+      "source": "细胞核.png",
+      "frame": {
+        "x": 4,
+        "y": 175,
+        "w": 67,
+        "h": 66
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 123,
+        "y": 135,
+        "w": 67,
+        "h": 66
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 300
+      },
+      "pivotPixels": [
+        156,
+        168
+      ],
+      "sourceRgbaSha256": "efa42e9ab1309f11522ad7ce2a4fb005e0a6593f07027da511d668b44e4aaf1c"
+    },
+    {
+      "name": "hair",
+      "source": "头发.png",
+      "frame": {
+        "x": 187,
+        "y": 4,
+        "w": 186,
+        "h": 109
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 79,
+        "y": 43,
+        "w": 186,
+        "h": 109
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 300
+      },
+      "pivotPixels": [
+        177,
+        75
+      ],
+      "sourceRgbaSha256": "0abda9478a3bd8704bacc70d94e5805a108c30c4cbd0d403f0ff13b00e3c3631"
+    }
+  ]
+}
