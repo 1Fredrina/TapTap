@@ -9,16 +9,24 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Min(0.02f)] private float dashDuration = 0.15f;
 
     private Rigidbody2D body;
+    private Animator animator;
     private ContactFilter2D groundFilter;
     private float moveInput;
     private float facingDirection = 1f;
     private float dashTime;
     private bool jumpRequested;
     private bool dashRequested;
+    private bool jumpAnimationRequested;
+    private string currentAnimation;
+
+    private const string MoveState = "CellCharacter_Move";
+    private const string JumpState = "CellCharacter_Jump";
+    private const string DashState = "CellCharacter_Dash";
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         body.constraints |= RigidbodyConstraints2D.FreezeRotation;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         groundFilter.SetLayerMask(groundLayers);
@@ -35,6 +43,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        bool grounded = body.IsTouching(groundFilter);
         if (dashTime <= 0f && moveInput != 0f)
             facingDirection = Mathf.Sign(moveInput);
 
@@ -47,15 +56,21 @@ public class PlayerController : MonoBehaviour
             ? facingDirection * dashSpeed
             : moveInput * playerData.MoveSpeed;
 
-        if (jumpRequested && velocity.y <= 0.05f && body.IsTouching(groundFilter))
+        bool jumpedThisFrame = false;
+        if (jumpRequested && velocity.y <= 0.05f && grounded)
         {
             float gravity = -Physics2D.gravity.y * body.gravityScale;
             if (gravity > 0f && playerData.JumpHeight > 0f)
+            {
                 velocity.y = Mathf.Sqrt(2f * gravity * playerData.JumpHeight);
+                jumpAnimationRequested = true;
+                jumpedThisFrame = true;
+            }
         }
 
         jumpRequested = false;
         body.linearVelocity = velocity;
+        UpdateAnimation(grounded || jumpedThisFrame);
         dashTime = Mathf.Max(0f, dashTime - Time.fixedDeltaTime);
     }
 
@@ -64,8 +79,29 @@ public class PlayerController : MonoBehaviour
         moveInput = 0f;
         dashTime = 0f;
         jumpRequested = false;
+        jumpAnimationRequested = false;
         dashRequested = false;
         if (body != null)
             body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
+    }
+
+    private void UpdateAnimation(bool grounded)
+    {
+        if (animator == null)
+            return;
+
+        bool dashing = dashTime > 0f;
+        bool airborne = !grounded || body.linearVelocity.y > 0.05f;
+        animator.SetBool("IsRun", !dashing && grounded && Mathf.Abs(moveInput) > 0.01f);
+        animator.SetBool("IsJump", !dashing && airborne);
+        animator.SetBool("IsDash", dashing);
+
+        // Dash has priority over all other locomotion states for its full duration.
+        string state = dashing ? DashState : (airborne || jumpAnimationRequested ? JumpState : MoveState);
+        if (state != currentAnimation)
+        {
+            animator.CrossFadeInFixedTime(state, 0.05f);
+            currentAnimation = state;
+        }
     }
 }
