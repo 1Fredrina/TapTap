@@ -41,8 +41,13 @@ public class PlayerController : MonoBehaviour
         dashRequested |= Input.GetKeyDown(KeyCode.LeftShift);
     }
 
+    public void Initialize(PlayerData data)
+    {
+        playerData = data;
+    }
     private void FixedUpdate()
     {
+        Debug.Log($"active={gameObject.name}, velocity={body.linearVelocity}, input={moveInput}");
         bool grounded = body.IsTouching(groundFilter);
         if (dashTime <= 0f && moveInput != 0f)
             facingDirection = Mathf.Sign(moveInput);

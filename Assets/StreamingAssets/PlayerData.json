@@ -1,0 +1,6 @@
+[
+{"id":1,"name":"我不知道名字1号","MoveSpeed":6,"JumpHeight":2.5},
+{"id":2,"name":"我不知道名字2号","MoveSpeed":6,"JumpHeight":2.5},
+{"id":3,"name":"树突状细胞","MoveSpeed":6,"JumpHeight":2.5},
+{"id":4,"name":"巨噬细胞","MoveSpeed":6,"JumpHeight":2.5}
+]
