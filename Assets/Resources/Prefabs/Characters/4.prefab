@@ -12,6 +12,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: -8431639063485078187, guid: 93fc43c0711cc4e44b4b195df31614ef, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8431639063485078187, guid: 93fc43c0711cc4e44b4b195df31614ef, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8268033429116936641, guid: 93fc43c0711cc4e44b4b195df31614ef, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8268033429116936641, guid: 93fc43c0711cc4e44b4b195df31614ef, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.85
+      objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 93fc43c0711cc4e44b4b195df31614ef, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -130,7 +146,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 3.4619737}
+  m_Offset: {x: 0, y: 0}
   m_Size: {x: 1.57, y: 2.02}
   m_Direction: 0
 --- !u!50 &8904525446141528005

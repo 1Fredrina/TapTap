@@ -12,6 +12,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: -8268033429116936641, guid: 62fa449b2952d8541ae2f0654278cbdd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8268033429116936641, guid: 62fa449b2952d8541ae2f0654278cbdd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 62fa449b2952d8541ae2f0654278cbdd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -113,7 +121,7 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.5, y: 1}
+  m_Size: {x: 1.6, y: 2.16}
   m_Direction: 0
 --- !u!50 &7302037997370340248
 Rigidbody2D:
