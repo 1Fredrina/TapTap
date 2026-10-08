@@ -13,7 +13,7 @@ public class PreparePanel : BasePanel //准备面板
         btnStart.onClick.AddListener(() =>
         {
             UIManager.Instance.HidePanel<PreparePanel>();
-            Debug.Log("进入选择章节页面");
+            UIManager.Instance.ShowPanel<LevelPanel>();
         });
         btnSetting.onClick.AddListener(() =>
         {
@@ -25,7 +25,8 @@ public class PreparePanel : BasePanel //准备面板
         });
         btnCharacter.onClick.AddListener(() =>
         {
-            Debug.Log("进入查看角色页面");
+            UIManager.Instance.HidePanel<PreparePanel>();
+            UIManager.Instance.ShowPanel<CharacterPanel>();
         });
     }
 }
