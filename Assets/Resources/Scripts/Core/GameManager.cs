@@ -14,6 +14,12 @@ public class GameManager : MonoBehaviour
     public int Lives { get; private set; }
     public bool IsGameOver { get; private set; }
 
+    [Header("临时生命")]
+    [SerializeField, Min(0)] private int maxTempLives = 5;
+    [SerializeField, Min(0f)] private float tempLifeDecayInterval = 5f;   // 每 5 秒
+    public int TempLives { get; private set; }
+    private float tempLifeDecayTimer;
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -24,6 +30,8 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         Lives = maxLives;
+        TempLives = 0;
+        tempLifeDecayTimer = tempLifeDecayInterval;
     }
 
     void Start()
@@ -36,21 +44,57 @@ public class GameManager : MonoBehaviour
             PlayerController controller = PlayerObj.GetComponent<PlayerController>();
             controller.Initialize(playerData);
 
+            Player player = PlayerObj.GetComponent<Player>();
+            player.Initialize(playerData);
+
             PlayerObj.name = playerData.name;
             teamMembers.Add(PlayerObj);
             PlayerObj.SetActive(i == 0);
         }
     }
+    private void Update()
+    {
+        if (TempLives > 0)
+        {
+            tempLifeDecayTimer -= Time.deltaTime;
+            if (tempLifeDecayTimer <= 0f)
+            {
+                tempLifeDecayTimer = tempLifeDecayInterval;
+                TempLives = Mathf.Max(0, TempLives - 1);
+            }
+        }
+        else
+        {
+            tempLifeDecayTimer = tempLifeDecayInterval;
+        }
+    }
 
-     public void LoseLife(int amount = 1)
+    public void LoseLife(int amount = 1)
     {
         if (IsGameOver) return;
 
-        Lives = Mathf.Max(0, Lives - amount);
-        Debug.Log($"Lost {amount} life(s). Remaining lives: {Lives}");
+        int remaining = amount;
+        if (TempLives > 0)
+        {
+            int absorbed = Mathf.Min(TempLives, remaining);
+            TempLives -= absorbed;
+            remaining -= absorbed;
+        }
 
-        if (Lives <= 0)
-            OnGameOver();
+        if (remaining > 0)
+        {
+            Lives = Mathf.Max(0, Lives - remaining);
+
+            if (Lives <= 0)
+                OnGameOver();
+        }
+    }
+    public void AddTempLives(int amount)
+    {
+        if (IsGameOver) return;
+        TempLives = Mathf.Min(maxTempLives, TempLives + amount);
+        tempLifeDecayTimer = tempLifeDecayInterval;
+        Debug.Log($"[TempLife] Added {amount}, now {TempLives}");
     }
 
     private void OnGameOver()
