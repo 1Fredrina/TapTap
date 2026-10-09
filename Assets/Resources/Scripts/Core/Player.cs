@@ -55,6 +55,12 @@ public class Player : MonoBehaviour
         for (int i = 0; i < allRenderers.Length; i++)
             initialEnabledStates[i] = allRenderers[i].enabled;
     }
+    private void OnDisable()
+    {
+        // 切人会中断动画，不能依赖 OnAttackAnimationEnd 清理攻击状态。
+        CancelAttack();
+    }
+
     private void Update()
     {
         if (attackCooldownTimer > 0f)
