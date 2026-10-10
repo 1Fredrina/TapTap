@@ -1,6 +1,6 @@
 [
-{"id":1,"name":"我不知道名字1号","MoveSpeed":6,"JumpHeight":2.5},
-{"id":2,"name":"我不知道名字2号","MoveSpeed":6,"JumpHeight":2.5},
-{"id":3,"name":"树突状细胞","MoveSpeed":6,"JumpHeight":2.5},
-{"id":4,"name":"巨噬细胞","MoveSpeed":6,"JumpHeight":2.5}
+{"id":1,"name":"细胞毒性T细胞","MoveSpeed":6,"JumpHeight":2.5,"AttackInterval":0.45,"InvincibleTime":1.0,"StunTimer":0.8,"skillId": "DamageBuff","skillCooldown": 25,"DashCooldown": 1},
+{"id":2,"name":"树突状细胞","MoveSpeed":6,"JumpHeight":2.5,"AttackInterval":0.75,"InvincibleTime":1.0,"StunTimer":0.8,"skillId": "DoubleAction","skillCooldown": 30,"DashCooldown": 1},
+{"id":3,"name":"辅助t细胞","MoveSpeed":6,"JumpHeight":2.5,"AttackInterval":0.55,"InvincibleTime":1.0,"StunTimer":0.8,"skillId": "Heal","skillCooldown": 35,"DashCooldown": 1},
+{"id":4,"name":"巨噬细胞","MoveSpeed":6,"JumpHeight":2.5,"AttackInterval":0.65,"InvincibleTime":1.0,"StunTimer":0.8,"skillId": "AoeStun","skillCooldown": 25,"DashCooldown": 1}
 ]

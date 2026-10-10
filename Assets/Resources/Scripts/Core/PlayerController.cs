@@ -10,103 +10,181 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D body;
     private Animator animator;
+    private Player player;
     private ContactFilter2D groundFilter;
+
+    private int jumpCount;
     private float moveInput;
     private float facingDirection = 1f;
     private float dashTime;
+    private float dashCooldownTimer;
+    private float stunTimer;
     private bool jumpRequested;
     private bool dashRequested;
-    private bool jumpAnimationRequested;
-    private string currentAnimation;
+    private bool wasGrounded;
 
-    private const string MoveState = "CellCharacter_Move";
-    private const string JumpState = "CellCharacter_Jump";
-    private const string DashState = "CellCharacter_Dash";
+    public float FacingDirection => facingDirection;
+    public bool IsStunned => stunTimer > 0f;
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        player = GetComponent<Player>();
+        if (animator != null)
+            animator.writeDefaultValuesOnDisable = true;
         body.constraints |= RigidbodyConstraints2D.FreezeRotation;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         groundFilter.SetLayerMask(groundLayers);
-        groundFilter.SetNormalAngle(45f, 135f); // 只把脚下的支撑面视为地面。
+        groundFilter.SetNormalAngle(45f, 135f);
         groundFilter.useTriggers = false;
     }
 
     private void Update()
     {
+        if (IsStunned)
+        {
+            moveInput = 0f;
+            jumpRequested = false;
+            dashRequested = false;
+            return;
+        }
+
         moveInput = Input.GetAxisRaw("Horizontal");
         jumpRequested |= Input.GetKeyDown(KeyCode.Space);
         dashRequested |= Input.GetKeyDown(KeyCode.LeftShift);
+
+        if (Input.GetKeyDown(KeyCode.J) && player != null)
+            player.OnAttackInput();
+
+        if (Input.GetKeyDown(KeyCode.K) && player != null)
+            player.OnSkillInput();
     }
 
     public void Initialize(PlayerData data)
     {
         playerData = data;
     }
+
     private void FixedUpdate()
     {
-        Debug.Log($"active={gameObject.name}, velocity={body.linearVelocity}, input={moveInput}");
         bool grounded = body.IsTouching(groundFilter);
-        if (dashTime <= 0f && moveInput != 0f)
-            facingDirection = Mathf.Sign(moveInput);
 
-        if (dashRequested && dashTime <= 0f)
+        if (grounded && body.linearVelocity.y <= 0.05f && !wasGrounded)
+        {
+            jumpCount = 0;
+            dashCooldownTimer = 0f;
+        }
+        wasGrounded = grounded;
+
+        // 硬直处理：保留击退惯性，不响应输入
+        if (IsStunned)
+        {
+            stunTimer -= Time.fixedDeltaTime;
+
+            Vector2 stunnedVel = body.linearVelocity;
+            stunnedVel.x = Mathf.MoveTowards(stunnedVel.x, 0f, 20f * Time.fixedDeltaTime);
+            body.linearVelocity = stunnedVel;
+
+            UpdateAnimationParams();
+            return;
+        }
+
+        bool doubleActive = player != null && player.DoubleActionActive;
+        int maxJump = doubleActive ? 2 : 1;
+
+        if (dashCooldownTimer > 0f)
+            dashCooldownTimer -= Time.fixedDeltaTime;
+
+        // 朝向
+        if (dashTime <= 0f && moveInput != 0f)
+        {
+            facingDirection = Mathf.Sign(moveInput);
+            ApplyFacing();
+        }
+
+        // 冲刺
+        if (dashRequested && dashTime <= 0f && dashCooldownTimer <= 0f)
+        {
             dashTime = Mathf.Max(dashDuration, Time.fixedDeltaTime);
 
+            float multiplier = player != null ? player.DashCooldownMultiplier : 1f;
+            dashCooldownTimer = playerData.DashCooldown * multiplier;
+
+            if (animator != null)
+                animator.SetTrigger("IsDash");
+        }
         dashRequested = false;
+
+        // 水平速度
         Vector2 velocity = body.linearVelocity;
         velocity.x = dashTime > 0f
             ? facingDirection * dashSpeed
             : moveInput * playerData.MoveSpeed;
 
-        bool jumpedThisFrame = false;
-        if (jumpRequested && velocity.y <= 0.05f && grounded)
+        // 跳跃
+        if (jumpRequested && jumpCount < maxJump)
         {
-            float gravity = -Physics2D.gravity.y * body.gravityScale;
-            if (gravity > 0f && playerData.JumpHeight > 0f)
+            bool canJump = grounded || jumpCount > 0;
+            if (canJump && velocity.y <= 0.5f)
             {
-                velocity.y = Mathf.Sqrt(2f * gravity * playerData.JumpHeight);
-                jumpAnimationRequested = true;
-                jumpedThisFrame = true;
+                float gravity = -Physics2D.gravity.y * body.gravityScale;
+                if (gravity > 0f && playerData.JumpHeight > 0f)
+                {
+                    velocity.y = Mathf.Sqrt(2f * gravity * playerData.JumpHeight);
+                    jumpCount++;
+                    if (animator != null)
+                        animator.SetTrigger("IsJump");
+                }
             }
         }
-
         jumpRequested = false;
+
         body.linearVelocity = velocity;
-        UpdateAnimation(grounded || jumpedThisFrame);
+        UpdateAnimationParams();
         dashTime = Mathf.Max(0f, dashTime - Time.fixedDeltaTime);
+    }
+
+    public void ApplyKnockback(float sourceX)
+    {
+        stunTimer = playerData.StunTime;
+
+        float dir = transform.position.x < sourceX ? -1f : 1f;
+        body.linearVelocity = new Vector2(dir * playerData.KnockbackForce, playerData.KnockbackUpForce);
     }
 
     private void OnDisable()
     {
         moveInput = 0f;
         dashTime = 0f;
+        dashCooldownTimer = 0f;
+        stunTimer = 0f;
         jumpRequested = false;
-        jumpAnimationRequested = false;
         dashRequested = false;
+        wasGrounded = false;
         if (body != null)
             body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
     }
 
-    private void UpdateAnimation(bool grounded)
+    public void PlayAttack()
+    {
+        if (animator != null)
+            animator.SetTrigger("IsAtk");
+    }
+
+    private void UpdateAnimationParams()
     {
         if (animator == null)
             return;
-
-        bool dashing = dashTime > 0f;
-        bool airborne = !grounded || body.linearVelocity.y > 0.05f;
-        animator.SetBool("IsRun", !dashing && grounded && Mathf.Abs(moveInput) > 0.01f);
-        animator.SetBool("IsJump", !dashing && airborne);
-        animator.SetBool("IsDash", dashing);
-
-        // Dash has priority over all other locomotion states for its full duration.
-        string state = dashing ? DashState : (airborne || jumpAnimationRequested ? JumpState : MoveState);
-        if (state != currentAnimation)
-        {
-            animator.CrossFadeInFixedTime(state, 0.05f);
-            currentAnimation = state;
-        }
+        animator.SetBool("IsRun", Mathf.Abs(moveInput) > 0.01f);
     }
+
+    private void ApplyFacing()
+    {
+        Vector3 scale = transform.localScale;
+        scale.x = Mathf.Abs(scale.x) * facingDirection;
+        transform.localScale = scale;
+    }
+
+
 }

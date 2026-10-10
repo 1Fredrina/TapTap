@@ -1,6 +1,15 @@
 using UnityEngine;
 
-public abstract class SkillBase //定义具体技能的统一执行入口
+public abstract class SkillBase
 {
+    public string SkillName { get; protected set; }
+    public float Cooldown { get; set; }
 
+    protected SkillBase(string name, float cooldown)
+    {
+        SkillName = name;
+        Cooldown = cooldown;
+    }
+
+    public abstract void Cast(Player caster);
 }

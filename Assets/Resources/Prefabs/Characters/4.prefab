@@ -84,6 +84,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8653719598885068355, guid: 93fc43c0711cc4e44b4b195df31614ef, type: 3}
       insertIndex: -1
       addedObject: {fileID: 975960282427471387}
+    - targetCorrespondingSourceObject: {fileID: -8653719598885068355, guid: 93fc43c0711cc4e44b4b195df31614ef, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1562241812935195639}
   m_SourcePrefab: {fileID: 4843985084834002234, guid: 93fc43c0711cc4e44b4b195df31614ef, type: 3}
 --- !u!1 &2133179222169151890 stripped
 GameObject:
@@ -193,9 +196,39 @@ MonoBehaviour:
     name: 
     MoveSpeed: 6
     JumpHeight: 2.5
-    animator: {fileID: 0}
+    AttackInterval: 0.5
+    InvincibleTime: 1
+    KnockbackForce: 8
+    KnockbackUpForce: 4
+    StunTime: 0.8
+    skillId: 
   groundLayers:
     serializedVersion: 2
     m_Bits: 51
   dashSpeed: 16
   dashDuration: 0.15
+--- !u!114 &1562241812935195639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2133179222169151890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c116991082e20374eb8bc0505cdb89ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player
+  data:
+    id: 0
+    name: 
+    MoveSpeed: 6
+    JumpHeight: 2.5
+    AttackInterval: 0.5
+    InvincibleTime: 1
+    KnockbackForce: 8
+    KnockbackUpForce: 4
+    StunTime: 0.8
+    skillId: 
+  controller: {fileID: 0}
+  attackEffectPrefab: {fileID: 0}
