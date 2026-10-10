@@ -32,11 +32,10 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 命中敌人
-        //if (other.TryGetComponent<Enemy>(out var enemy))
-        //{
-        //    enemy.TakeDamage(currentDamage);
-        //    Destroy(gameObject);
-        //}
+        Enemy enemy = other.GetComponentInParent<Enemy>();
+        if (enemy == null) return;
+
+        enemy.TakeDamage(currentDamage);
+        Destroy(gameObject);
     }
 }

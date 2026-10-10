@@ -16,7 +16,8 @@ public class AoeStunEffect : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 碰到敌人就让它晕
-        if (other.TryGetComponent<Enemy>(out var enemy))
+        Enemy enemy = other.GetComponentInParent<Enemy>();
+        if (enemy != null)
         {
             enemy.Stun(stunDuration);
         }

@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     public int TempLives { get; private set; }
     private float tempLifeDecayTimer;
 
+    private readonly Dictionary<Player, float> skillCooldownTimers = new Dictionary<Player, float>();
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -47,6 +49,8 @@ public class GameManager : MonoBehaviour
             Player player = PlayerObj.GetComponent<Player>();
             player.Initialize(playerData);
 
+            skillCooldownTimers[player] = 0f;
+
             PlayerObj.name = playerData.name;
             teamMembers.Add(PlayerObj);
             PlayerObj.SetActive(i == 0);
@@ -54,6 +58,8 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
+        UpdateSkillCooldowns();
+
         if (TempLives > 0)
         {
             tempLifeDecayTimer -= Time.deltaTime;
@@ -67,6 +73,33 @@ public class GameManager : MonoBehaviour
         {
             tempLifeDecayTimer = tempLifeDecayInterval;
         }
+    }
+
+    private void UpdateSkillCooldowns()
+    {
+        if (skillCooldownTimers.Count == 0) return;
+
+        foreach (var player in new List<Player>(skillCooldownTimers.Keys))
+        {
+            if (player == null)
+            {
+                skillCooldownTimers.Remove(player);
+                continue;
+            }
+
+            skillCooldownTimers[player] = Mathf.Max(0f, skillCooldownTimers[player] - Time.deltaTime);
+        }
+    }
+
+    public bool TryStartSkillCooldown(Player player, float cooldown)
+    {
+        if (player == null) return false;
+
+        if (skillCooldownTimers.TryGetValue(player, out float remaining) && remaining > 0f)
+            return false;
+
+        skillCooldownTimers[player] = Mathf.Max(0f, cooldown);
+        return true;
     }
 
     public void LoseLife(int amount = 1)

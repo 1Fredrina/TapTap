@@ -17,7 +17,6 @@ public class Player : MonoBehaviour
     private SkillBase skill;
     private DamageBuffSkill damageBuff;
     private DoubleActionSkill doubleAction;
-    private float skillCooldownTimer;
 
 
     private float attackCooldownTimer; //gameplay: 攻击间隔计时器，防止攻击过快
@@ -65,8 +64,6 @@ public class Player : MonoBehaviour
     {
         if (attackCooldownTimer > 0f)
             attackCooldownTimer -= Time.deltaTime;
-        if (skillCooldownTimer > 0f)
-            skillCooldownTimer -= Time.deltaTime;
         UpdateInvincible();
         if (damageBuff != null)
             damageBuff.Tick(Time.deltaTime);
@@ -75,12 +72,12 @@ public class Player : MonoBehaviour
 
     public void OnSkillInput()
     {
-        if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
+        GameManager manager = GameManager.Instance;
+        if (manager == null || manager.IsGameOver) return;
         if (controller.IsStunned) return;
         if (skill == null) return;
-        if (skillCooldownTimer > 0f) return;
+        if (!manager.TryStartSkillCooldown(this, skill.Cooldown)) return;
 
-        skillCooldownTimer = skill.Cooldown;
         skill.Cast(this);
     }
 

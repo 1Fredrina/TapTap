@@ -31,7 +31,6 @@ public class PlayerController : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         player = GetComponent<Player>();
-        // 攻击会修改子节点的姿态和显隐，停用时还原，避免切回后将攻击帧作为默认值。
         if (animator != null)
             animator.writeDefaultValuesOnDisable = true;
         body.constraints |= RigidbodyConstraints2D.FreezeRotation;
