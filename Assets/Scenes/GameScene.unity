@@ -847,6 +847,8 @@ MonoBehaviour:
   teamMembers: []
   teamSize: 4
   maxLives: 5
+  maxTempLives: 5
+  tempLifeDecayInterval: 5
 --- !u!114 &1918575836
 MonoBehaviour:
   m_ObjectHideFlags: 0
