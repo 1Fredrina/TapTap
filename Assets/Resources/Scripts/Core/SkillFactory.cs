@@ -7,7 +7,7 @@ public static class SkillFactory
         switch (id)
         {
             case "Heal":   return new HealSkill(2);
-            case "DamageBuff": return new DamageBuffSkill(2f, 4f);
+            case "DamageBuff": return new DamageBuffSkill(2f, 10f);
             case "DoubleAction": return new DoubleActionSkill(10f);
             case "AoeStun":
                 {

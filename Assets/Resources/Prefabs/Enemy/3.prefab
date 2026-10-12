@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3153449377570049947}
   - component: {fileID: 3502391364473045773}
   - component: {fileID: 491234555050975727}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.09, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 198871208839887713}
@@ -131,7 +131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 264082740155778838}
   - component: {fileID: 3339693547071822710}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u80BF\u7624\u5DE6\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1922292103056792839}
   - component: {fileID: 4588909388278969907}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u80BF \u773C\u775B"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +315,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1961807019293991769}
   - component: {fileID: 3509957487889051484}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u80BF\u7624\u53F3\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -407,7 +407,7 @@ GameObject:
   m_Component:
   - component: {fileID: 198871208839887713}
   - component: {fileID: 1225220620576451538}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u80BF\u7624\u8EAB\u4F53"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -506,7 +506,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6528170418112439246}
   - component: {fileID: 947644931193561544}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u80BF\u7624\u7EC6\u80DE\u6838"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -598,7 +598,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4855186889630790271}
   - component: {fileID: 3113164613683906864}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u80BF\u7624\u5DE6\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -690,7 +690,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3314832403274101471}
   - component: {fileID: 5445179734539186349}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u80BF\u7624\u53F3\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -782,7 +782,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8073423491152927999}
   - component: {fileID: 8605985650994256674}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u80BF\u7624cell \u7EC6\u80DE\u5185\u6D6E\u7247"
   m_TagString: Untagged
   m_Icon: {fileID: 0}

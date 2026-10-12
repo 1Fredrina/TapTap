@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8429893570586982711}
   - component: {fileID: 7423531067960442935}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 1_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6159368017685796569}
   - component: {fileID: 1931645266682838590}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u5C3E\u5DF4\uFF08\u6B66\u5668"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7031295263892079543}
   - component: {fileID: 8001981402986569846}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,7 +286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6852596320312724290}
   - component: {fileID: 9162244148805489831}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u53F3\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -378,7 +378,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4421616885529555628}
   - component: {fileID: 3017224879085644638}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -470,7 +470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8526673044680913572}
   - component: {fileID: 3575936677295320741}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u7EC6\u80DE\u6838"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -562,7 +562,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3411933927622759429}
   - component: {fileID: 8685840377162223604}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u8EAB\u4F53"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -662,7 +662,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3687240416010889753}
   - component: {fileID: 4504925490759417914}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u5DE6\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -754,7 +754,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5720894648006086904}
   - component: {fileID: 4497873243156493414}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u5934\u53D1"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -851,9 +851,9 @@ GameObject:
   - component: {fileID: 8819616432959596239}
   - component: {fileID: 852555923866707829}
   - component: {fileID: 7052131639167110745}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 1
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -868,7 +868,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3411933927622759429}
@@ -956,6 +956,13 @@ MonoBehaviour:
     MoveSpeed: 6
     JumpHeight: 2.5
     AttackInterval: 0.5
+    InvincibleTime: 1
+    KnockbackForce: 8
+    KnockbackUpForce: 4
+    StunTime: 0.8
+    skillId: 
+    skillCooldown: 6
+    DashCooldown: 1
   groundLayers:
     serializedVersion: 2
     m_Bits: 51
@@ -1014,5 +1021,12 @@ MonoBehaviour:
     MoveSpeed: 6
     JumpHeight: 2.5
     AttackInterval: 0.5
+    InvincibleTime: 1
+    KnockbackForce: 8
+    KnockbackUpForce: 4
+    StunTime: 0.8
+    skillId: 
+    skillCooldown: 6
+    DashCooldown: 1
   controller: {fileID: 0}
   attackEffectPrefab: {fileID: 547073194578725119, guid: 99f3ea850e5e3ca4da5f2c6dd27b5b74, type: 3}

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2839093891966547530}
   - component: {fileID: 8512867963194648971}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53CD1\u53F3\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6589314601373802614}
   - component: {fileID: 6497957711171733524}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53CD1\u773C\u775B\u5634"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2729232506757190343}
   - component: {fileID: 1194709850937480568}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53CD1\u53F3\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,7 +286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1145433651367754979}
   - component: {fileID: 8220486071616808445}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53CD1\u5DE6\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -378,7 +378,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1136602792798482594}
   - component: {fileID: 3373471059103266873}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53CD1\u5DE6\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -470,7 +470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2623806078649597544}
   - component: {fileID: 8232320539575233938}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53CD1\u8EAB\u4F53"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -569,7 +569,8 @@ GameObject:
   - component: {fileID: 7894943479096982134}
   - component: {fileID: 6687801919760083751}
   - component: {fileID: 8452556570322933951}
-  m_Layer: 0
+  - component: {fileID: 3629655037839718071}
+  m_Layer: 7
   m_Name: 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -586,7 +587,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2623806078649597544}
@@ -615,10 +616,10 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!70 &6687801919760083751
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -653,8 +654,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.087338686, y: -0.053747416}
-  m_Size: {x: 1.0240359, y: 2.0989838}
+  m_Offset: {x: -0.087338686, y: -0.021471024}
+  m_Size: {x: 1.0240359, y: 2.034431}
   m_Direction: 0
 --- !u!95 &8452556570322933951
 Animator:
@@ -678,3 +679,30 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3629655037839718071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8923255902921633441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28452b345095de74ca6ac5b783e1e4b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TurrentEnemy
+  data:
+    id: 1
+    name: 
+    MaxHealth: 2
+    MoveSpeed: 2
+    AttackDamage: 1
+    AttackInterval: 1
+  detectionRadius: 7
+  detectionAngle: 360
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  bulletPrefab: {fileID: 5673622631488429701, guid: 61edfad1e598b0743b45c94aa1a8374a, type: 3}
+  firePoint: {fileID: 6966144326057327070}
+  fireInterval: 2.5

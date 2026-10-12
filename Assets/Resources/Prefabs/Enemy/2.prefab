@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3485387096579200634}
   - component: {fileID: 6706738816713368914}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u9897\u7C92\u53F3\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9075791703776046290}
   - component: {fileID: 5743928213370169627}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u9897\u7C92\u8EAB\u4F53"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -199,7 +199,7 @@ GameObject:
   m_Component:
   - component: {fileID: 421698572856521765}
   - component: {fileID: 1520980683661252024}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u75C5\u6BD2\u9897\u7C92\u5DE6\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -291,7 +291,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4341829018687850514}
   - component: {fileID: 7924963228616651988}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u9897\u7C92\u53F3\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -383,7 +383,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4498010426564397665}
   - component: {fileID: 1833685968733858322}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u9897\u7C92\u5DE6\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -475,7 +475,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9137962386676419}
   - component: {fileID: 6977736125663374121}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u9897\u7C92\u773C\u775B"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -569,7 +569,8 @@ GameObject:
   - component: {fileID: 3650854861372929213}
   - component: {fileID: 3641937182767418147}
   - component: {fileID: 604023762555449348}
-  m_Layer: 0
+  - component: {fileID: 5448006010818143995}
+  m_Layer: 7
   m_Name: 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -586,7 +587,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9075791703776046290}
@@ -678,3 +679,29 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5448006010818143995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8063860334379773426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a62c51e8e904744094d7bc0d643941a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChaserEnemy
+  data:
+    id: 0
+    name: 
+    MaxHealth: 2
+    MoveSpeed: 2
+    AttackDamage: 1
+    AttackInterval: 1
+  fireDelay: 0.5
+  contactDamageCooldown: 1
+  detectionRadius: 10
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  moveSpeed: 4

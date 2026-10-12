@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6764133561533320479}
   - component: {fileID: 3812450393120189559}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u8C03t\u95ED\u773C"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 962351633493460597}
   - component: {fileID: 1181517231874896942}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u8C03t\u73AF1"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,7 +196,8 @@ GameObject:
   - component: {fileID: 6280592563860356872}
   - component: {fileID: 175627772761667686}
   - component: {fileID: 9096318686036086294}
-  m_Layer: 0
+  - component: {fileID: 8641149062268712423}
+  m_Layer: 7
   m_Name: 5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +250,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5024180079513063130}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -304,6 +305,33 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.81
+--- !u!114 &8641149062268712423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5024180079513063130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b18385f9f5ab5314db646de4af325222, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapSpawnerEnemy
+  data:
+    id: 0
+    name: 
+    MaxHealth: 10
+    MoveSpeed: 2
+    AttackDamage: 1
+    AttackInterval: 1
+  fireDelay: 0.5
+  contactDamageCooldown: 1
+  detectionRadius: 5
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  trapPrefab: {fileID: 7529094510282418251, guid: cab2639e26b0685409c60cdde1fa3a52, type: 3}
+  spawnInterval: 2
 --- !u!1 &5713471856486102355
 GameObject:
   m_ObjectHideFlags: 0
@@ -314,7 +342,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7273217896619407123}
   - component: {fileID: 6014500051887545854}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u8C03t\u73AF2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -406,7 +434,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8631066829075757606}
   - component: {fileID: 1707890623284440178}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u8C03T\u7741\u773C"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -498,7 +526,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6540722840614425234}
   - component: {fileID: 2093451758717708876}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u8C03t\u534A\u7741"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -590,7 +618,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4369199259625285487}
   - component: {fileID: 8173815260004046599}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u8C03T\u8EAB\u4F53"
   m_TagString: Untagged
   m_Icon: {fileID: 0}

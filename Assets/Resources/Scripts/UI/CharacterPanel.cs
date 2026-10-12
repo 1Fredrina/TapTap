@@ -53,14 +53,14 @@ public class CharacterPanel : BasePanel
             txtName.text = "巨噬细胞";
             txtIntro.text = "This is the introduction for Character 4.";
             imgCharacter.sprite = Resources.Load<Sprite>("Characters/Character4");
-            btnSkill1.gameObject.SetActive(false);
+            btnSkill1.gameObject.SetActive(false); 
             btnSkill2.gameObject.SetActive(false);
             btnSkill3.gameObject.SetActive(false);
             btnSkill4.gameObject.SetActive(true);
          });
         btnSkill1.onClick.AddListener(() => { 
             UIManager.Instance.ShowPanel<SkillPanel>();
-            UIManager.Instance.GetPanel<SkillPanel>().txtSkill.text = "开启技能后短时间内攻击力变为2倍，持续4秒，冷却25秒。";
+            UIManager.Instance.GetPanel<SkillPanel>().txtSkill.text = "开启技能后短时间内攻击力变为2倍，持续10秒，冷却25秒。";
          });
         btnSkill2.onClick.AddListener(() => { 
             UIManager.Instance.ShowPanel<SkillPanel>();

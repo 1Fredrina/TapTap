@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6075188107692326404}
   - component: {fileID: 2936188750856367624}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u611F\u7EC6\u80DE\u53F3\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 163848857574175163}
   - component: {fileID: 8171307246232470387}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u611F\u7EC6\u80DE\u4E94\u5B98"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8592166013770537403}
   - component: {fileID: 5520151599676119424}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u611F\u7EC6\u80DE\u8EAB\u4F53"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -289,7 +289,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4585756607929659972}
   - component: {fileID: 5266690363993918913}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u611F\u7EC6\u80DE\u5DE6\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -383,7 +383,8 @@ GameObject:
   - component: {fileID: 8933897370463782646}
   - component: {fileID: 6507052199841636832}
   - component: {fileID: 6702037876520516432}
-  m_Layer: 0
+  - component: {fileID: 1386178993936724635}
+  m_Layer: 7
   m_Name: 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -440,8 +441,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.5, y: 1}
+  m_Offset: {x: -0.08200902, y: 0.2004664}
+  m_Size: {x: 1.7210237, y: 1.9841094}
   m_Direction: 0
 --- !u!50 &6507052199841636832
 Rigidbody2D:
@@ -451,7 +452,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8462867616061105479}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -492,3 +493,37 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1386178993936724635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8462867616061105479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9848df4570d471445af5847d5614adc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThrowerEnemy
+  data:
+    id: 2
+    name: 
+    MaxHealth: 20
+    MoveSpeed: 2
+    AttackDamage: 1
+    AttackInterval: 1
+  fireDelay: 0.5
+  contactDamageCooldown: 1
+  detectionRadius: 12
+  detectionAngle: 360
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  bulletPrefab: {fileID: 5673622631488429701, guid: 61edfad1e598b0743b45c94aa1a8374a, type: 3}
+  firePoint: {fileID: 2385829678201432796}
+  shootInterval: 4
+  spreadAngle: 15
+  turretPrefab: {fileID: 8923255902921633441, guid: 84a25547e0df25b42b17f1f2253606c2, type: 3}
+  throwInterval: 6
+  throwForceX: 2.5
+  throwForceY: 4
