@@ -2,37 +2,46 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private EnemyData data = new EnemyData();
+    [SerializeField] protected EnemyData data = new EnemyData();
 
-    private float currentHealth;
-    private float stunTimer;
+    [Header("通用：进入视野后的开火延迟")]
+    [SerializeField] protected float fireDelay = 0.5f;
+
+    [Header("通用：接触伤害")]
+    [SerializeField] protected float contactDamageCooldown = 1f;
+
+    protected float currentHealth;
+    protected float stunTimer;
+    protected float playerInRangeTimer;
+    protected bool canFire;
+    protected float contactDamageTimer;
 
     public EnemyData Data => data;
     public float CurrentHealth => currentHealth;
-    public bool IsDead { get; private set; }
+    public bool IsDead { get; protected set; }
     public bool IsStunned => stunTimer > 0f;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         ResetState();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (stunTimer > 0f)
             stunTimer = Mathf.Max(0f, stunTimer - Time.deltaTime);
+
+        if (contactDamageTimer > 0f)
+            contactDamageTimer -= Time.deltaTime;
     }
 
-    public void Initialize(EnemyData enemyData)
+    public virtual void Initialize(EnemyData enemyData)
     {
         data = enemyData ?? new EnemyData();
         ResetState();
     }
 
-    /// <summary>
-    /// 敌人不使用受击无敌或击退；每次有效命中都会直接扣除生命值。
-    /// </summary>
-    public void TakeDamage(int damage = 1)
+    public virtual void TakeDamage(int damage = 1)
     {
         if (IsDead || damage <= 0) return;
 
@@ -48,14 +57,58 @@ public class Enemy : MonoBehaviour
         stunTimer = Mathf.Max(stunTimer, duration);
     }
 
-    private void ResetState()
+    protected bool UpdatePlayerVisibility(bool hasPlayerInSight)
+    {
+        if (hasPlayerInSight)
+        {
+            playerInRangeTimer += Time.deltaTime;
+            if (playerInRangeTimer >= fireDelay)
+                canFire = true;
+        }
+        else
+        {
+            playerInRangeTimer = 0f;
+            canFire = false;
+        }
+
+        return canFire;
+    }
+
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        TryContactDamage(collision.collider);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        TryContactDamage(other);
+    }
+
+    private void TryContactDamage(Collider2D other)
+    {
+        if (IsDead) return;
+        if (contactDamageTimer > 0f) return;
+
+        Player player = other.GetComponentInParent<Player>();
+        if (player == null) return;
+
+        int dmg = data != null ? data.AttackDamage : 1;
+        player.TakeDamage(dmg, transform.position.x);
+        contactDamageTimer = contactDamageCooldown;
+    }
+
+    protected virtual void ResetState()
     {
         currentHealth = data != null ? Mathf.Max(1f, data.MaxHealth) : 1f;
         stunTimer = 0f;
+        playerInRangeTimer = 0f;
+        canFire = false;
+        contactDamageTimer = 0f;
         IsDead = false;
     }
 
-    private void Die()
+    protected virtual void Die()
     {
         IsDead = true;
         stunTimer = 0f;
