@@ -21,7 +21,8 @@ public class PreparePanel : BasePanel //准备面板
         });
         btnAchievement.onClick.AddListener(() =>
         {
-            Debug.Log("进入成就页面");
+            UIManager.Instance.HidePanel<PreparePanel>();
+            UIManager.Instance.ShowPanel<AchievementPanel>();
         });
         btnCharacter.onClick.AddListener(() =>
         {
