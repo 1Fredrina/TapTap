@@ -94,7 +94,7 @@ public class Enemy : MonoBehaviour
         if (player == null) return;
 
         int dmg = data != null ? data.AttackDamage : 1;
-        player.TakeDamage(dmg, transform.position.x);
+        player.TakeDamage(dmg, transform.position);
         contactDamageTimer = contactDamageCooldown;
     }
 
@@ -112,6 +112,7 @@ public class Enemy : MonoBehaviour
     {
         IsDead = true;
         stunTimer = 0f;
+        Player.NotifyEnemyDefeated(data != null ? data.ExperienceReward : 1);
         gameObject.SetActive(false);
     }
 }

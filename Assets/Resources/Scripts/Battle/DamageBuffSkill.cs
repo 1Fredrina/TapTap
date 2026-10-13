@@ -6,7 +6,7 @@ public class DamageBuffSkill : SkillBase
     private float duration;
     private float timer;
 
-    public DamageBuffSkill(float multiplier = 2f, float duration = 4f, float cooldown = 6f)
+    public DamageBuffSkill(float multiplier = 1.5f, float duration = 5f, float cooldown = 20f)
         : base("DamageBuff", cooldown)
     {
         this.multiplier = multiplier;
@@ -15,6 +15,8 @@ public class DamageBuffSkill : SkillBase
 
     public override void Cast(Player caster)
     {
+        if (caster == null) return;
+
         timer = duration;
         Debug.Log($"[Skill] Damage x{multiplier} for {duration}s");
     }
@@ -27,4 +29,14 @@ public class DamageBuffSkill : SkillBase
 
     public bool IsActive => timer > 0f;
     public float Multiplier => multiplier;
+
+    public void AddDuration(float extra)
+    {
+        duration += extra;
+    }
+
+    public void AddMultiplier(float extra)
+    {
+        multiplier += extra;
+    }
 }

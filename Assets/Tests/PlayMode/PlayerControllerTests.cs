@@ -70,6 +70,34 @@ public class PlayerControllerTests
     }
 
     [Test]
+    public void TopDownMovementUsesEightDirectionsAndKeepsDashDirection()
+    {
+        Type controllerType = controller.GetType();
+        controllerType.GetField("topDownMovement", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(controller, true);
+        controllerType.GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+            .Invoke(controller, null);
+        Type dataType = Type.GetType("PlayerData, Assembly-CSharp", true);
+        object data = Activator.CreateInstance(dataType);
+        dataType.GetField("MoveSpeed").SetValue(data, 6f);
+        dataType.GetField("DashCooldown").SetValue(data, 1f);
+        controllerType.GetMethod("Initialize").Invoke(controller, new object[] { data });
+        body.position = Vector2.zero;
+
+        Set("moveInputVector", new Vector2(1f, 1f));
+        Step();
+        Assert.That(body.linearVelocity.magnitude, Is.EqualTo(6f).Within(0.05f));
+        Assert.That(body.gravityScale, Is.Zero);
+
+        Set("dashRequested", true);
+        Step();
+        Vector2 dashVelocity = body.linearVelocity;
+        Set("moveInputVector", new Vector2(-1f, 0f));
+        Step();
+        Assert.That(Vector2.Dot(body.linearVelocity.normalized, dashVelocity.normalized), Is.GreaterThan(0.99f));
+    }
+
+    [Test]
     public void JumpsToConfiguredHeightWithoutAirJump()
     {
         float start = body.position.y;

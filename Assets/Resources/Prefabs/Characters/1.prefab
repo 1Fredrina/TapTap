@@ -950,6 +950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b9565ad7d883644b4e41a9b62b5a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  topDownMovement: 1
   playerData:
     id: 0
     name: 
@@ -1030,3 +1031,7 @@ MonoBehaviour:
     DashCooldown: 1
   controller: {fileID: 0}
   attackEffectPrefab: {fileID: 547073194578725119, guid: 99f3ea850e5e3ca4da5f2c6dd27b5b74, type: 3}
+  autoAttack: 1
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295

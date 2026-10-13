@@ -22,7 +22,7 @@ public class Shockwave : MonoBehaviour
         Player player = other.GetComponentInParent<Player>();
         if (player == null) return;
 
-        player.TakeDamage(damage, transform.position.x);
+        player.TakeDamage(damage, transform.position);
     }
     public void SetDirection(float dir)
     {
