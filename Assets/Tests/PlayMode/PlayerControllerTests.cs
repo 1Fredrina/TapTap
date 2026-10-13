@@ -70,6 +70,34 @@ public class PlayerControllerTests
     }
 
     [Test]
+    public void TopDownMovementUsesEightDirectionsAndKeepsDashDirection()
+    {
+        Type controllerType = controller.GetType();
+        controllerType.GetField("topDownMovement", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(controller, true);
+        controllerType.GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+            .Invoke(controller, null);
+        Type dataType = Type.GetType("PlayerData, Assembly-CSharp", true);
+        object data = Activator.CreateInstance(dataType);
+        dataType.GetField("MoveSpeed").SetValue(data, 6f);
+        dataType.GetField("DashCooldown").SetValue(data, 1f);
+        controllerType.GetMethod("Initialize").Invoke(controller, new object[] { data });
+        body.position = Vector2.zero;
+
+        Set("moveInputVector", new Vector2(1f, 1f));
+        Step();
+        Assert.That(body.linearVelocity.magnitude, Is.EqualTo(6f).Within(0.05f));
+        Assert.That(body.gravityScale, Is.Zero);
+
+        Set("dashRequested", true);
+        Step();
+        Vector2 dashVelocity = body.linearVelocity;
+        Set("moveInputVector", new Vector2(-1f, 0f));
+        Step();
+        Assert.That(Vector2.Dot(body.linearVelocity.normalized, dashVelocity.normalized), Is.GreaterThan(0.99f));
+    }
+
+    [Test]
     public void JumpsToConfiguredHeightWithoutAirJump()
     {
         float start = body.position.y;
@@ -91,6 +119,31 @@ public class PlayerControllerTests
         Set("jumpRequested", true);
         Step();
         Assert.That(body.linearVelocity.y, Is.GreaterThan(0f));
+    }
+
+    [Test]
+    public void DoubleJumpCanBeTriggeredWhileFirstJumpIsAscending()
+    {
+        Type playerType = Type.GetType("Player, Assembly-CSharp", true);
+        Component player = controller.gameObject.AddComponent(playerType);
+        object playerData = Activator.CreateInstance(Type.GetType("PlayerData, Assembly-CSharp", true));
+        controller.GetType().GetField("playerData", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(controller, playerData);
+        Type skillType = Type.GetType("DoubleActionSkill, Assembly-CSharp", true);
+        object skill = Activator.CreateInstance(skillType, new object[] { 10f, 15f, 0.5f });
+        playerType.GetField("doubleAction", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(player, skill);
+        skillType.GetMethod("Cast").Invoke(skill, new object[] { player });
+        Set("player", player);
+
+        Set("jumpRequested", true);
+        Step();
+        float firstJumpVelocity = body.linearVelocity.y;
+        Assert.That(firstJumpVelocity, Is.GreaterThan(0f));
+
+        Set("jumpRequested", true);
+        Step();
+        Assert.That(body.linearVelocity.y, Is.EqualTo(firstJumpVelocity).Within(0.01f));
     }
 
     [Test]

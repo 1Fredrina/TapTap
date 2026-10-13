@@ -1,0 +1,34 @@
+[
+    {
+        "LevelsID": 1,
+        "IsUnlock": true
+    },
+    {
+        "LevelsID": 2,
+        "IsUnlock": false
+    },
+    {
+        "LevelsID": 3,
+        "IsUnlock": false
+    },
+    {
+        "LevelsID": 4,
+        "IsUnlock": false
+    },
+    {
+        "LevelsID": 5,
+        "IsUnlock": false
+    },
+    {
+        "LevelsID": 6,
+        "IsUnlock": false
+    },
+    {
+        "LevelsID": 7,
+        "IsUnlock": false
+    },
+    {
+        "LevelsID": 8,
+        "IsUnlock": false
+    }
+]

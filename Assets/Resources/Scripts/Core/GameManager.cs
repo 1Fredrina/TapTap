@@ -6,21 +6,27 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     public static GameManager Instance => instance;
 
-    public List<GameObject> teamMembers = new List<GameObject>();
-    [SerializeField] private int teamSize = 4;
+    public GameObject PlayerObject { get; private set; }
+    public Player Player { get; private set; }
 
-    [Header("共享生命")]
     [SerializeField, Min(1)] private int maxLives = 5;
     public int Lives { get; private set; }
     public bool IsGameOver { get; private set; }
 
     [Header("临时生命")]
     [SerializeField, Min(0)] private int maxTempLives = 5;
-    [SerializeField, Min(0f)] private float tempLifeDecayInterval = 5f;   // 每 5 秒
+    [SerializeField, Min(0f)] private float tempLifeDecayInterval = 5f;
     public int TempLives { get; private set; }
     private float tempLifeDecayTimer;
 
-    private readonly Dictionary<Player, float> skillCooldownTimers = new Dictionary<Player, float>();
+    private float skillCooldownTimer;
+    private float teamDoubleActionTimer;
+    private float teamMoveSpeedBonus;
+    private float teamWeaponCooldownMultiplier = 1f;
+
+    public bool TeamDoubleActionActive => teamDoubleActionTimer > 0f;
+    public float TeamMoveSpeedBonus => TeamDoubleActionActive ? teamMoveSpeedBonus : 0f;
+    public float TeamWeaponCooldownMultiplier => TeamDoubleActionActive ? teamWeaponCooldownMultiplier : 1f;
 
     private void Awake()
     {
@@ -37,28 +43,44 @@ public class GameManager : MonoBehaviour
     }
 
     void Start()
-    {      
-        for (int i = 0; i < GameDataMgr.Instance.playerDatas.Count; i++)
+    {
+        if (GameDataMgr.Instance == null || GameDataMgr.Instance.playerDatas.Count == 0)
         {
-            PlayerData playerData = GameDataMgr.Instance.playerDatas[i];
-            GameObject PlayerObj = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/"+ (i+1)), Vector3.zero, Quaternion.identity);
+            return;
+        }
 
-            PlayerController controller = PlayerObj.GetComponent<PlayerController>();
+        PlayerData playerData = GameDataMgr.Instance.playerDatas[0];
+
+        PlayerObject = Instantiate(
+            Resources.Load<GameObject>("Prefabs/Characters/" + (playerData.id > 0 ? playerData.id : 1)),
+            Vector3.zero,
+            Quaternion.identity);
+
+        PlayerController controller = PlayerObject.GetComponent<PlayerController>();
+        if (controller != null)
             controller.Initialize(playerData);
 
-            Player player = PlayerObj.GetComponent<Player>();
-            player.Initialize(playerData);
+        Player = PlayerObject.GetComponent<Player>();
+        if (Player != null)
+            Player.Initialize(playerData);
 
-            skillCooldownTimers[player] = 0f;
-
-            PlayerObj.name = playerData.name;
-            teamMembers.Add(PlayerObj);
-            PlayerObj.SetActive(i == 0);
-        }
+        PlayerObject.name = playerData.name;
     }
+
     private void Update()
     {
-        UpdateSkillCooldowns();
+        UpdateSkillCooldown();
+
+        if (teamDoubleActionTimer > 0f)
+        {
+            teamDoubleActionTimer = Mathf.Max(0f, teamDoubleActionTimer - Time.deltaTime);
+
+            if (teamDoubleActionTimer <= 0f)
+            {
+                teamMoveSpeedBonus = 0f;
+                teamWeaponCooldownMultiplier = 1f;
+            }
+        }
 
         if (TempLives > 0)
         {
@@ -75,30 +97,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void UpdateSkillCooldowns()
+    public void ActivateTeamDoubleAction(float duration, float moveSpeedBonus, float weaponCooldownMultiplier)
     {
-        if (skillCooldownTimers.Count == 0) return;
+        teamDoubleActionTimer = Mathf.Max(0f, duration);
+        teamMoveSpeedBonus = moveSpeedBonus;
+        teamWeaponCooldownMultiplier = Mathf.Max(0.1f, weaponCooldownMultiplier);
+    }
 
-        foreach (var player in new List<Player>(skillCooldownTimers.Keys))
-        {
-            if (player == null)
-            {
-                skillCooldownTimers.Remove(player);
-                continue;
-            }
-
-            skillCooldownTimers[player] = Mathf.Max(0f, skillCooldownTimers[player] - Time.deltaTime);
-        }
+    private void UpdateSkillCooldown()
+    {
+        if (skillCooldownTimer > 0f)
+            skillCooldownTimer = Mathf.Max(0f, skillCooldownTimer - Time.deltaTime);
     }
 
     public bool TryStartSkillCooldown(Player player, float cooldown)
     {
         if (player == null) return false;
+        if (skillCooldownTimer > 0f) return false;
 
-        if (skillCooldownTimers.TryGetValue(player, out float remaining) && remaining > 0f)
-            return false;
-
-        skillCooldownTimers[player] = Mathf.Max(0f, cooldown);
+        skillCooldownTimer = Mathf.Max(0f, cooldown);
         return true;
     }
 
@@ -122,6 +139,7 @@ public class GameManager : MonoBehaviour
                 OnGameOver();
         }
     }
+
     public void AddTempLives(int amount)
     {
         if (IsGameOver) return;
@@ -134,12 +152,12 @@ public class GameManager : MonoBehaviour
     {
         IsGameOver = true;
 
-        foreach (var member in teamMembers)
+        if (PlayerObject != null)
         {
-            if (member == null) continue;
-            var ctrl = member.GetComponent<PlayerController>();
+            var ctrl = PlayerObject.GetComponent<PlayerController>();
             if (ctrl != null) ctrl.enabled = false;
         }
+
         // UIManager.Instance.ShowPanel<GameOverPanel>();
         Debug.Log("Game Over");
     }

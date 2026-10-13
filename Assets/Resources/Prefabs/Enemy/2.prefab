@@ -692,7 +692,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChaserEnemy
   data:
-    id: 0
+    id: 1
     name: 
     MaxHealth: 2
     MoveSpeed: 2

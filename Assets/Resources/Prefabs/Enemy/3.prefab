@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3153449377570049947}
   - component: {fileID: 3502391364473045773}
   - component: {fileID: 491234555050975727}
+  - component: {fileID: -3354625033525055248}
   m_Layer: 7
   m_Name: 3
   m_TagString: Untagged
@@ -29,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.09, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 198871208839887713}
@@ -121,6 +122,51 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-3354625033525055248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67511244184190318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c33d4c303c6247c40a473d5b8a46b9af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BerserkerEnemy
+  data:
+    id: 2
+    name: 
+    MaxHealth: 40
+    MoveSpeed: 2
+    AttackDamage: 2
+    AttackInterval: 1
+  fireDelay: 0.2
+  contactDamageCooldown: 1
+  detectionRadius: 10
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  moveSpeed: 4
+  preferredDistance: 6
+  distanceTolerance: 0.5
+  attackCooldown: 1
+  bulletPrefab: {fileID: 2208014496072608904, guid: 9776de8fbd66d9343a58ab9733580be4, type: 3}
+  firePoint: {fileID: 549185166641879300}
+  shootInterval: 1.5
+  shootCount: 2
+  shootSpreadAngle: 15
+  chargeForce: 12
+  chargeDuration: 0.6
+  slamJumpForce: 12
+  shockwavePrefab: {fileID: 6823138241080395158, guid: 609dc1f4ad0f8bc49a772cd258a6c3c5, type: 3}
+  shockwaveOffset: {x: 0.8, y: 0}
+  shockwaveYOffset: -0.5
+  groundLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  groundCheckDistance: 0.15
+  berserkThreshold: 0.5
 --- !u!1 &463537989857938336
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,7 +338,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 0875921f20872fa4599e15febe694fb7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

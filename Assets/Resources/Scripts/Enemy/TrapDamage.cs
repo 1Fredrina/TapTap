@@ -20,7 +20,7 @@ public class TrapDamage : MonoBehaviour
         Player player = other.GetComponentInParent<Player>();
         if (player == null) return;
 
-        player.TakeDamage(damage, transform.position.x);
+            player.TakeDamage(damage, transform.position);
         hasHit = true;
         Destroy(gameObject);
     }
@@ -32,9 +32,8 @@ public class TrapDamage : MonoBehaviour
         Player player = collision.collider.GetComponentInParent<Player>();
         if (player == null) return;
 
-        player.TakeDamage(damage, transform.position.x);
+            player.TakeDamage(damage, transform.position);
         hasHit = true;
 
-        Destroy(gameObject);
     }
 }

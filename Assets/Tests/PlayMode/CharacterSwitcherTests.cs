@@ -128,6 +128,45 @@ public class CharacterSwitcherTests
         Assert.That(IsAttacking(), Is.False);
     }
 
+    [Test]
+    public void DoubleActionSkillAffectsEveryTeamMember()
+    {
+        CreateTeam(1);
+        Type skillType = Type.GetType("DoubleActionSkill, Assembly-CSharp", true);
+        object skill = Activator.CreateInstance(skillType, new object[] { 10f, 15f, 0.5f });
+        skillType.GetMethod("Cast").Invoke(skill, new object[] { player });
+
+        Component teammate = incoming.GetComponent(Type.GetType("Player, Assembly-CSharp", true));
+        Assert.That((bool)player.GetType().GetProperty("DoubleActionActive").GetValue(player), Is.True);
+        Assert.That((bool)teammate.GetType().GetProperty("DoubleActionActive").GetValue(teammate), Is.True);
+        Assert.That((float)teammate.GetType().GetProperty("DashCooldownMultiplier").GetValue(teammate),
+            Is.EqualTo(0.5f));
+    }
+
+    [Test]
+    public void ExperienceLevelsUpAndImprovesAutoAttackStats()
+    {
+        GameObject character = new GameObject("Progression Test Player");
+        SceneManager.MoveGameObjectToScene(character, scene);
+        Component progressionPlayer = character.AddComponent(Type.GetType("Player, Assembly-CSharp", true));
+        Type dataType = Type.GetType("PlayerData, Assembly-CSharp", true);
+        object data = Activator.CreateInstance(dataType);
+        dataType.GetField("AttackDamage").SetValue(data, 2);
+        dataType.GetField("AttackInterval").SetValue(data, 0.5f);
+        dataType.GetField("AttackRange").SetValue(data, 4f);
+        dataType.GetField("BaseExperienceToNextLevel").SetValue(data, 5);
+        progressionPlayer.GetType().GetMethod("Initialize").Invoke(progressionPlayer, new object[] { data });
+
+        progressionPlayer.GetType().GetMethod("AddExperience").Invoke(progressionPlayer, new object[] { 11 });
+
+        Assert.That((int)progressionPlayer.GetType().GetProperty("Level").GetValue(progressionPlayer), Is.EqualTo(2));
+        Assert.That((int)progressionPlayer.GetType().GetProperty("Experience").GetValue(progressionPlayer), Is.EqualTo(6));
+        Assert.That((int)progressionPlayer.GetType().GetProperty("AttackDamage").GetValue(progressionPlayer), Is.EqualTo(3));
+        Assert.That((float)progressionPlayer.GetType().GetProperty("AttackInterval").GetValue(progressionPlayer), Is.EqualTo(0.475f).Within(0.001f));
+        Assert.That((float)progressionPlayer.GetType().GetProperty("AttackRange").GetValue(progressionPlayer), Is.EqualTo(4.25f).Within(0.001f));
+        Object.DestroyImmediate(character);
+    }
+
     private void CreateTeam(int character)
     {
         outgoing = CreateCharacter(character);
