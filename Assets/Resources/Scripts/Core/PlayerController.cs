@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour
         if (jumpRequested && jumpCount < maxJump)
         {
             bool canJump = grounded || jumpCount > 0;
-            if (canJump && velocity.y <= 0.5f)
+            if (canJump && (jumpCount > 0 || velocity.y <= 0.5f))
             {
                 float gravity = -Physics2D.gravity.y * body.gravityScale;
                 if (gravity > 0f && playerData.JumpHeight > 0f)

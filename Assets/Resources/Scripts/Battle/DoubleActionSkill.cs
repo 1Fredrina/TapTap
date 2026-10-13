@@ -16,6 +16,9 @@ public class DoubleActionSkill : SkillBase
     public override void Cast(Player caster)
     {
         timer = duration;
+        GameManager manager = GameManager.Instance;
+        if (manager != null)
+            manager.ActivateTeamDoubleAction(duration, dashCooldownMultiplier);
     }
 
     public void Tick(float dt)

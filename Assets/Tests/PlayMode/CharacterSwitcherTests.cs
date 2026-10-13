@@ -128,6 +128,21 @@ public class CharacterSwitcherTests
         Assert.That(IsAttacking(), Is.False);
     }
 
+    [Test]
+    public void DoubleActionSkillAffectsEveryTeamMember()
+    {
+        CreateTeam(1);
+        Type skillType = Type.GetType("DoubleActionSkill, Assembly-CSharp", true);
+        object skill = Activator.CreateInstance(skillType, new object[] { 10f, 15f, 0.5f });
+        skillType.GetMethod("Cast").Invoke(skill, new object[] { player });
+
+        Component teammate = incoming.GetComponent(Type.GetType("Player, Assembly-CSharp", true));
+        Assert.That((bool)player.GetType().GetProperty("DoubleActionActive").GetValue(player), Is.True);
+        Assert.That((bool)teammate.GetType().GetProperty("DoubleActionActive").GetValue(teammate), Is.True);
+        Assert.That((float)teammate.GetType().GetProperty("DashCooldownMultiplier").GetValue(teammate),
+            Is.EqualTo(0.5f));
+    }
+
     private void CreateTeam(int character)
     {
         outgoing = CreateCharacter(character);

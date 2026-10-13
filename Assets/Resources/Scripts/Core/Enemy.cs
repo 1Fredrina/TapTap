@@ -90,7 +90,7 @@ public class Enemy : MonoBehaviour
         if (IsDead) return;
         if (contactDamageTimer > 0f) return;
 
-        Player player = other.GetComponentInParent<Player>();
+        Player player = other.GetComponent<Player>();
         if (player == null) return;
 
         int dmg = data != null ? data.AttackDamage : 1;

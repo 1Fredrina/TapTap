@@ -506,13 +506,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThrowerEnemy
   data:
-    id: 2
+    id: 3
     name: 
-    MaxHealth: 20
+    MaxHealth: 35
     MoveSpeed: 2
     AttackDamage: 1
     AttackInterval: 1
-  fireDelay: 0.5
+  fireDelay: 0.2
   contactDamageCooldown: 1
   detectionRadius: 12
   detectionAngle: 360

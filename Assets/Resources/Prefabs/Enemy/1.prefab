@@ -692,17 +692,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurrentEnemy
   data:
-    id: 1
+    id: 0
     name: 
     MaxHealth: 2
     MoveSpeed: 2
     AttackDamage: 1
     AttackInterval: 1
-  detectionRadius: 7
+  fireDelay: 0.3
+  contactDamageCooldown: 1
+  detectionRadius: 10
   detectionAngle: 360
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  bulletPrefab: {fileID: 5673622631488429701, guid: 61edfad1e598b0743b45c94aa1a8374a, type: 3}
+  bulletPrefab: {fileID: 2208014496072608904, guid: 9776de8fbd66d9343a58ab9733580be4, type: 3}
   firePoint: {fileID: 6966144326057327070}
   fireInterval: 2.5

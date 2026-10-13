@@ -35,6 +35,5 @@ public class TrapDamage : MonoBehaviour
         player.TakeDamage(damage, transform.position.x);
         hasHit = true;
 
-        Destroy(gameObject);
     }
 }

@@ -21,6 +21,11 @@ public class GameManager : MonoBehaviour
     private float tempLifeDecayTimer;
 
     private readonly Dictionary<Player, float> skillCooldownTimers = new Dictionary<Player, float>();
+    private float teamDoubleActionTimer;
+    private float teamDashCooldownMultiplier = 1f;
+
+    public bool TeamDoubleActionActive => teamDoubleActionTimer > 0f;
+    public float TeamDashCooldownMultiplier => TeamDoubleActionActive ? teamDashCooldownMultiplier : 1f;
 
     private void Awake()
     {
@@ -59,6 +64,8 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         UpdateSkillCooldowns();
+        if (teamDoubleActionTimer > 0f)
+            teamDoubleActionTimer = Mathf.Max(0f, teamDoubleActionTimer - Time.deltaTime);
 
         if (TempLives > 0)
         {
@@ -73,6 +80,12 @@ public class GameManager : MonoBehaviour
         {
             tempLifeDecayTimer = tempLifeDecayInterval;
         }
+    }
+
+    public void ActivateTeamDoubleAction(float duration, float dashCooldownMultiplier)
+    {
+        teamDoubleActionTimer = Mathf.Max(0f, duration);
+        teamDashCooldownMultiplier = Mathf.Max(0f, dashCooldownMultiplier);
     }
 
     private void UpdateSkillCooldowns()

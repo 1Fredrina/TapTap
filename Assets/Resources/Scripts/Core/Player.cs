@@ -25,7 +25,9 @@ public class Player : MonoBehaviour
     private float blinkTimer;
     private bool[] initialEnabledStates;
 
-    public bool DoubleActionActive => doubleAction != null && doubleAction.IsActive;
+    public bool DoubleActionActive => GameManager.Instance != null
+        ? GameManager.Instance.TeamDoubleActionActive
+        : doubleAction != null && doubleAction.IsActive;
 
     public void Initialize(PlayerData d)
     {
@@ -184,6 +186,8 @@ public class Player : MonoBehaviour
     {
         get
         {
+            if (GameManager.Instance != null)
+                return GameManager.Instance.TeamDashCooldownMultiplier;
             if (doubleAction != null && doubleAction.IsActive)
                 return doubleAction.DashCooldownMultiplier;
             return 1f;

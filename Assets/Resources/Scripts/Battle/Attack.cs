@@ -14,6 +14,5 @@ public class Attack : MonoBehaviour
         if (enemy == null) return;
 
         enemy.TakeDamage(currentDamage);
-        Destroy(gameObject);
     }
 }

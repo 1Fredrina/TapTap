@@ -94,6 +94,31 @@ public class PlayerControllerTests
     }
 
     [Test]
+    public void DoubleJumpCanBeTriggeredWhileFirstJumpIsAscending()
+    {
+        Type playerType = Type.GetType("Player, Assembly-CSharp", true);
+        Component player = controller.gameObject.AddComponent(playerType);
+        object playerData = Activator.CreateInstance(Type.GetType("PlayerData, Assembly-CSharp", true));
+        controller.GetType().GetField("playerData", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(controller, playerData);
+        Type skillType = Type.GetType("DoubleActionSkill, Assembly-CSharp", true);
+        object skill = Activator.CreateInstance(skillType, new object[] { 10f, 15f, 0.5f });
+        playerType.GetField("doubleAction", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(player, skill);
+        skillType.GetMethod("Cast").Invoke(skill, new object[] { player });
+        Set("player", player);
+
+        Set("jumpRequested", true);
+        Step();
+        float firstJumpVelocity = body.linearVelocity.y;
+        Assert.That(firstJumpVelocity, Is.GreaterThan(0f));
+
+        Set("jumpRequested", true);
+        Step();
+        Assert.That(body.linearVelocity.y, Is.EqualTo(firstJumpVelocity).Within(0.01f));
+    }
+
+    [Test]
     public void DashUsesLastDirectionExpiresAndPreservesGravity()
     {
         Set("moveInput", -1f);
