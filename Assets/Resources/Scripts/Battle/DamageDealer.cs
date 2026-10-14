@@ -7,6 +7,6 @@ public class DamageDealer : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.TryGetComponent<Player>(out var player))
-            player.TakeDamage(damage, transform.position);
+            player.TakeDamage(damage);
     }
 }

@@ -320,7 +320,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u7EE7\u7EED\u5192\u9669"
+  m_Text: "\u5F00\u59CB\u5192\u9669"
 --- !u!1 &4399350841515532873
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,7 +413,7 @@ GameObject:
   - component: {fileID: 1937637175644392284}
   - component: {fileID: 377416541294987971}
   m_Layer: 5
-  m_Name: Button (Legacy)
+  m_Name: btnStart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -881,10 +881,11 @@ MonoBehaviour:
   alphaSpeed: 10
   isShow: 0
   imgCharacter: {fileID: 3287120210507988612}
-  btnStart: {fileID: 1744073552938864726}
+  btnStart: {fileID: 377416541294987971}
   btnSetting: {fileID: 3571263602836210967}
   btnAchievement: {fileID: 3055062070311722294}
   btnCharacter: {fileID: 6732795876311639202}
+  btnBook: {fileID: 1744073552938864726}
 --- !u!1 &7553918118513057738
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,7 +1043,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u7AE0\u8282"
+  m_Text: "\u56FE\u9274"
 --- !u!1 &8571649757555181996
 GameObject:
   m_ObjectHideFlags: 0
@@ -1256,7 +1257,7 @@ GameObject:
   - component: {fileID: 685037156913007824}
   - component: {fileID: 1744073552938864726}
   m_Layer: 5
-  m_Name: btnStart
+  m_Name: btnBook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -694,9 +694,10 @@ MonoBehaviour:
   data:
     id: 0
     name: 
-    MaxHealth: 2
+    MaxHealth: 15
     MoveSpeed: 2
-    AttackDamage: 1
+    AttackDamage: 10
+    ExperienceReward: 100
     AttackInterval: 1
   fireDelay: 0.3
   contactDamageCooldown: 1

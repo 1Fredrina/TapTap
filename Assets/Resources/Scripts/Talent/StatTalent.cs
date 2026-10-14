@@ -17,10 +17,16 @@ public enum StatType
 {
     AttackDamage,
     AttackSpeed,
+    AttackRange,
     MoveSpeed,
     MaxHealth,
-    PickupRange,
-    ExperienceGain,
     InvincibleTime,
-    SkillCooldown
+    ShieldDecay,
+    PickupRange,
+     DamageReduction,
+    ExperienceGain,
+    SkillCooldown,
+    HealOnKill,
+    ShieldOnKill,
+    ExtraChoice
 }

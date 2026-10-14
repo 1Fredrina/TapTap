@@ -8,6 +8,7 @@ public class PreparePanel : BasePanel //准备面板
     public Button btnSetting;
     public Button btnAchievement;
     public Button btnCharacter;
+    public Button btnBook; 
     public override void Init()
     {
         btnStart.onClick.AddListener(() =>

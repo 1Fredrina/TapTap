@@ -4,17 +4,18 @@ public class EnemyBullet : MonoBehaviour
 {
     [SerializeField] private float speed = 5f;
     [SerializeField] private float lifeTime = 3f;
-    [SerializeField] private int damage = 1;
+    [SerializeField] private int damage = 10;
 
     [Header("碰撞过滤")]
     [SerializeField] private LayerMask hitLayers;
 
     private Vector2 moveDirection;
 
-    public void Initialize(Vector2 direction, int bulletDamage)
+    public void Initialize(Vector2 direction, int bulletDamage=-1)
     {
         moveDirection = direction.normalized;
-        damage = bulletDamage;
+        if (bulletDamage >= 0)
+            damage = bulletDamage;
 
         float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle);
@@ -34,7 +35,7 @@ public class EnemyBullet : MonoBehaviour
         Player player = other.GetComponent<Player>();
         if (player != null)
         {
-            player.TakeDamage(damage, transform.position);
+            player.TakeDamage(damage);
         }
         Destroy(gameObject);
     }

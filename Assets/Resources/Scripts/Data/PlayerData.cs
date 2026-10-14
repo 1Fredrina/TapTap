@@ -21,9 +21,13 @@ public class PlayerData
     [Min(0f)] public float skillCooldown = 6f;
     [Min(0f)] public float DashCooldown = 1f;
 
+    [Header("护盾")]
+    [Min(0f)] public float ShieldDecayRate = 0.1f;
+
     [Header("等级")]
     [Min(1)] public int MaxLevel = 21;
 
     [Header("天赋池")]
     public TalentBase[] talents;
+    public string startingWeaponId;
 }

@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
     protected bool canFire;
     protected float contactDamageTimer;
 
+    private Rigidbody2D body;
+
     public EnemyData Data => data;
     public float CurrentHealth => currentHealth;
     public bool IsDead { get; protected set; }
@@ -23,6 +25,12 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Awake()
     {
+        body = GetComponent<Rigidbody2D>();
+        if (body != null)
+        {
+            body.gravityScale = 0f;
+            body.constraints |= RigidbodyConstraints2D.FreezeRotation;
+        }
         ResetState();
     }
 
@@ -33,6 +41,31 @@ public class Enemy : MonoBehaviour
 
         if (contactDamageTimer > 0f)
             contactDamageTimer -= Time.deltaTime;
+
+        if (IsDead) return;
+
+        MoveTowardsPlayer();
+    }
+
+    protected virtual void MoveTowardsPlayer()
+    {
+        if (IsStunned) return;
+        if (data == null || data.MoveSpeed <= 0f) return;
+
+        Player target = Player.ActivePlayer;
+        if (target == null || target.IsDead) return;
+
+        Vector2 direction = ((Vector2)target.transform.position - (Vector2)transform.position).normalized;
+        if (direction.sqrMagnitude < 0.001f) return;
+
+        if (body != null)
+        {
+            body.linearVelocity = direction * data.MoveSpeed;
+        }
+        else
+        {
+            transform.position += (Vector3)(direction * data.MoveSpeed * Time.deltaTime);
+        }
     }
 
     public virtual void Initialize(EnemyData enemyData)
@@ -55,6 +88,9 @@ public class Enemy : MonoBehaviour
         if (IsDead || duration <= 0f) return;
 
         stunTimer = Mathf.Max(stunTimer, duration);
+
+        if (body != null)
+            body.linearVelocity = Vector2.zero;
     }
 
     protected bool UpdatePlayerVisibility(bool hasPlayerInSight)
@@ -74,7 +110,6 @@ public class Enemy : MonoBehaviour
         return canFire;
     }
 
-
     private void OnCollisionStay2D(Collision2D collision)
     {
         TryContactDamage(collision.collider);
@@ -93,8 +128,8 @@ public class Enemy : MonoBehaviour
         Player player = other.GetComponent<Player>();
         if (player == null) return;
 
-        int dmg = data != null ? data.AttackDamage : 1;
-        player.TakeDamage(dmg, transform.position);
+        int dmg = data != null ? data.AttackDamage : 10;
+        player.TakeDamage(dmg);
         contactDamageTimer = contactDamageCooldown;
     }
 
@@ -112,7 +147,11 @@ public class Enemy : MonoBehaviour
     {
         IsDead = true;
         stunTimer = 0f;
-        Player.NotifyEnemyDefeated(data != null ? data.ExperienceReward : 1);
-        gameObject.SetActive(false);
+
+        if (body != null)
+            body.linearVelocity = Vector2.zero;
+
+        Player.NotifyEnemyDefeated(data != null ? data.ExperienceReward : 100);
+        Destroy(gameObject);
     }
 }
