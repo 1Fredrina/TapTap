@@ -309,23 +309,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b9565ad7d883644b4e41a9b62b5a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  topDownMovement: 1
   playerData:
     id: 0
     name: 
     MoveSpeed: 6
-    JumpHeight: 2.5
+    MaxHealth: 10
     AttackInterval: 0.5
+    AttackDamage: 1
+    AttackRange: 12
+    ProjectileCount: 1
+    ProjectileSpread: 12
+    PickupRange: 2.5
+    ExperienceMultiplier: 1
+    BaseExperienceToNextLevel: 5
     InvincibleTime: 1
-    KnockbackForce: 8
-    KnockbackUpForce: 4
     StunTime: 0.8
     skillId: 
     skillCooldown: 6
     DashCooldown: 1
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 51
+    ShieldDecayRate: 0.1
+    MaxLevel: 21
+    startingWeaponId: 
   dashSpeed: 16
   dashDuration: 0.15
 --- !u!95 &2649184071431801043
@@ -366,18 +370,25 @@ MonoBehaviour:
     id: 0
     name: 
     MoveSpeed: 6
-    JumpHeight: 2.5
+    MaxHealth: 10
     AttackInterval: 0.5
+    AttackDamage: 1
+    AttackRange: 12
+    ProjectileCount: 1
+    ProjectileSpread: 12
+    PickupRange: 2.5
+    ExperienceMultiplier: 1
+    BaseExperienceToNextLevel: 5
     InvincibleTime: 1
-    KnockbackForce: 8
-    KnockbackUpForce: 4
     StunTime: 0.8
     skillId: 
     skillCooldown: 6
     DashCooldown: 1
+    ShieldDecayRate: 10
+    MaxLevel: 21
+    startingWeaponId: 
   controller: {fileID: 0}
-  attackEffectPrefab: {fileID: 0}
-  autoAttack: 1
   enemyLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+  baseChoicesPerLevel: 3

@@ -11,13 +11,13 @@
     "ProjectileSpread": 12,
     "PickupRange": 2.5,
     "ExperienceMultiplier": 1,
-    "BaseExperienceToNextLevel": 1000,
+    "BaseExperienceToNextLevel": 400,
     "InvincibleTime": 1.0,
     "StunTime": 0.8,
     "skillId": "DamageBuff",
     "skillCooldown": 25,
     "DashCooldown": 1,
-    "ShieldDecayRate": 0.1,
+    "ShieldDecayRate": 10,
     "MaxLevel": 21,
     "startingWeaponId": "weapon_igg"
   },
@@ -33,15 +33,15 @@
     "ProjectileSpread": 12,
     "PickupRange": 2.5,
     "ExperienceMultiplier": 1,
-    "BaseExperienceToNextLevel": 1000,
+    "BaseExperienceToNextLevel": 400,
     "InvincibleTime": 1.0,
     "StunTime": 0.8,
     "skillId": "DoubleAction",
     "skillCooldown": 30,
     "DashCooldown": 1,
-    "ShieldDecayRate": 0.1,
+    "ShieldDecayRate": 10,
     "MaxLevel": 21,
-    "startingWeaponId": "weapon_igg"
+    "startingWeaponId": "weapon_firebomb"
   },
   {
     "id": 3,
@@ -55,15 +55,15 @@
     "ProjectileSpread": 12,
     "PickupRange": 2.5,
     "ExperienceMultiplier": 1,
-    "BaseExperienceToNextLevel": 1000,
+    "BaseExperienceToNextLevel": 400,
     "InvincibleTime": 1.0,
     "StunTime": 0.8,
     "skillId": "Heal",
     "skillCooldown": 35,
     "DashCooldown": 1,
-    "ShieldDecayRate": 0.1,
+    "ShieldDecayRate": 10,
     "MaxLevel": 21,
-    "startingWeaponId": "weapon_igg"
+    "startingWeaponId": "weapon_orbit"
   },
   {
     "id": 4,
@@ -77,14 +77,14 @@
     "ProjectileSpread": 12,
     "PickupRange": 2.5,
     "ExperienceMultiplier": 1,
-    "BaseExperienceToNextLevel": 1000,
+    "BaseExperienceToNextLevel": 400,
     "InvincibleTime": 1.0,
     "StunTime": 0.8,
     "skillId": "AoeStun",
     "skillCooldown": 25,
     "DashCooldown": 1,
-    "ShieldDecayRate": 0.1,
+    "ShieldDecayRate": 10,
     "MaxLevel": 21,
-    "startingWeaponId": "weapon_igg"
+    "startingWeaponId": "weapon_rocket"
   }
 ]

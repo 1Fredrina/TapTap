@@ -35,6 +35,7 @@ public static class TalentConverter
                     color = color,
                     maxStack = entry.maxStack,
                     weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
                     statType = ParseEnum(entry.statType, StatType.AttackDamage),
                     value = entry.value
                 };
@@ -48,7 +49,9 @@ public static class TalentConverter
                     color = color,
                     maxStack = entry.maxStack,
                     weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
                     weaponType = ParseEnum(entry.weaponType, WeaponType.Projectile),
+                    stackUpMode = ParseEnum(entry.stackUpMode, StackUpMode.ExtraShot),
                     cooldown = entry.cooldown,
                     damage = entry.damage,
                     range = entry.range,
@@ -64,7 +67,20 @@ public static class TalentConverter
                     orbitSpeed = entry.orbitSpeed,
                     orbitPrefabPath = string.IsNullOrEmpty(entry.orbitPrefab)
                         ? "Prefabs/Weapons/OrbitProjectile"
-                        : entry.orbitPrefab
+                        : entry.orbitPrefab,
+                    rocketPrefabPath = entry.rocketPrefab,
+                    explosionEffectPath = entry.explosionEffect,
+                    explosionRadius = entry.explosionRadius,
+                    rocketSpeed = entry.rocketSpeed,
+                    fireBombPrefabPath = entry.fireBombPrefab,
+                    firePitPrefabPath = entry.firePitPrefab,
+                    firePitRadius = entry.firePitRadius,
+                    firePitLifetime = entry.firePitLifetime,
+                    firePitDamageInterval = entry.firePitDamageInterval,
+                    fireBombSpeed = entry.fireBombSpeed,
+                    piercingBulletPrefabPath = entry.piercingBulletPrefab,
+                    basePierce = entry.basePierce,
+                    piercingBulletSpeed = entry.piercingBulletSpeed
                 };
 
             case "skillmod":
@@ -76,10 +92,38 @@ public static class TalentConverter
                     color = color,
                     maxStack = entry.maxStack,
                     weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    targetSkillId = entry.targetSkillId,
                     modType = ParseEnum(entry.modType, SkillModType.Duration),
                     value = entry.modValue
                 };
 
+            case "killstack":
+                return new KillStackTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    initialDamageMultiplier = entry.initialDamageMultiplier,
+                    damagePerKill = entry.damagePerKill
+                };
+            case "stationary":
+                return new StationaryTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    attackSpeedMax = entry.stationaryAttackSpeedMax,
+                    sizeMax = entry.stationarySizeMax
+                };
             default:
                 Debug.LogWarning($"未知天赋类型: {entry.type}");
                 return null;

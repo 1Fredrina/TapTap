@@ -9,7 +9,7 @@ public class MeleeWeapon : WeaponBase
 
     public override bool RequiresTarget => true;
 
-    public override void Fire(Player player, Enemy target)
+    protected override void FireSingle(Player player, Enemy target)
     {
         if (player == null) return;
 
@@ -30,7 +30,6 @@ public class MeleeWeapon : WeaponBase
         float halfArc = arcAngle * 0.5f;
         float rangeSqr = range * range;
         float dmg = damage * player.DamageMultiplier;
-        int shots = GetShotCount();
 
         Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
         foreach (var enemy in enemies)
@@ -41,8 +40,7 @@ public class MeleeWeapon : WeaponBase
             if (toEnemy.sqrMagnitude > rangeSqr) continue;
             if (Vector2.Angle(forward, toEnemy) > halfArc) continue;
 
-            for (int s = 0; s < shots; s++)
-                enemy.TakeDamage(Mathf.RoundToInt(dmg));
+            enemy.TakeDamage(Mathf.RoundToInt(dmg));
         }
 
         EnemyBullet[] bullets = Object.FindObjectsByType<EnemyBullet>(FindObjectsSortMode.None);

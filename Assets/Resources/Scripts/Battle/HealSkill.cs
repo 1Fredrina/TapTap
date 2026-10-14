@@ -4,7 +4,7 @@ public class HealSkill : SkillBase
 {
     private float shieldPercent;
 
-    public HealSkill(float shieldPercent = 0.2f, float cooldown = 20f)
+    public HealSkill(float shieldPercent = 0.05f, float cooldown = 20f)
         : base("Heal", cooldown)
     {
         this.shieldPercent = shieldPercent;

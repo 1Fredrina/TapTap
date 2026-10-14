@@ -12,11 +12,12 @@ public abstract class TalentBase
     public string id;
     public string displayName;
     [TextArea] public string description;
-
     public TalentColor color;
-
     [Min(1)] public int maxStack = 1;
     [Min(1)] public int weight = 10;
+
+    [Header("前置条件")]
+    public string[] prerequisiteIds;
 
     public const int MaxPerColor = 7;
 

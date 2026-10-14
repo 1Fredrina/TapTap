@@ -4,6 +4,7 @@ using UnityEngine;
 public class WeaponTalent : TalentBase
 {
     public WeaponType weaponType;
+    public StackUpMode stackUpMode = StackUpMode.ExtraShot;
 
     [Min(0.05f)] public float cooldown = 1f;
     [Min(0)] public int damage = 1;
@@ -28,6 +29,25 @@ public class WeaponTalent : TalentBase
     public float orbitSpeed = 120f;
     public string orbitPrefabPath = "Prefabs/Weapons/OrbitProjectile";
 
+    // Rocket
+    public string rocketPrefabPath;
+    public string explosionEffectPath;
+    public float explosionRadius = 2f;
+    public float rocketSpeed = 8f;
+
+    // FireBomb
+    public string fireBombPrefabPath;
+    public string firePitPrefabPath;
+    public float firePitRadius = 2f;
+    public float firePitLifetime = 3f;
+    public float firePitDamageInterval = 0.5f;
+    public float fireBombSpeed = 8f;
+
+    // Piercing
+    public string piercingBulletPrefabPath;
+    public int basePierce = 1;
+    public float piercingBulletSpeed = 12f;
+
     public override void OnAcquire(Player player, int stack)
     {
         if (player == null) return;
@@ -43,7 +63,6 @@ public class WeaponTalent : TalentBase
         switch (weaponType)
         {
             case WeaponType.Projectile:
-                GameObject prefab = LoadPrefab(projectilePrefabPath);
                 return new ProjectileWeapon
                 {
                     id = id,
@@ -51,7 +70,8 @@ public class WeaponTalent : TalentBase
                     cooldown = cooldown,
                     damage = damage,
                     range = range,
-                    projectilePrefab = prefab,
+                    stackUpMode = stackUpMode,
+                    projectilePrefab = LoadPrefab(projectilePrefabPath),
                     projectileCount = projectileCount,
                     projectileSpread = projectileSpread
                 };
@@ -64,6 +84,7 @@ public class WeaponTalent : TalentBase
                     cooldown = cooldown,
                     damage = damage,
                     range = range,
+                    stackUpMode = stackUpMode,
                     arcAngle = arcAngle,
                     effectPrefab = LoadPrefab(effectPrefabPath),
                     effectLifetime = effectLifetime
@@ -77,6 +98,7 @@ public class WeaponTalent : TalentBase
                     cooldown = cooldown,
                     damage = damage,
                     range = range,
+                    stackUpMode = stackUpMode,
                     auraPrefab = LoadPrefab(auraPrefabPath)
                 };
 
@@ -88,12 +110,58 @@ public class WeaponTalent : TalentBase
                     cooldown = cooldown,
                     damage = damage,
                     range = range,
+                    stackUpMode = stackUpMode,
                     orbitCount = orbitCount,
                     orbitRadius = orbitRadius,
                     orbitSpeed = orbitSpeed,
                     orbitPrefabPath = string.IsNullOrEmpty(orbitPrefabPath)
                         ? "Prefabs/Weapons/OrbitProjectile"
                         : orbitPrefabPath
+                };
+
+            case WeaponType.Rocket:
+                return new RocketWeapon
+                {
+                    id = id,
+                    displayName = displayName,
+                    cooldown = cooldown,
+                    damage = damage,
+                    range = range,
+                    stackUpMode = stackUpMode,
+                    rocketPrefab = LoadPrefab(rocketPrefabPath),
+                    explosionRadius = explosionRadius,
+                    rocketSpeed = rocketSpeed,
+                    explosionEffectPrefab = LoadPrefab(explosionEffectPath)
+                };
+
+            case WeaponType.FireBomb:
+                return new FireBombWeapon
+                {
+                    id = id,
+                    displayName = displayName,
+                    cooldown = cooldown,
+                    damage = damage,
+                    range = range,
+                    stackUpMode = stackUpMode,
+                    bombPrefab = LoadPrefab(fireBombPrefabPath),
+                    firePitRadius = firePitRadius,
+                    firePitLifetime = firePitLifetime,
+                    firePitDamageInterval = firePitDamageInterval,
+                    bombSpeed = fireBombSpeed
+                };
+
+            case WeaponType.Piercing:
+                return new PiercingWeapon
+                {
+                    id = id,
+                    displayName = displayName,
+                    cooldown = cooldown,
+                    damage = damage,
+                    range = range,
+                    stackUpMode = stackUpMode,
+                    bulletPrefab = LoadPrefab(piercingBulletPrefabPath),
+                    basePierce = basePierce,
+                    bulletSpeed = piercingBulletSpeed
                 };
 
             default:
@@ -113,5 +181,9 @@ public enum WeaponType
     Projectile,
     Melee,
     Aura,
-    Orbit
+    Orbit,
+    Rocket,
+    FireBomb,
+    Piercing,
+
 }

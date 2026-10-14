@@ -9,36 +9,40 @@ public class ProjectileWeapon : WeaponBase
 
     public override bool RequiresTarget => true;
 
-    public override void Fire(Player player, Enemy target)
+    protected override void FireSingle(Player player, Enemy target)
+{
+    if (projectilePrefab == null) return;
+
+    Vector2 baseDirection;
+    if (target != null && !target.IsDead)
+        baseDirection = ((Vector2)target.transform.position - (Vector2)player.transform.position).normalized;
+    else
+        baseDirection = player.Controller != null
+            ? new Vector2(player.Controller.FacingDirection, 0f)
+            : Vector2.right;
+
+    if (baseDirection.sqrMagnitude < 0.001f)
+        baseDirection = Vector2.right;
+
+    int perShot = Mathf.Max(1, projectileCount);
+    int totalPierce = extraPierce + player.ExtraPierce;
+    int dmg = Mathf.RoundToInt(damage * player.DamageMultiplier);
+    float speedMult = player.BulletSpeedMultiplier;
+
+    for (int i = 0; i < perShot; i++)
     {
-        if (target == null || projectilePrefab == null) return;
+        float angle = perShot == 1
+            ? 0f
+            : (i - (perShot - 1) / 2f) * projectileSpread;
 
-        Vector2 baseDirection = ((Vector2)target.transform.position - (Vector2)player.transform.position).normalized;
-        if (baseDirection.sqrMagnitude < 0.001f)
-            baseDirection = player.Controller != null
-                ? new Vector2(player.Controller.FacingDirection, 0f)
-                : Vector2.right;
+        Vector2 direction = Quaternion.Euler(0f, 0f, angle) * baseDirection;
+        Vector3 spawnPos = player.transform.position + (Vector3)(direction.normalized * 0.5f);
 
-        int perShot = Mathf.Max(1, projectileCount);
-        int shots = GetShotCount();
-
-        for (int s = 0; s < shots; s++)
+        GameObject projectile = Object.Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+        if (projectile.TryGetComponent<Bullet>(out var bullet))
         {
-            for (int i = 0; i < perShot; i++)
-            {
-                float angle = perShot == 1
-                    ? 0f
-                    : (i - (perShot - 1) / 2f) * projectileSpread;
-
-                Vector2 direction = Quaternion.Euler(0f, 0f, angle) * baseDirection;
-                Vector3 spawnPos = player.transform.position + (Vector3)(direction.normalized * 0.5f);
-
-                GameObject projectile = Object.Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
-                if (projectile.TryGetComponent<Bullet>(out var bullet))
-                {
-                    bullet.Init(direction, damage * player.DamageMultiplier);
-                }
-            }
+            bullet.Init(direction, dmg, totalPierce, speedMult);
         }
     }
+}
 }

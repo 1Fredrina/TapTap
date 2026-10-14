@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
     protected bool canFire;
     protected float contactDamageTimer;
 
+    [System.NonSerialized] public float healthMultiplier = 1f;
+
     private Rigidbody2D body;
 
     public EnemyData Data => data;
@@ -59,18 +61,21 @@ public class Enemy : MonoBehaviour
         if (direction.sqrMagnitude < 0.001f) return;
 
         if (body != null)
-        {
             body.linearVelocity = direction * data.MoveSpeed;
-        }
         else
-        {
             transform.position += (Vector3)(direction * data.MoveSpeed * Time.deltaTime);
-        }
     }
 
     public virtual void Initialize(EnemyData enemyData)
     {
         data = enemyData ?? new EnemyData();
+        ResetState();
+    }
+
+    public virtual void Initialize(EnemyData enemyData, float healthMultiplier)
+    {
+        data = enemyData ?? new EnemyData();
+        this.healthMultiplier = Mathf.Max(0.01f, healthMultiplier);
         ResetState();
     }
 
@@ -135,7 +140,8 @@ public class Enemy : MonoBehaviour
 
     protected virtual void ResetState()
     {
-        currentHealth = data != null ? Mathf.Max(1f, data.MaxHealth) : 1f;
+        float baseHp = data != null ? Mathf.Max(1f, data.MaxHealth) : 1f;
+        currentHealth = baseHp * healthMultiplier;
         stunTimer = 0f;
         playerInRangeTimer = 0f;
         canFire = false;

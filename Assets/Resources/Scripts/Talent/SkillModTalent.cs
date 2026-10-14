@@ -3,6 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class SkillModTalent : TalentBase
 {
+    public string targetSkillId;   // 对应技能 id，比如 "DamageBuff"
     public SkillModType modType;
     public float value;
 
@@ -12,6 +13,7 @@ public class SkillModTalent : TalentBase
 
         SkillBase skill = player.Skill;
         if (skill == null) return;
+        if (skill.Id != targetSkillId) return;  // 再加一层保险
 
         if (skill is DoubleActionSkill doubleAction)
         {
@@ -45,7 +47,7 @@ public class SkillModTalent : TalentBase
             switch (modType)
             {
                 case SkillModType.TempLifePercent:
-                    heal.AddShieldPercent(value);
+                    heal.AddShieldPercent((int)value);
                     break;
             }
         }
