@@ -16,10 +16,20 @@ public class GameDataMgr
 
     public MusicData musicData;
     public List<PlayerData> playerDatas;
+    public List<TalentBase> talentDatas;
+
+    public int selectedCharacterId = 1;
 
     private GameDataMgr()
     {
-        musicData = JsonMgr.Instance.LoadData<MusicData>("MusicData");
+        //Debug.Log("Loading MusicData");
+        //musicData = JsonMgr.Instance.LoadData<MusicData>("MusicData");
+
+        Debug.Log("Loading PlayerData");
         playerDatas = JsonMgr.Instance.LoadData<List<PlayerData>>("PlayerData");
+
+        Debug.Log("Loading TalentData");
+        var entries = JsonMgr.Instance.LoadData<List<TalentJsonEntry>>("TalentData");
+        talentDatas = TalentConverter.Convert(entries);
     }
 }

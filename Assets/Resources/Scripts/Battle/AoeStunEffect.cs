@@ -5,7 +5,7 @@ public class AoeStunEffect : MonoBehaviour
 {
     [SerializeField] private float lifetime = 0.5f;
 
-    private float stunDuration = 2f;
+    private float stunDuration = 3f;
 
     public void Init(float stun)
     {
@@ -15,7 +15,6 @@ public class AoeStunEffect : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 碰到敌人就让它晕
         Enemy enemy = other.GetComponentInParent<Enemy>();
         if (enemy != null)
         {

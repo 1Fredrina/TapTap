@@ -323,6 +323,7 @@ MonoBehaviour:
     MaxHealth: 10
     MoveSpeed: 2
     AttackDamage: 1
+    ExperienceReward: 100
     AttackInterval: 1
   fireDelay: 0.5
   contactDamageCooldown: 1

@@ -12,6 +12,10 @@ public abstract class WeaponBase
 
     [System.NonSerialized] public float cooldownTimer;
     [System.NonSerialized] public int stack = 1;
+    [System.NonSerialized] public int extraShots = 0;
+
+    public virtual bool RequiresTarget => true;
+    public virtual bool RequiresEnemyInRange => false;
 
     public bool TickCooldown(float deltaTime)
     {
@@ -27,12 +31,17 @@ public abstract class WeaponBase
 
     public virtual void ResetCooldown(float cooldownMultiplier = 1f)
     {
-        float baseCd = Mathf.Max(0.05f, cooldown - (stack - 1) * 0.05f);
-        cooldownTimer = baseCd * Mathf.Max(0.05f, cooldownMultiplier);
+        cooldownTimer = Mathf.Max(0.05f, cooldown) * Mathf.Max(0.05f, cooldownMultiplier);
     }
 
     public virtual void OnStackUp(int newStack)
     {
         stack = newStack;
+        extraShots++;
+    }
+
+    public virtual int GetShotCount()
+    {
+        return 1 + extraShots;
     }
 }

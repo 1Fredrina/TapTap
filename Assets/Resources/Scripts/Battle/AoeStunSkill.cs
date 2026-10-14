@@ -5,7 +5,7 @@ public class AoeStunSkill : SkillBase
     private GameObject effectPrefab;
     private float stunDuration;
 
-    public AoeStunSkill(GameObject prefab, float stunDuration = 2f, float cooldown = 8f)
+    public AoeStunSkill(GameObject prefab, float stunDuration = 3f, float cooldown = 15f)
         : base("AoeStun", cooldown)
     {
         this.effectPrefab = prefab;
@@ -14,9 +14,10 @@ public class AoeStunSkill : SkillBase
 
     public override void Cast(Player caster)
     {
+        if (caster == null) return;
+
         if (effectPrefab == null)
         {
-            Debug.LogWarning("[AoeStun] effectPrefab is null");
             return;
         }
 
@@ -25,6 +26,12 @@ public class AoeStunSkill : SkillBase
         if (effect.TryGetComponent<AoeStunEffect>(out var comp))
             comp.Init(stunDuration);
 
-        Debug.Log($"[AoeStun] Cast, stun {stunDuration}s");
+    }
+
+    public float StunDuration => stunDuration;
+
+    public void AddStunDuration(float extra)
+    {
+        stunDuration += extra;
     }
 }

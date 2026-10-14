@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBullet
   speed: 5
   lifeTime: 3
-  damage: 1
+  damage: 10
   hitLayers:
     serializedVersion: 2
     m_Bits: 64

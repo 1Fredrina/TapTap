@@ -82,7 +82,7 @@ public class TurretEnemy : Enemy
         if (bullet.TryGetComponent<EnemyBullet>(out var bulletScript))
         {
             int dmg = Data != null ? Data.AttackDamage : 1;
-            bulletScript.Initialize(shootDirection, dmg);
+            bulletScript.Initialize(shootDirection);
         }
     }
 

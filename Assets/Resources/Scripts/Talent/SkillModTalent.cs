@@ -40,7 +40,24 @@ public class SkillModTalent : TalentBase
                     break;
             }
         }
-        // 以后扩展其他技能类型
+        else if (skill is HealSkill heal)
+        {
+            switch (modType)
+            {
+                case SkillModType.TempLifePercent:
+                    heal.AddShieldPercent(value);
+                    break;
+            }
+        }
+        else if (skill is AoeStunSkill aoeStun)
+        {
+            switch (modType)
+            {
+                case SkillModType.StunDuration:
+                    aoeStun.AddStunDuration(value);
+                    break;
+            }
+        }
     }
 }
 
@@ -49,5 +66,7 @@ public enum SkillModType
     Duration,
     MoveSpeed,
     WeaponCooldown,
-    Multiplier
+    Multiplier,
+    TempLifePercent,
+    StunDuration
 }

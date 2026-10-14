@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,16 +7,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject PlayerObject { get; private set; }
     public Player Player { get; private set; }
-
-    [SerializeField, Min(1)] private int maxLives = 5;
-    public int Lives { get; private set; }
     public bool IsGameOver { get; private set; }
-
-    [Header("临时生命")]
-    [SerializeField, Min(0)] private int maxTempLives = 5;
-    [SerializeField, Min(0f)] private float tempLifeDecayInterval = 5f;
-    public int TempLives { get; private set; }
-    private float tempLifeDecayTimer;
 
     private float skillCooldownTimer;
     private float teamDoubleActionTimer;
@@ -37,34 +27,45 @@ public class GameManager : MonoBehaviour
         }
 
         instance = this;
-        Lives = maxLives;
-        TempLives = 0;
-        tempLifeDecayTimer = tempLifeDecayInterval;
     }
 
     void Start()
+{
+    if (GameDataMgr.Instance == null || GameDataMgr.Instance.playerDatas.Count == 0)
     {
-        if (GameDataMgr.Instance == null || GameDataMgr.Instance.playerDatas.Count == 0)
+        Debug.LogError("没有可加载的角色数据");
+        return;
+    }
+
+    int selectedId = GameDataMgr.Instance.selectedCharacterId;
+
+    PlayerData playerData = null;
+    foreach (var d in GameDataMgr.Instance.playerDatas)
+    {
+        if (d.id == selectedId)
         {
-            return;
+            playerData = d;
+            break;
         }
+    }
 
-        PlayerData playerData = GameDataMgr.Instance.playerDatas[0];
+    if (playerData == null)
+        playerData = GameDataMgr.Instance.playerDatas[0];
 
-        PlayerObject = Instantiate(
-            Resources.Load<GameObject>("Prefabs/Characters/" + (playerData.id > 0 ? playerData.id : 1)),
-            Vector3.zero,
-            Quaternion.identity);
+    PlayerObject = Instantiate(
+        Resources.Load<GameObject>("Prefabs/Characters/" + playerData.id),
+        Vector3.zero,
+        Quaternion.identity);
 
-        PlayerController controller = PlayerObject.GetComponent<PlayerController>();
-        if (controller != null)
-            controller.Initialize(playerData);
+    PlayerController controller = PlayerObject.GetComponent<PlayerController>();
+    if (controller != null)
+        controller.Initialize(playerData);
 
-        Player = PlayerObject.GetComponent<Player>();
-        if (Player != null)
-            Player.Initialize(playerData);
+    Player = PlayerObject.GetComponent<Player>();
+    if (Player != null)
+        Player.Initialize(playerData);
 
-        PlayerObject.name = playerData.name;
+    PlayerObject.name = playerData.name;
     }
 
     private void Update()
@@ -80,20 +81,6 @@ public class GameManager : MonoBehaviour
                 teamMoveSpeedBonus = 0f;
                 teamWeaponCooldownMultiplier = 1f;
             }
-        }
-
-        if (TempLives > 0)
-        {
-            tempLifeDecayTimer -= Time.deltaTime;
-            if (tempLifeDecayTimer <= 0f)
-            {
-                tempLifeDecayTimer = tempLifeDecayInterval;
-                TempLives = Mathf.Max(0, TempLives - 1);
-            }
-        }
-        else
-        {
-            tempLifeDecayTimer = tempLifeDecayInterval;
         }
     }
 
@@ -119,37 +106,9 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    public void LoseLife(int amount = 1)
+    public void OnPlayerDeath()
     {
         if (IsGameOver) return;
-
-        int remaining = amount;
-        if (TempLives > 0)
-        {
-            int absorbed = Mathf.Min(TempLives, remaining);
-            TempLives -= absorbed;
-            remaining -= absorbed;
-        }
-
-        if (remaining > 0)
-        {
-            Lives = Mathf.Max(0, Lives - remaining);
-
-            if (Lives <= 0)
-                OnGameOver();
-        }
-    }
-
-    public void AddTempLives(int amount)
-    {
-        if (IsGameOver) return;
-        TempLives = Mathf.Min(maxTempLives, TempLives + amount);
-        tempLifeDecayTimer = tempLifeDecayInterval;
-        Debug.Log($"[TempLife] Added {amount}, now {TempLives}");
-    }
-
-    private void OnGameOver()
-    {
         IsGameOver = true;
 
         if (PlayerObject != null)
@@ -158,7 +117,6 @@ public class GameManager : MonoBehaviour
             if (ctrl != null) ctrl.enabled = false;
         }
 
-        // UIManager.Instance.ShowPanel<GameOverPanel>();
         Debug.Log("Game Over");
     }
 }
