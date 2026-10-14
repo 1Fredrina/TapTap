@@ -91,7 +91,9 @@ public class PlayerController : MonoBehaviour
         {
             dashDirection = lastMoveDirection;
             dashTime = Mathf.Max(dashDuration, Time.fixedDeltaTime);
-            dashCooldownTimer = playerData.DashCooldown;
+
+            float cooldownMult = player != null ? player.DashCooldownMultiplier : 1f;
+            dashCooldownTimer = playerData.DashCooldown* cooldownMult;
             if (animator != null)
                 animator.SetTrigger("IsDash");
         }

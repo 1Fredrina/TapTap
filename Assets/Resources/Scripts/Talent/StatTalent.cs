@@ -28,5 +28,11 @@ public enum StatType
     SkillCooldown,
     HealOnKill,
     ShieldOnKill,
-    ExtraChoice
+    ExtraChoice,
+    DashCooldown,
+    ExtraPierce,
+    SizeIncrease,
+    KillStackDamage,
+    BulletSpeed,
+    StationaryAttackSpeed
 }

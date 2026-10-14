@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a48cd20a612f15444819c607d4dafb87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrapDamage
-  damage: 1
+  damage: 10
   lifeTime: 2
 --- !u!58 &85962886338002335
 CircleCollider2D:

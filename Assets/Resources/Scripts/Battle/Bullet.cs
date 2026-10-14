@@ -2,49 +2,53 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private float lifetime = 2f;
-    [SerializeField] private int baseDamage = 1;
+    [SerializeField] private float speed = 12f;
+    [SerializeField] private float lifeTime = 3f;
+    [SerializeField] private LayerMask hitLayers;
 
-    private Vector2 direction = Vector2.right;
+    private Vector2 direction;
+    private int damage;
+    private int pierceRemaining;
 
-    public void Init(float dir, float damageMultiplier = 1f)
+    public void Init(Vector2 dir, int dmg, int pierce = 0, float speedMultiplier = 1f)
     {
-        direction = new Vector2(dir, 0f);
+        direction = dir.normalized;
+        damage = dmg;
+        pierceRemaining = pierce;
+        speed *= Mathf.Max(0.1f, speedMultiplier);
 
-        int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
 
-        Vector3 scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x) * dir;
-        transform.localScale = scale;
-
-        currentDamage = finalDamage;
-
-        Destroy(gameObject, lifetime);
+        Destroy(gameObject, lifeTime);
     }
 
-    public void Init(Vector2 dir, float damageMultiplier = 1f)
+    public void Init(Vector2 dir, float dmg, int pierce = 0, float speedMultiplier = 1f)
     {
-        direction = dir.sqrMagnitude > 0.001f ? dir.normalized : Vector2.right;
-        int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
-        currentDamage = Mathf.Max(1, finalDamage);
-        transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
-        Destroy(gameObject, lifetime);
+        Init(dir, Mathf.RoundToInt(dmg), pierce, speedMultiplier);
     }
-
-    private int currentDamage = 1;
 
     private void Update()
     {
-        transform.Translate((Vector3)direction * speed * Time.deltaTime, Space.World);
+        transform.Translate(direction * speed * Time.deltaTime, Space.World);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Enemy enemy = other.GetComponentInParent<Enemy>();
-        if (enemy == null) return;
+        if ((hitLayers.value & (1 << other.gameObject.layer)) == 0) return;
 
-        enemy.TakeDamage(currentDamage);
+        Enemy enemy = other.GetComponentInParent<Enemy>();
+        if (enemy != null && !enemy.IsDead)
+        {
+            enemy.TakeDamage(damage);
+
+            if (pierceRemaining > 0)
+            {
+                pierceRemaining--;
+                return;
+            }
+        }
+
         Destroy(gameObject);
     }
 }

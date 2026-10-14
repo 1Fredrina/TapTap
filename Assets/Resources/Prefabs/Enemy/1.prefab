@@ -694,13 +694,13 @@ MonoBehaviour:
   data:
     id: 0
     name: 
-    MaxHealth: 15
+    MaxHealth: 10
     MoveSpeed: 2
     AttackDamage: 10
     ExperienceReward: 100
     AttackInterval: 1
   fireDelay: 0.3
-  contactDamageCooldown: 1
+  contactDamageCooldown: 10
   detectionRadius: 10
   detectionAngle: 360
   playerLayer:

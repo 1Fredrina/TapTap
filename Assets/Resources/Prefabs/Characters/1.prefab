@@ -1039,7 +1039,11 @@ MonoBehaviour:
     skillId: 
     skillCooldown: 6
     DashCooldown: 1
+<<<<<<< HEAD
     ShieldDecayRate: 0.1
+=======
+    ShieldDecayRate: 10
+>>>>>>> df8f0fa9a6a59262e592ac7ea8df78eaaea35f2b
     MaxLevel: 21
     startingWeaponId: 
   controller: {fileID: 0}
@@ -1047,6 +1051,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   baseChoicesPerLevel: 3
+<<<<<<< HEAD
 --- !u!114 &7088476710252974402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1063,3 +1068,5 @@ MonoBehaviour:
   auraIndicatorPrefab: {fileID: 6681911530449383916, guid: 95b159ae441992e4bba2ea8cdcdfc24a, type: 3}
   meleeRadius: 1.5
   auraRadius: 2.5
+=======
+>>>>>>> df8f0fa9a6a59262e592ac7ea8df78eaaea35f2b

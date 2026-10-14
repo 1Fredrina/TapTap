@@ -28,9 +28,13 @@ public class CameraFollow : MonoBehaviour
     private void RefreshTarget()
     {
         if (GameManager.Instance == null) return;
-        var team = GameManager.Instance.PlayerObject;
-        if (team == null) return;
+
+        GameObject playerObj = GameManager.Instance.PlayerObject;
+        if (playerObj == null) return;
+
+        target = playerObj.transform;
     }
+
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;

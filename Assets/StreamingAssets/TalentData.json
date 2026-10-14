@@ -3,12 +3,12 @@
     "type": "stat",
     "id": "atk_up",
     "displayName": "抗体浓度",
-    "description": "攻击力 +10%",
+    "description": "攻击力 +20%",
     "color": "Red",
     "maxStack": 5,
     "weight": 10,
     "statType": "AttackDamage",
-    "value": 0.1
+    "value": 0.2
   },
   {
     "type": "stat",
@@ -113,34 +113,23 @@
     "type": "stat",
     "id": "heal_on_kill",
     "displayName": "自噬",
-    "description": "击杀回复 1 点生命",
+    "description": "击杀回复 3 点生命",
     "color": "Green",
     "maxStack": 3,
     "weight": 6,
     "statType": "HealOnKill",
-    "value": 1
+    "value": 3
   },
   {
     "type": "stat",
     "id": "shield_on_kill",
     "displayName": "补体沉积",
-    "description": "击杀获得 0.5 护盾",
+    "description": "击杀获得护盾",
     "color": "Green",
     "maxStack": 3,
     "weight": 6,
     "statType": "ShieldOnKill",
-    "value": 0.5
-  },
-  {
-    "type": "stat",
-    "id": "luck",
-    "displayName": "广谱识别",
-    "description": "天赋选项 +1",
-    "color": "Green",
-    "maxStack": 1,
-    "weight": 4,
-    "statType": "ExtraChoice",
-    "value": 1
+    "value": 15
   },
   {
     "type": "weapon",
@@ -162,6 +151,7 @@
     "type": "skillmod",
     "id": "dmg_buff_duration",
     "displayName": "记忆强化",
+    "targetSkillId": "DamageBuff",
     "description": "加攻技能持续时间 +2 秒",
     "color": "Green",
     "maxStack": 3,
@@ -172,6 +162,7 @@
   {
     "type": "skillmod",
     "id": "dmg_buff_multiplier",
+    "targetSkillId": "DamageBuff",
     "displayName": "高亲和力",
     "description": "加攻技能倍率 +0.25",
     "color": "Red",
@@ -183,6 +174,7 @@
   {
     "type": "skillmod",
     "id": "double_action_duration",
+    "targetSkillId": "DoubleAction",
     "displayName": "持续活化",
     "description": "加速技能持续时间 +2 秒",
     "color": "Blue",
@@ -194,8 +186,9 @@
   {
     "type": "skillmod",
     "id": "double_action_cd",
+    "targetSkillId": "DoubleAction",
     "displayName": "冷却优化",
-    "description": "加速技能武器冷却 -0.05",
+    "description": "加速技能 武器冷却时间 -0.05",
     "color": "Blue",
     "maxStack": 3,
     "weight": 6,
@@ -205,17 +198,19 @@
   {
     "type": "skillmod",
     "id": "heal_shield",
+    "targetSkillId": "Heal",
     "displayName": "补体增强",
-    "description": "护盾技能护盾量 +5%",
+    "description": "护盾技能护盾量 +10%",
     "color": "Blue",
     "maxStack": 3,
     "weight": 6,
     "modType": "TempLifePercent",
-    "modValue": 0.05
+    "modValue": 0.1
   },
   {
     "type": "skillmod",
     "id": "aoe_stun_duration",
+    "targetSkillId": "AoeStun",
     "displayName": "神经抑制",
     "description": "眩晕技能时长 +0.5 秒",
     "color": "Green",
@@ -224,6 +219,17 @@
     "modType": "StunDuration",
     "modValue": 0.5
   },
+  {
+  "type": "stat",
+  "id": "dash_cd",
+  "displayName": "快速反应",
+  "description": "冲刺冷却 -20%",
+  "color": "Green",
+  "maxStack": 3,
+  "weight": 8,
+  "statType": "DashCooldown",
+  "value": -0.2
+},
 {
   "type": "weapon",
   "id": "weapon_melee",
@@ -264,11 +270,122 @@
   "weight": 12,
   "weaponType": "Orbit",
   "cooldown": 1.0,
-  "damage": 20,
+  "damage": 10,
   "range": 5.0,
   "orbitCount": 2,
   "orbitRadius": 4.0,
-  "orbitSpeed": 120.0,
+  "orbitSpeed": 60.0,
   "orbitPrefab": "Prefabs/Weapons/OrbitProjectile"
+},
+{
+  "type": "weapon",
+  "id": "weapon_rocket",
+  "displayName": "补体火箭",
+  "description": "发射火箭弹，造成范围伤害",
+  "color": "Red",
+  "maxStack": 5,
+  "weight": 10,
+  "weaponType": "Rocket",
+  "cooldown": 4.0,
+  "damage": 30,
+  "range": 12.0,
+  "rocketPrefab": "Prefabs/Weapons/RocketProjectile",
+  "explosionEffect": "Prefabs/Weapons/ExplosionEffect",
+  "explosionRadius": 1.5,
+  "rocketSpeed": 8.0
+},
+{
+  "type": "weapon",
+  "id": "weapon_firebomb",
+  "displayName": "炎症火坑",
+  "description": "发射燃烧弹，留下持续灼烧的火坑",
+  "color": "Red",
+  "maxStack": 5,
+  "weight": 10,
+  "weaponType": "FireBomb",
+  "cooldown": 2.5,
+  "damage": 3,
+  "range": 12.0,
+  "fireBombPrefab": "Prefabs/Weapons/FireBombProjectile",
+  "firePitPrefab": "Prefabs/Weapons/FirePit",
+  "firePitRadius": 2.0,
+  "firePitLifetime": 3.0,
+  "firePitDamageInterval": 0.5,
+  "fireBombSpeed": 8.0
+},
+{
+  "type": "stat",
+  "id": "extra_pierce",
+  "displayName": "穿孔能力",
+  "description": "所有子弹 +1 贯穿",
+  "color": "Red",
+  "maxStack": 3,
+  "weight": 8,
+  "statType": "ExtraPierce",
+  "value": 1
+},
+{
+  "type": "weapon",
+  "id": "weapon_piercing",
+  "displayName": "穿孔抗体",
+  "description": "发射贯穿子弹，可穿透多个敌人",
+  "color": "Red",
+  "maxStack": 5,
+  "weight": 10,
+  "weaponType": "Projectile",
+  "stackUpMode": "ExtraPierce",
+  "cooldown": 1.2,
+  "damage": 7,
+  "range": 12.0,
+  "projectileCount": 1,
+  "projectileSpread": 0,
+  "projectilePrefab": "Prefabs/Weapons/PiercingBullet"
+},
+{
+  "type": "compound",
+  "id": "double_edge_damage",
+  "displayName": "过度激活",
+  "description": "伤害 +50%，但<color=#FF4444>体积 +15%</color>",
+  "color": "Red",
+  "maxStack": 1,
+  "weight": 4,
+  "statModifiers": [
+    { "statType": "AttackDamage", "value": 0.5 },
+    { "statType": "SizeIncrease", "value": 0.15 }
+  ]
+},
+{
+  "type": "killstack",
+  "id": "kill_growth",
+  "displayName": "杀意累积",
+  "description": "<color=#FF4444>攻击力立刻减半</color>，每击杀一个敌人伤害 +1%",
+  "color": "Red",
+  "maxStack": 1,
+  "weight": 4,
+  "initialDamageMultiplier": 0.5,
+  "damagePerKill": 0.01
+},
+{
+  "type": "stat",
+  "id": "bullet_speed",
+  "displayName": "快速投射",
+  "description": "子弹飞行速度 +15%",
+  "color": "Red",
+  "maxStack": 5,
+  "weight": 10,
+  "statType": "BulletSpeed",
+  "value": 0.15
+},
+{
+  "type": "stationary",
+  "id": "stationary_charge",
+  "displayName": "蓄势待发",
+  "description": "停止移动 3 秒后攻速 +150%、[体积 +50%]，移动立即恢复",
+  "color": "Red",
+  "maxStack": 1,
+  "weight": 5,
+  "prerequisiteIds": ["bullet_speed", "atk_speed"],
+  "stationaryAttackSpeedMax": 1.5,
+  "stationarySizeMax": 0.5
 }
 ]

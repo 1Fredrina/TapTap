@@ -55,4 +55,9 @@ public class OrbitWeapon : WeaponBase
     {
         base.OnStackUp(newStack);
     }
+
+    protected override void FireSingle(Player player, Enemy target)
+    {
+        throw new System.NotImplementedException();
+    }
 }

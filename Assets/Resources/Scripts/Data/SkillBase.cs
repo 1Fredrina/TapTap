@@ -5,9 +5,11 @@ public abstract class SkillBase
     public string SkillName { get; protected set; }
     public float Cooldown { get; set; }
 
-    protected SkillBase(string name, float cooldown)
+    public string Id { get; protected set; }
+
+    protected SkillBase(string id, float cooldown)
     {
-        SkillName = name;
+        Id = id;
         Cooldown = cooldown;
     }
 

@@ -22,7 +22,6 @@ public class TrapDamage : MonoBehaviour
 
             player.TakeDamage(damage);
         hasHit = true;
-        Destroy(gameObject);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

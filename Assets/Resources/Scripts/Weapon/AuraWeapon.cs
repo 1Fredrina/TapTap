@@ -28,14 +28,13 @@ public class AuraWeapon : WeaponBase
         auraInstance = null;
     }
 
-    public override void Fire(Player player, Enemy target)
+    protected override void FireSingle(Player player, Enemy target)
     {
         if (player == null) return;
 
         Vector2 origin = player.transform.position;
         float rangeSqr = range * range;
         float dmg = damage * player.DamageMultiplier;
-        int shots = GetShotCount();
 
         Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
         foreach (var enemy in enemies)
@@ -44,8 +43,7 @@ public class AuraWeapon : WeaponBase
 
             if (((Vector2)enemy.transform.position - origin).sqrMagnitude > rangeSqr) continue;
 
-            for (int s = 0; s < shots; s++)
-                enemy.TakeDamage(Mathf.RoundToInt(dmg));
+            enemy.TakeDamage(Mathf.RoundToInt(dmg));
         }
     }
 }

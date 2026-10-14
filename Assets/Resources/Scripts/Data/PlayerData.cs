@@ -6,7 +6,7 @@ public class PlayerData
     public int id;
     public string name;
     [Min(0f)] public float MoveSpeed = 6f;
-    [Min(1f)] public float MaxHealth = 10f;
+    [Min(1f)] public float MaxHealth = 100f;
     [Min(0f)] public float AttackInterval = 0.5f;
     [Min(1)] public int AttackDamage = 1;
     [Min(0f)] public float AttackRange = 12f;
