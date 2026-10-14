@@ -851,6 +851,7 @@ GameObject:
   - component: {fileID: 8819616432959596239}
   - component: {fileID: 852555923866707829}
   - component: {fileID: 7052131639167110745}
+  - component: {fileID: 7088476710252974402}
   m_Layer: 6
   m_Name: 1
   m_TagString: Player
@@ -950,23 +951,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b9565ad7d883644b4e41a9b62b5a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  topDownMovement: 1
   playerData:
     id: 0
     name: 
     MoveSpeed: 6
-    JumpHeight: 2.5
+    MaxHealth: 10
     AttackInterval: 0.5
+    AttackDamage: 1
+    AttackRange: 12
+    ProjectileCount: 1
+    ProjectileSpread: 12
+    PickupRange: 2.5
+    ExperienceMultiplier: 1
+    BaseExperienceToNextLevel: 5
     InvincibleTime: 1
-    KnockbackForce: 8
-    KnockbackUpForce: 4
     StunTime: 0.8
     skillId: 
     skillCooldown: 6
     DashCooldown: 1
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 51
+    ShieldDecayRate: 0.1
+    MaxLevel: 21
+    startingWeaponId: 
   dashSpeed: 16
   dashDuration: 0.15
 --- !u!210 &8819616432959596239
@@ -1020,18 +1025,41 @@ MonoBehaviour:
     id: 0
     name: 
     MoveSpeed: 6
-    JumpHeight: 2.5
+    MaxHealth: 10
     AttackInterval: 0.5
+    AttackDamage: 1
+    AttackRange: 12
+    ProjectileCount: 1
+    ProjectileSpread: 12
+    PickupRange: 2.5
+    ExperienceMultiplier: 1
+    BaseExperienceToNextLevel: 5
     InvincibleTime: 1
-    KnockbackForce: 8
-    KnockbackUpForce: 4
     StunTime: 0.8
     skillId: 
     skillCooldown: 6
     DashCooldown: 1
+    ShieldDecayRate: 0.1
+    MaxLevel: 21
+    startingWeaponId: 
   controller: {fileID: 0}
-  attackEffectPrefab: {fileID: 547073194578725119, guid: 99f3ea850e5e3ca4da5f2c6dd27b5b74, type: 3}
-  autoAttack: 1
   enemyLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+  baseChoicesPerLevel: 3
+--- !u!114 &7088476710252974402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8371627931481361551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32affc3b3a7004641b2cd1e1dfde6d05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRangeVisuals
+  meleeIndicatorPrefab: {fileID: 1653271991505637366, guid: 57d40b5fde8af4b43bf11ca6eeffd6c9, type: 3}
+  auraIndicatorPrefab: {fileID: 6681911530449383916, guid: 95b159ae441992e4bba2ea8cdcdfc24a, type: 3}
+  meleeRadius: 1.5
+  auraRadius: 2.5
