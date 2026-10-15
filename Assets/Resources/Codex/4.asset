@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79c7201adbd4393448fe4f54169ae84b, type: 3}
+  m_Name: 4
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyCodexData
+  enemyID: 4
+  displayName: "\u53D8\u5F02\u611F\u67D3\u7EC6\u80DE"
+  icon: {fileID: 7444998605873465473, guid: d89f7e41267592d4cbcb980513ebe7a8, type: 3}
+  desc: 

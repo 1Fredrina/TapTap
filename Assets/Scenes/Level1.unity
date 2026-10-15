@@ -1177,10 +1177,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f7cffd4b81b7d54098704fc87165495, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TalentUIManager
-  talentPanelPrefab: {fileID: 0}
-  canvasTransform: {fileID: 0}
-  subscribedPlayer: {fileID: 0}
-  subscribed: 0
 --- !u!1 &2057283166
 GameObject:
   m_ObjectHideFlags: 0
