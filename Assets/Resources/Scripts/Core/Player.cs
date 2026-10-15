@@ -10,10 +10,11 @@ public class Player : MonoBehaviour
     [Header("升级抽天赋")]
     [SerializeField, Min(1)] private int baseChoicesPerLevel = 3;
 
+    private float moveSpeedToDamageRatio = 0f;
+
     private static Player activePlayer;
     private int level = 1;
     private int experience;
-    private const float BaseScale = 0.5f;
 
     // ===== 生命 =====
     private float currentHealth;
@@ -30,6 +31,27 @@ public class Player : MonoBehaviour
     private float stationarySizeMax = 0f;
     private float baseSizeBonus = 0f;
     private float stationarySizeBonus = 0f;
+
+    // ===== 冲刺 Buff =====
+    private float dashBuffTimer = 0f;
+    private float dashBuffDuration = 0f;
+    private float dashBuffDamageBonus = 0f;
+
+    // ===== 触发型天赋（配置与状态均属于当前角色） =====
+    private float dashPulseRadius, dashPulseStunDuration, dashPulseCooldown, dashPulseTimer;
+    private int dashPulseDamage;
+    private GameObject dashPulseEffectPrefab;
+    private float frenzyDuration, frenzyTimer, frenzyAttackSpeedPerCharge, frenzyMoveSpeedPerCharge;
+    private int frenzyMaxCharges, frenzyCharges;
+    private float overhealShieldRatio, overhealShieldCapPercent;
+    private int retaliationCount, retaliationDamage;
+    private float retaliationCooldown, retaliationTimer;
+    private GameObject retaliationPrefab;
+
+    public int KillFrenzyCharges => frenzyCharges;
+    public float KillFrenzyTimeRemaining => frenzyTimer;
+    public PlayerTalentEffects TalentEffects { get; private set; }
+    internal LayerMask EnemyLayers => enemyLayers;
 
     // ===== 武器 =====
     private readonly List<WeaponBase> weapons = new();
@@ -102,6 +124,12 @@ public class Player : MonoBehaviour
         stationarySizeMax = 0f;
         baseSizeBonus = 0f;
         stationarySizeBonus = 0f;
+        dashBuffTimer = 0f;
+        dashBuffDuration = 0f;
+        dashBuffDamageBonus = 0f;
+        moveSpeedToDamageRatio = 0f;
+        ResetReactiveTalents();
+        TalentEffects = new PlayerTalentEffects(this);
         skill = null;
         damageBuff = null;
         doubleAction = null;
@@ -163,6 +191,7 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
+        TalentEffects?.ResetMovementOrigin();
         if (activePlayer == null)
             activePlayer = this;
     }
@@ -178,6 +207,11 @@ public class Player : MonoBehaviour
         UpdateInvincible();
         UpdateShield();
         UpdateStationary();
+        TickReactiveTalents(Time.deltaTime);
+        TalentEffects?.Tick(Time.deltaTime);
+
+        if (dashBuffTimer > 0f)
+            dashBuffTimer -= Time.deltaTime;
 
         if (damageBuff != null)
             damageBuff.Tick(Time.deltaTime);
@@ -281,7 +315,14 @@ public class Player : MonoBehaviour
         skill.Cast(this);
     }
 
-    private Enemy FindClosestEnemyInRange(float range)
+    internal bool CanTargetEnemy(Enemy enemy)
+    {
+        return enemy != null && !enemy.IsDead && enemy.isActiveAndEnabled &&
+            enemy.gameObject.scene == gameObject.scene &&
+            (enemyLayers.value & (1 << enemy.gameObject.layer)) != 0;
+    }
+
+    internal Enemy FindClosestEnemyInRange(float range)
     {
         Enemy closest = null;
         float closestDistance = range * range;
@@ -289,9 +330,7 @@ public class Player : MonoBehaviour
 
         foreach (Enemy enemy in enemies)
         {
-            if (enemy == null || enemy.IsDead || !enemy.isActiveAndEnabled) continue;
-            if (enemy.gameObject.scene != gameObject.scene) continue;
-            if ((enemyLayers.value & (1 << enemy.gameObject.layer)) == 0) continue;
+            if (!CanTargetEnemy(enemy)) continue;
 
             float distance = ((Vector2)enemy.transform.position - (Vector2)transform.position).sqrMagnitude;
             if (distance <= closestDistance)
@@ -330,9 +369,16 @@ public class Player : MonoBehaviour
 
     public static void NotifyEnemyDefeated(int reward)
     {
-        if (activePlayer == null) return;
+        NotifyEnemyDefeated(reward, null);
+    }
+
+    public static void NotifyEnemyDefeated(int reward, Enemy defeatedEnemy)
+    {
+        if (activePlayer == null || activePlayer.IsDead) return;
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
 
         activePlayer.AddExperience(reward);
+        activePlayer.RegisterFrenzyKill();
 
         if (activePlayer.killStackBonusPerKill > 0f)
         {
@@ -347,16 +393,21 @@ public class Player : MonoBehaviour
         float shield = activePlayer.GetStatBonus(StatType.ShieldOnKill);
         if (shield > 0f)
             activePlayer.AddShield(shield);
+
+        activePlayer.TalentEffects?.OnEnemyDefeated(defeatedEnemy);
     }
 
     public void TakeDamage(int dmg)
     {
         if (IsInvincible || dmg <= 0 || IsDead) return;
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
 
         float reduction = Mathf.Clamp(GetStatBonus(StatType.DamageReduction), 0f, 0.9f);
         float finalDmg = Mathf.Max(1f, dmg * (1f - reduction));
 
         float remaining = finalDmg;
+        bool shieldBroken = currentShield > 0f && remaining >= currentShield;
+        float rescueInvincibility = 0f;
 
         if (currentShield > 0f)
         {
@@ -369,10 +420,25 @@ public class Player : MonoBehaviour
         {
             currentHealth = Mathf.Max(0f, currentHealth - remaining);
             if (currentHealth <= 0f)
-                OnDeath();
+            {
+                if (TalentEffects.TryPreventDeath(out float rescueShield, out rescueInvincibility))
+                {
+                    currentHealth = Mathf.Min(1f, MaxHealth);
+                    AddShield(rescueShield);
+                }
+                else
+                    OnDeath();
+            }
         }
 
         StartInvincible();
+        invincibleTimer = Mathf.Max(invincibleTimer, rescueInvincibility);
+        if (shieldBroken && !IsDead)
+            TalentEffects.OnShieldBroken();
+
+        // 只有实际损失生命且存活时反击；护盾吸收和无敌帧不会触发。
+        if (remaining > 0f && !IsDead)
+            TryRetaliation();
     }
 
     public void AddShield(float amount)
@@ -384,7 +450,16 @@ public class Player : MonoBehaviour
     public void Heal(float amount)
     {
         if (amount <= 0f || IsDead) return;
-        currentHealth = Mathf.Min(MaxHealth, currentHealth + amount);
+        float restored = Mathf.Min(amount, Mathf.Max(0f, MaxHealth - currentHealth));
+        currentHealth += restored;
+
+        float overflow = amount - restored;
+        if (overflow > 0f && overhealShieldRatio > 0f)
+        {
+            // 只限制本次转化的增量，不削减技能或其他天赋已经提供的护盾。
+            float room = Mathf.Max(0f, MaxHealth * overhealShieldCapPercent - currentShield);
+            AddShield(Mathf.Min(overflow * overhealShieldRatio, room));
+        }
     }
 
     private void OnDeath()
@@ -438,12 +513,23 @@ public class Player : MonoBehaviour
     {
         get
         {
-            float mult = 1f;
+            // 每升一级累计增加 10% 基础伤害，独立于天赋和技能倍率。
+            float mult = 1f + (level - 1) * 0.1f;
             if (damageBuff != null && damageBuff.IsActive)
                 mult *= damageBuff.Multiplier;
             mult *= baseDamageMultiplier;
             mult *= (1f + GetStatBonus(StatType.AttackDamage));
             mult *= (1f + GetStatBonus(StatType.KillStackDamage));
+
+            if (moveSpeedToDamageRatio > 0f)
+            {
+                float moveBonus = MoveSpeedBonus;
+                mult *= (1f + moveBonus * moveSpeedToDamageRatio);
+            }
+
+            if (dashBuffTimer > 0f)
+                mult *= (1f + dashBuffDamageBonus);
+
             return mult;
         }
     }
@@ -460,6 +546,7 @@ public class Player : MonoBehaviour
                 mult *= doubleAction.WeaponCooldownMultiplier;
 
             float attackSpeedBonus = GetStatBonus(StatType.AttackSpeed) + GetStatBonus(StatType.StationaryAttackSpeed);
+            attackSpeedBonus += frenzyCharges * frenzyAttackSpeedPerCharge;
             mult *= 1f / (1f + attackSpeedBonus);
 
             return mult;
@@ -471,6 +558,7 @@ public class Player : MonoBehaviour
         get
         {
             float bonus = GetStatBonus(StatType.MoveSpeed);
+            bonus += frenzyCharges * frenzyMoveSpeedPerCharge;
             if (GameManager.Instance != null && GameManager.Instance.TeamDoubleActionActive)
                 bonus += GameManager.Instance.TeamMoveSpeedBonus;
             else if (doubleAction != null && doubleAction.IsActive)
@@ -509,6 +597,124 @@ public class Player : MonoBehaviour
         stationarySizeMax = Mathf.Max(stationarySizeMax, sizeMax);
     }
 
+    public void SetDashBuff(float duration, float damageBonus)
+    {
+        dashBuffDuration = Mathf.Max(dashBuffDuration, duration);
+        dashBuffDamageBonus = Mathf.Max(dashBuffDamageBonus, damageBonus);
+    }
+
+    public void OnDashPerformed()
+    {
+        if (IsDead || !isActiveAndEnabled) return;
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
+        if (dashBuffDuration > 0f)
+            dashBuffTimer = dashBuffDuration;
+        TryDashPulse();
+    }
+
+    private void ResetReactiveTalents()
+    {
+        dashPulseRadius = dashPulseStunDuration = dashPulseCooldown = dashPulseTimer = 0f;
+        dashPulseDamage = 0;
+        dashPulseEffectPrefab = null;
+        frenzyDuration = frenzyTimer = frenzyAttackSpeedPerCharge = frenzyMoveSpeedPerCharge = 0f;
+        frenzyMaxCharges = frenzyCharges = 0;
+        overhealShieldRatio = overhealShieldCapPercent = 0f;
+        retaliationCount = retaliationDamage = 0;
+        retaliationCooldown = retaliationTimer = 0f;
+        retaliationPrefab = null;
+    }
+
+    private void TickReactiveTalents(float deltaTime)
+    {
+        dashPulseTimer = Mathf.Max(0f, dashPulseTimer - deltaTime);
+        retaliationTimer = Mathf.Max(0f, retaliationTimer - deltaTime);
+        frenzyTimer = Mathf.Max(0f, frenzyTimer - deltaTime);
+        if (frenzyTimer <= 0f)
+            frenzyCharges = 0;
+    }
+
+    public void SetKillFrenzy(float duration, int maxCharges, float attackSpeedPerCharge, float moveSpeedPerCharge)
+    {
+        frenzyDuration = Mathf.Max(0f, duration);
+        frenzyMaxCharges = Mathf.Max(0, maxCharges);
+        frenzyAttackSpeedPerCharge = Mathf.Max(0f, attackSpeedPerCharge);
+        frenzyMoveSpeedPerCharge = Mathf.Max(0f, moveSpeedPerCharge);
+        frenzyCharges = Mathf.Min(frenzyCharges, frenzyMaxCharges);
+    }
+
+    private void RegisterFrenzyKill()
+    {
+        if (frenzyDuration <= 0f || frenzyMaxCharges <= 0) return;
+        frenzyCharges = Mathf.Min(frenzyCharges + 1, frenzyMaxCharges);
+        frenzyTimer = frenzyDuration;
+    }
+
+    public void SetOverhealShield(float ratio, float capPercent)
+    {
+        overhealShieldRatio = Mathf.Max(0f, ratio);
+        overhealShieldCapPercent = Mathf.Clamp01(capPercent);
+    }
+
+    public void SetDashPulse(float radius, int damage, float stun, float cooldown, GameObject effect)
+    {
+        dashPulseRadius = Mathf.Max(0f, radius);
+        dashPulseDamage = Mathf.Max(0, damage);
+        dashPulseStunDuration = Mathf.Max(0f, stun);
+        dashPulseCooldown = Mathf.Max(0.05f, cooldown);
+        dashPulseEffectPrefab = effect;
+    }
+
+    private void TryDashPulse()
+    {
+        if (dashPulseRadius <= 0f || dashPulseTimer > 0f) return;
+        dashPulseTimer = dashPulseCooldown;
+        int damage = Mathf.RoundToInt(dashPulseDamage * DamageMultiplier);
+        Vector2 origin = transform.position;
+        foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+        {
+            if (enemy == null || enemy.IsDead || !enemy.isActiveAndEnabled) continue;
+            if (enemy.gameObject.scene != gameObject.scene) continue;
+            if ((enemyLayers.value & (1 << enemy.gameObject.layer)) == 0) continue;
+            if (((Vector2)enemy.transform.position - origin).sqrMagnitude > dashPulseRadius * dashPulseRadius) continue;
+            enemy.Stun(dashPulseStunDuration);
+            enemy.TakeDamage(damage);
+        }
+
+        if (dashPulseEffectPrefab != null)
+        {
+            GameObject effect = Instantiate(dashPulseEffectPrefab, transform.position, Quaternion.identity);
+            effect.transform.localScale = Vector3.one * dashPulseRadius * 2f;
+            if (effect.TryGetComponent<SpriteRenderer>(out var sprite))
+                sprite.color = new Color(0.3f, 0.75f, 1f, 0.3f);
+            Destroy(effect, 0.2f);
+        }
+    }
+
+    public void SetRetaliation(int count, int damage, float cooldown, GameObject prefab)
+    {
+        retaliationCount = Mathf.Clamp(count, 1, 32);
+        retaliationDamage = Mathf.Max(0, damage);
+        retaliationCooldown = Mathf.Max(0.05f, cooldown);
+        // 与 PiercingWeapon 一样，必须由匹配的子弹组件接收 Init。
+        retaliationPrefab = prefab != null && prefab.GetComponent<PiercingBullet>() != null ? prefab : null;
+    }
+
+    private void TryRetaliation()
+    {
+        if (retaliationPrefab == null || retaliationTimer > 0f) return;
+        retaliationTimer = retaliationCooldown;
+        float damage = retaliationDamage * DamageMultiplier;
+        for (int i = 0; i < retaliationCount; i++)
+        {
+            float angle = i * Mathf.PI * 2f / retaliationCount;
+            Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            Vector3 position = transform.position + (Vector3)(direction * 0.5f);
+            GameObject projectile = Instantiate(retaliationPrefab, position, Quaternion.identity);
+            projectile.GetComponent<PiercingBullet>().Init(direction, damage, ExtraPierce, BulletSpeedMultiplier);
+        }
+    }
+
     private void ApplySize()
     {
         baseSizeBonus = GetStatBonus(StatType.SizeIncrease);
@@ -517,9 +723,9 @@ public class Player : MonoBehaviour
 
     private void ApplySizeCombined()
     {
-    float total = baseSizeBonus + stationarySizeBonus;
-    float scale = BaseScale * Mathf.Max(0.1f, 1f + total);
-    transform.localScale = new Vector3(scale, scale, 1f);
+        float total = baseSizeBonus + stationarySizeBonus;
+        float scale = 0.5f * Mathf.Max(0.1f, 1f + total);
+        transform.localScale = new Vector3(scale, scale, 1f);
     }
 
     // ===== 武器 =====
@@ -555,7 +761,14 @@ public class Player : MonoBehaviour
 
     public bool CanAcquireColor(TalentColor color)
     {
-        return GetColorCount(color) < TalentBase.MaxPerColor;
+        int limit = color switch
+        {
+            TalentColor.Red => TalentBase.MaxRed,
+            TalentColor.Blue => TalentBase.MaxBlue,
+            TalentColor.Green => TalentBase.MaxGreen,
+            _ => 0
+        };
+        return GetColorCount(color) < limit;
     }
 
     public int GetTalentStack(TalentBase talent)
@@ -657,7 +870,6 @@ public class Player : MonoBehaviour
         panel.Show(new List<TalentBase>(pendingChoices), selected =>
         {
             ChooseTalent(selected);
-            Time.timeScale = 1f;
             UIManager.Instance.HidePanel<TalentPanel>(false);
         });
     }
@@ -692,5 +904,9 @@ public class Player : MonoBehaviour
 
         if (type == StatType.SizeIncrease)
             ApplySize();
+    }
+    public void SetMoveSpeedToDamageRatio(float ratio)
+    {
+    moveSpeedToDamageRatio = Mathf.Max(moveSpeedToDamageRatio, ratio);
     }
 }

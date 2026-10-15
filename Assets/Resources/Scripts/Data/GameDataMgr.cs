@@ -17,6 +17,7 @@ public class GameDataMgr
     public MusicData musicData;
     public List<PlayerData> playerDatas;
     public List<TalentBase> talentDatas;
+    public List<EnemyTalentData> enemyTalentDatas;
 
     public int selectedCharacterId = 1;
 
@@ -31,5 +32,6 @@ public class GameDataMgr
         Debug.Log("Loading TalentData");
         var entries = JsonMgr.Instance.LoadData<List<TalentJsonEntry>>("TalentData");
         talentDatas = TalentConverter.Convert(entries);
+        enemyTalentDatas = JsonMgr.Instance.LoadData<List<EnemyTalentData>>("EnemyTalentData");
     }
 }

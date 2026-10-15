@@ -1137,6 +1137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5c7db31265ae1469a0ee0ca29998b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  enemyTalentInterval: 300
 --- !u!114 &1918575836
 MonoBehaviour:
   m_ObjectHideFlags: 0

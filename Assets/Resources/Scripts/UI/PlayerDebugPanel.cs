@@ -17,7 +17,7 @@ public class PlayerDebugPanel : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!visible) return;
+        if (!visible || Time.timeScale <= 0f) return;
 
         Player player = GameManager.Instance != null ? GameManager.Instance.Player : null;
         if (player == null) return;
@@ -43,6 +43,19 @@ public class PlayerDebugPanel : MonoBehaviour
         sb.AppendLine($"攻击间隔：{player.AttackInterval:F2} 秒");
         sb.AppendLine($"武器冷却倍率：{player.WeaponCooldownMultiplier:F2}");
         sb.AppendLine($"移动速度加成：{player.MoveSpeedBonus * 100:F0}%");
+        if (player.KillFrenzyCharges > 0)
+            sb.AppendLine($"连锁活化：{player.KillFrenzyCharges} 层 / 剩余 {player.KillFrenzyTimeRemaining:F1} 秒");
+        var effects = player.TalentEffects;
+        if (effects != null)
+        {
+            if (effects.TravelCharge > 0f)
+                sb.AppendLine($"游走电容：{effects.TravelCharge * 100f:F0}%");
+            if (effects.KillsPerNova > 0)
+                sb.AppendLine($"凋亡新星：{effects.NovaKills} / {effects.KillsPerNova}");
+            if (effects.HasLastStand)
+                sb.AppendLine(effects.LastStandCooldownRemaining > 0f
+                    ? $"绝境蜕生：冷却 {effects.LastStandCooldownRemaining:F1} 秒" : "绝境蜕生：就绪");
+        }
         sb.AppendLine();
         sb.AppendLine($"无敌时间：{player.Data.InvincibleTime * (1f + player.GetStatBonus(StatType.InvincibleTime)):F2} 秒");
         sb.AppendLine($"护盾衰减：{player.Data.ShieldDecayRate * (1f + player.GetStatBonus(StatType.ShieldDecay)):F3} / 秒");
@@ -53,9 +66,9 @@ public class PlayerDebugPanel : MonoBehaviour
         sb.AppendLine($"经验倍率：{player.Data.ExperienceMultiplier * (1f + player.GetStatBonus(StatType.ExperienceGain)):F2}");
         sb.AppendLine($"额外选项：{player.GetStatBonus(StatType.ExtraChoice):F0}");
         sb.AppendLine();
-        sb.AppendLine($"红色天赋：{player.GetColorCount(TalentColor.Red)} / {TalentBase.MaxPerColor}");
-        sb.AppendLine($"蓝色天赋：{player.GetColorCount(TalentColor.Blue)} / {TalentBase.MaxPerColor}");
-        sb.AppendLine($"绿色天赋：{player.GetColorCount(TalentColor.Green)} / {TalentBase.MaxPerColor}");
+        sb.AppendLine($"红色天赋：{player.GetColorCount(TalentColor.Red)} / {TalentBase.MaxRed}");
+        sb.AppendLine($"蓝色天赋：{player.GetColorCount(TalentColor.Blue)} / {TalentBase.MaxBlue}");
+        sb.AppendLine($"绿色天赋：{player.GetColorCount(TalentColor.Green)} / {TalentBase.MaxGreen}");
         sb.AppendLine();
         sb.AppendLine($"武器数量：{player.Weapons.Count}");
         foreach (var w in player.Weapons)

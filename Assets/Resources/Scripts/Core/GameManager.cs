@@ -8,6 +8,12 @@ public class GameManager : MonoBehaviour
     public GameObject PlayerObject { get; private set; }
     public Player Player { get; private set; }
     public bool IsGameOver { get; private set; }
+    public bool IsVictory { get; private set; }
+    private const float VictoryTime = 20f * 60f;
+
+    [Header("敌人异变")]
+    [SerializeField, Min(1f)] private float enemyTalentInterval = 300f;
+    public EnemyTalentRuntime EnemyTalents { get; private set; } = new EnemyTalentRuntime();
 
     private float skillCooldownTimer;
     private float teamDoubleActionTimer;
@@ -27,6 +33,7 @@ public class GameManager : MonoBehaviour
         }
 
         instance = this;
+        EnemyTalents = new EnemyTalentRuntime(enemyTalentInterval);
     }
 
     void Start()
@@ -70,6 +77,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        UpdateEnemyTalents(Time.deltaTime);
         UpdateSkillCooldown();
 
         if (teamDoubleActionTimer > 0f)
@@ -91,6 +99,51 @@ public class GameManager : MonoBehaviour
         teamWeaponCooldownMultiplier = Mathf.Max(0.1f, weaponCooldownMultiplier);
     }
 
+    private void UpdateEnemyTalents(float deltaTime)
+    {
+        if (IsGameOver || Player == null || Player.IsDead || Time.timeScale <= 0f) return;
+        EnemyTalents.Tick(deltaTime);
+        // 胜利优先于 20 分钟的敌人异变选择，共用有效游玩时间（不计暂停）。
+        if (EnemyTalents.ElapsedTime >= VictoryTime)
+        {
+            OnVictory();
+            return;
+        }
+        if (!EnemyTalents.IsChoiceDue || EnemyTalents.IsChoosing) return;
+
+        // 优先等玩家升级选择结束，避免两个面板争抢点击。
+        if (UIManager.Instance.GetPanel<TalentPanel>() != null ||
+            UIManager.Instance.GetPanel<EnemyTalentPanel>() != null) return;
+        var choices = EnemyTalents.RollChoices(GameDataMgr.Instance.enemyTalentDatas);
+        if (choices.Count == 0) return;
+
+        EnemyTalentPanel panel = UIManager.Instance.ShowPanel<EnemyTalentPanel>();
+        panel.Show(choices, selected =>
+        {
+            if (IsGameOver || !EnemyTalents.Choose(selected)) return;
+            foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (enemy.gameObject.scene == gameObject.scene)
+                    enemy.RefreshTalentHealth();
+            UIManager.Instance.HidePanel<EnemyTalentPanel>(false);
+        });
+    }
+
+    private void CloseEnemyTalentPanel()
+    {
+        if (!EnemyTalents.IsChoosing) return;
+        EnemyTalents.CancelChoice();
+        UIManager.Instance.HidePanel<EnemyTalentPanel>(false);
+    }
+
+    private void OnDestroy()
+    {
+        if (instance != this) return;
+        CloseEnemyTalentPanel();
+        UIManager.Instance.HidePanel<OverPanel>(false);
+        TalentPanelPause.Release(this);
+        instance = null;
+    }
+
     private void UpdateSkillCooldown()
     {
         if (skillCooldownTimer > 0f)
@@ -106,10 +159,26 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    private void OnVictory()
+    {
+        if (IsGameOver) return;
+        IsVictory = true;
+        IsGameOver = true;
+        TalentPanelPause.Acquire(this);
+        CloseEnemyTalentPanel();
+        if (Player != null && Player.Controller != null)
+            Player.Controller.enabled = false;
+
+        Debug.Log("Victory: survived 20 minutes.");
+        ShowOverPanel(true);
+    }
+
     public void OnPlayerDeath()
     {
         if (IsGameOver) return;
         IsGameOver = true;
+        TalentPanelPause.Acquire(this);
+        CloseEnemyTalentPanel();
 
         if (PlayerObject != null)
         {
@@ -118,5 +187,12 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log("Game Over");
+        ShowOverPanel(false);
+    }
+
+    private void ShowOverPanel(bool victory)
+    {
+        OverPanel panel = UIManager.Instance.ShowPanel<OverPanel>();
+        panel.ShowResult(victory);
     }
 }

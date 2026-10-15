@@ -46,7 +46,7 @@ public class BerserkerEnemy : Enemy
         get
         {
             if (Data == null) return false;
-            return CurrentHealth / Data.MaxHealth <= berserkThreshold;
+            return CurrentHealth / MaxHealth <= berserkThreshold;
         }
     }
 
@@ -114,7 +114,7 @@ public class BerserkerEnemy : Enemy
         }
 
         float moveDir = distance > preferredDistance ? Mathf.Sign(dirX) : -Mathf.Sign(dirX);
-        rb.linearVelocity = new Vector2(moveDir * moveSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(moveDir * moveSpeed * MoveSpeedMultiplier, rb.linearVelocity.y);
 
         if (Mathf.Abs(dirX) > 0.05f)
         {
@@ -240,7 +240,7 @@ public class BerserkerEnemy : Enemy
         scale.x = Mathf.Abs(scale.x) * facing;
         transform.localScale = scale;
 
-        rb.linearVelocity = new Vector2(facing * chargeForce, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(facing * chargeForce * MoveSpeedMultiplier, rb.linearVelocity.y);
 
         if (animator != null) animator.SetTrigger("IsCharge");
     }

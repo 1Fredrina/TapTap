@@ -67,4 +67,32 @@ public class TalentJsonEntry
 
     public float stationaryAttackSpeedMax = 0f;
     public float stationarySizeMax = 0f;
+
+    public float dashBuffDuration = 3f;
+    public float dashBuffDamageBonus = 0.5f;
+    public float moveSpeedToDamageRatio = 0.5f;
+
+    public float dashPulseStunDuration = 0.6f;
+    public float frenzyDuration = 4f;
+    public int frenzyMaxCharges = 5;
+    public float frenzyAttackSpeedPerCharge = 0.04f;
+    public float frenzyMoveSpeedPerCharge = 0.02f;
+    public float overhealShieldRatio = 0.5f;
+    public float overhealShieldCapPercent = 0.3f;
+
+    // 独立运行时的触发型天赋
+    public float travelDistance = 8f;
+    public float shieldBreakStunDuration = 1f;
+    public int novaKillsRequired = 5;
+    public float lastStandShieldPercent = 0.35f;
+    public float lastStandInvincibility = 2f;
+
+    public StatModifierJsonEntry[] statModifiers;
+}
+
+[Serializable]
+public class StatModifierJsonEntry
+{
+    public string statType;
+    public float value;
 }

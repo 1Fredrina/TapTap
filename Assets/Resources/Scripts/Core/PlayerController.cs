@@ -93,9 +93,13 @@ public class PlayerController : MonoBehaviour
             dashTime = Mathf.Max(dashDuration, Time.fixedDeltaTime);
 
             float cooldownMult = player != null ? player.DashCooldownMultiplier : 1f;
-            dashCooldownTimer = playerData.DashCooldown* cooldownMult;
+            dashCooldownTimer = playerData.DashCooldown * cooldownMult;
+
             if (animator != null)
                 animator.SetTrigger("IsDash");
+
+            if (player != null)
+                player.OnDashPerformed();
         }
         dashRequested = false;
 

@@ -19,7 +19,9 @@ public abstract class TalentBase
     [Header("前置条件")]
     public string[] prerequisiteIds;
 
-    public const int MaxPerColor = 7;
+    public const int MaxRed = 30;
+    public const int MaxBlue = 10;
+    public const int MaxGreen = 10;
 
     public abstract void OnAcquire(Player player, int stack);
 }

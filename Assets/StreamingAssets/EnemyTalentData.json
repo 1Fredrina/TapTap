@@ -1,0 +1,26 @@
+[
+  {
+    "id": "enemy_giant",
+    "displayName": "巨型增生",
+    "description": "所有敌人最大生命 ×3。场上敌人保持当前生命比例，后续生成的敌人同样生效。可重复叠加。",
+    "healthMultiplier": 3.0
+  },
+  {
+    "id": "enemy_ferocity",
+    "displayName": "致命毒性",
+    "description": "所有敌人造成的伤害 ×2，包含接触、子弹、陷阱和冲击波。可重复叠加。",
+    "damageMultiplier": 2.0
+  },
+  {
+    "id": "enemy_haste",
+    "displayName": "极速猎杀",
+    "description": "所有敌人的移动和冲锋速度 ×1.75。场上与后续生成的敌人均生效。可重复叠加。",
+    "moveSpeedMultiplier": 1.75
+  },
+  {
+    "id": "enemy_armor",
+    "displayName": "超厚甲壳",
+    "description": "所有敌人受到的伤害减半。与最大生命强化叠加，可重复选择，连续两次后仅承受 25% 伤害。",
+    "damageTakenMultiplier": 0.5
+  }
+]

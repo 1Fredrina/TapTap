@@ -22,6 +22,7 @@ public class UIManager
     public T ShowPanel<T>() where T : BasePanel
     {
         string panelName = typeof(T).Name;
+        RemoveDestroyedPanel(panelName);
         if (panelDic.ContainsKey(panelName))
         {
             return panelDic[panelName] as T;
@@ -37,6 +38,7 @@ public class UIManager
     public void HidePanel<T>(bool isFade=true) where T : BasePanel
     {
         string panelName = typeof(T).Name;
+        RemoveDestroyedPanel(panelName);
         if (panelDic.ContainsKey(panelName))
         {
             if (isFade)
@@ -59,11 +61,19 @@ public class UIManager
     public T GetPanel<T>() where T : BasePanel
     {
         string panelName = typeof(T).Name;
+        RemoveDestroyedPanel(panelName);
         if (panelDic.ContainsKey(panelName))
         {
             return panelDic[panelName] as T;
         }
         return null;
+    }
+
+    private void RemoveDestroyedPanel(string panelName)
+    {
+        // 退出关卡或播放模式时，Unity 可能先于 GameManager 销毁面板。
+        if (panelDic.TryGetValue(panelName, out BasePanel panel) && panel == null)
+            panelDic.Remove(panelName);
     }
     
 }

@@ -28,7 +28,6 @@ public class OrbitWeapon : WeaponBase
         }
 
         int count = Mathf.Max(1, orbitCount) + extraShots;
-        float dmg = damage * player.DamageMultiplier;
 
         for (int i = 0; i < count; i++)
         {
@@ -36,7 +35,7 @@ public class OrbitWeapon : WeaponBase
             GameObject obj = Object.Instantiate(prefab, player.transform.position, Quaternion.identity);
             if (obj.TryGetComponent<OrbitProjectile>(out var op))
             {
-                op.Init(player, dmg, orbitRadius, orbitSpeed, startAngle);
+                op.Init(player, damage, orbitRadius, orbitSpeed, startAngle);
             }
             orbitObjects.Add(obj);
         }

@@ -15,6 +15,7 @@ public class CharacterPanel : BasePanel
     public Button btnSkill2;
     public Button btnSkill3;
     public Button btnSkill4;
+    public GameObject[] gameObjects;
 
     public Button btnSelect;
 
@@ -38,6 +39,10 @@ public class CharacterPanel : BasePanel
             btnSkill2.gameObject.SetActive(false);
             btnSkill3.gameObject.SetActive(false);
             btnSkill4.gameObject.SetActive(false);
+            gameObjects[0].SetActive(true);
+            gameObjects[1].SetActive(false);
+            gameObjects[2].SetActive(false);
+            gameObjects[3].SetActive(false);
         });
 
         btnC2.onClick.AddListener(() =>
@@ -50,6 +55,10 @@ public class CharacterPanel : BasePanel
             btnSkill2.gameObject.SetActive(true);
             btnSkill3.gameObject.SetActive(false);
             btnSkill4.gameObject.SetActive(false);
+            gameObjects[0].SetActive(false);
+            gameObjects[1].SetActive(true);
+            gameObjects[2].SetActive(false);
+            gameObjects[3].SetActive(false);
         });
 
         btnC3.onClick.AddListener(() =>
@@ -62,6 +71,10 @@ public class CharacterPanel : BasePanel
             btnSkill2.gameObject.SetActive(false);
             btnSkill3.gameObject.SetActive(true);
             btnSkill4.gameObject.SetActive(false);
+            gameObjects[0].SetActive(false);
+            gameObjects[1].SetActive(false);
+            gameObjects[2].SetActive(true);
+            gameObjects[3].SetActive(false);
         });
 
         btnC4.onClick.AddListener(() =>
@@ -74,6 +87,10 @@ public class CharacterPanel : BasePanel
             btnSkill2.gameObject.SetActive(false);
             btnSkill3.gameObject.SetActive(false);
             btnSkill4.gameObject.SetActive(true);
+            gameObjects[0].SetActive(false);
+            gameObjects[1].SetActive(false);
+            gameObjects[2].SetActive(false);
+            gameObjects[3].SetActive(true);
         });
 
         btnSkill1.onClick.AddListener(() =>

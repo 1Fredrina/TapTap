@@ -54,7 +54,7 @@ public class ChaserEnemy : Enemy
         }
 
         float dirX = playerTarget.position.x - transform.position.x;
-        float moveX = Mathf.Sign(dirX) * moveSpeed;
+        float moveX = Mathf.Sign(dirX) * moveSpeed * MoveSpeedMultiplier;
 
         rb.linearVelocity = new Vector2(moveX, rb.linearVelocity.y);
 

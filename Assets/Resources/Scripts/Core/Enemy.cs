@@ -19,6 +19,25 @@ public class Enemy : MonoBehaviour
     [System.NonSerialized] public float healthMultiplier = 1f;
 
     private Rigidbody2D body;
+    private float talentHealthMultiplier = 1f;
+
+    public float MaxHealth => (data != null ? Mathf.Max(1f, data.MaxHealth) : 1f) * healthMultiplier * talentHealthMultiplier;
+    public float MoveSpeedMultiplier => GameManager.Instance?.EnemyTalents.MoveSpeedMultiplier ?? 1f;
+
+    // 在实际命中时统一计算，接触伤害、飞行中的子弹和地面陷阱只乘一次。
+    public static int GetUpgradedDamage(int baseDamage)
+    {
+        float multiplier = GameManager.Instance?.EnemyTalents.DamageMultiplier ?? 1f;
+        return Mathf.Max(0, Mathf.RoundToInt(baseDamage * multiplier));
+    }
+
+    public void RefreshTalentHealth()
+    {
+        if (IsDead) return;
+        float healthRatio = Mathf.Clamp01(currentHealth / MaxHealth);
+        talentHealthMultiplier = GameManager.Instance?.EnemyTalents.HealthMultiplier ?? 1f;
+        currentHealth = MaxHealth * healthRatio;
+    }
 
     public EnemyData Data => data;
     public float CurrentHealth => currentHealth;
@@ -61,9 +80,9 @@ public class Enemy : MonoBehaviour
         if (direction.sqrMagnitude < 0.001f) return;
 
         if (body != null)
-            body.linearVelocity = direction * data.MoveSpeed;
+            body.linearVelocity = direction * data.MoveSpeed * MoveSpeedMultiplier;
         else
-            transform.position += (Vector3)(direction * data.MoveSpeed * Time.deltaTime);
+            transform.position += (Vector3)(direction * data.MoveSpeed * MoveSpeedMultiplier * Time.deltaTime);
     }
 
     public virtual void Initialize(EnemyData enemyData)
@@ -83,7 +102,8 @@ public class Enemy : MonoBehaviour
     {
         if (IsDead || damage <= 0) return;
 
-        currentHealth = Mathf.Max(0f, currentHealth - damage);
+        float damageTaken = GameManager.Instance?.EnemyTalents.DamageTakenMultiplier ?? 1f;
+        currentHealth = Mathf.Max(0f, currentHealth - damage * damageTaken);
         if (currentHealth <= 0f)
             Die();
     }
@@ -134,14 +154,14 @@ public class Enemy : MonoBehaviour
         if (player == null) return;
 
         int dmg = data != null ? data.AttackDamage : 10;
-        player.TakeDamage(dmg);
+        player.TakeDamage(GetUpgradedDamage(dmg));
         contactDamageTimer = contactDamageCooldown;
     }
 
     protected virtual void ResetState()
     {
-        float baseHp = data != null ? Mathf.Max(1f, data.MaxHealth) : 1f;
-        currentHealth = baseHp * healthMultiplier;
+        talentHealthMultiplier = GameManager.Instance?.EnemyTalents.HealthMultiplier ?? 1f;
+        currentHealth = MaxHealth;
         stunTimer = 0f;
         playerInRangeTimer = 0f;
         canFire = false;
@@ -157,7 +177,7 @@ public class Enemy : MonoBehaviour
         if (body != null)
             body.linearVelocity = Vector2.zero;
 
-        Player.NotifyEnemyDefeated(data != null ? data.ExperienceReward : 100);
+        Player.NotifyEnemyDefeated(data != null ? data.ExperienceReward : 100, this);
         Destroy(gameObject);
     }
 }

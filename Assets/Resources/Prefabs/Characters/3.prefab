@@ -385,10 +385,10 @@ MonoBehaviour:
     skillCooldown: 6
     DashCooldown: 1
     ShieldDecayRate: 10
-    MaxLevel: 21
+    MaxLevel: 30
     startingWeaponId: 
   controller: {fileID: 0}
   enemyLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 128
   baseChoicesPerLevel: 3

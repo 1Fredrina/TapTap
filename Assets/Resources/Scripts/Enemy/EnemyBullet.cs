@@ -35,7 +35,7 @@ public class EnemyBullet : MonoBehaviour
         Player player = other.GetComponent<Player>();
         if (player != null)
         {
-            player.TakeDamage(damage);
+            player.TakeDamage(Enemy.GetUpgradedDamage(damage));
         }
         Destroy(gameObject);
     }

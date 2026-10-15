@@ -48,12 +48,12 @@ public class TalentPanel : BasePanel
 
     private void OnEnable()
     {
-        Time.timeScale = 0f;
+        TalentPanelPause.Acquire(this);
     }
 
     private void OnDisable()
     {
-        Time.timeScale = 1f;
+        TalentPanelPause.Release(this);
     }
 
     private Color GetColor(TalentColor color)

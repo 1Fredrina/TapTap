@@ -6,6 +6,7 @@ public class PiercingBullet : MonoBehaviour
     public float damage;
     public int pierceRemaining;
     public float lifeTime = 3f;
+    [SerializeField] private float spriteForwardAngle = 45f;
 
     private Vector2 direction;
     private float lifeTimer;
@@ -19,7 +20,7 @@ public class PiercingBullet : MonoBehaviour
         lifeTimer = lifeTime;
 
         float angle = Mathf.Atan2(this.direction.y, this.direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        transform.rotation = Quaternion.Euler(0f, 0f, angle - spriteForwardAngle);
     }
 
     private void Update()
@@ -32,14 +33,18 @@ public class PiercingBullet : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other)
+{
+    Enemy enemy = other.GetComponentInParent<Enemy>();
+    if (enemy == null || enemy.IsDead) return;
+
+    enemy.TakeDamage(Mathf.RoundToInt(damage));
+
+    if (pierceRemaining > 0)
     {
-        Enemy enemy = other.GetComponentInParent<Enemy>();
-        if (enemy == null || enemy.IsDead) return;
-
-        enemy.TakeDamage(Mathf.RoundToInt(damage));
-
         pierceRemaining--;
-        if (pierceRemaining <= 0)
-            Destroy(gameObject);
+        return;
     }
+
+    Destroy(gameObject);
+}
 }

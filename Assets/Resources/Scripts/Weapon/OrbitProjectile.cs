@@ -42,7 +42,9 @@ public class OrbitProjectile : MonoBehaviour
         Enemy enemy = other.GetComponentInParent<Enemy>();
         if (enemy != null && !enemy.IsDead)
         {
-            enemy.TakeDamage(Mathf.RoundToInt(damage));
+            // 环绕物持续存在，命中时读取倍率，使升级和天赋加成即时生效。
+            float multiplier = owner != null ? owner.DamageMultiplier : 1f;
+            enemy.TakeDamage(Mathf.RoundToInt(damage * multiplier));
         }
     }
 }

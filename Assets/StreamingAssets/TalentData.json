@@ -129,7 +129,7 @@
     "maxStack": 3,
     "weight": 6,
     "statType": "ShieldOnKill",
-    "value": 15
+    "value": 10
   },
   {
     "type": "weapon",
@@ -332,14 +332,14 @@
   "color": "Red",
   "maxStack": 5,
   "weight": 10,
-  "weaponType": "Projectile",
+  "weaponType": "Piercing",
   "stackUpMode": "ExtraPierce",
   "cooldown": 1.2,
   "damage": 7,
   "range": 12.0,
-  "projectileCount": 1,
-  "projectileSpread": 0,
-  "projectilePrefab": "Prefabs/Weapons/PiercingBullet"
+  "basePierce": 1,
+  "piercingBulletSpeed": 12,
+  "piercingBulletPrefab": "Prefabs/Weapons/PiercingBullet"
 },
 {
   "type": "compound",
@@ -380,12 +380,168 @@
   "type": "stationary",
   "id": "stationary_charge",
   "displayName": "蓄势待发",
-  "description": "停止移动 3 秒后攻速 +150%、[体积 +50%]，移动立即恢复",
+  "description": "停止移动 3 秒后攻速 +150%、<color=#FF4444>体积 +50%</color>，移动立即恢复",
   "color": "Red",
   "maxStack": 1,
-  "weight": 5,
+  "weight": 10,
   "prerequisiteIds": ["bullet_speed", "atk_speed"],
   "stationaryAttackSpeedMax": 1.5,
   "stationarySizeMax": 0.5
+},
+{
+  "type": "compound",
+  "id": "fast_but_no_dash",
+  "displayName": "疾走",
+  "description": "移动速度 +100%，<color=#FF4444>但冲刺冷却 ×10</color>",
+  "color": "Blue",
+  "maxStack": 1,
+  "weight": 10,
+  "prerequisiteIds": ["move_speed"],
+  "statModifiers": [
+    { "statType": "MoveSpeed", "value": 1.0 },
+    { "statType": "DashCooldown", "value": 9.0 }
+  ]
+},
+{
+  "type": "compound",
+  "id": "slow_but_fast_dash",
+  "displayName": "蓄势",
+  "description": "移动速度<color=#FF4444>减少 90%</color>，但冲刺冷却大幅缩短",
+  "color": "Blue",
+  "maxStack": 1,
+  "weight": 10,
+  "statModifiers": [
+    { "statType": "MoveSpeed", "value": -0.9 },
+    { "statType": "DashCooldown", "value": -0.8 }
+  ]
+},
+{
+  "type": "dashbuff",
+  "id": "dash_damage",
+  "displayName": "冲刺突袭",
+  "description": "冲刺后 3 秒内伤害 +50%",
+  "color": "Red",
+  "maxStack": 3,
+  "weight": 8,
+  "dashBuffDuration": 3.0,
+  "dashBuffDamageBonus": 0.5
+},
+{
+  "type": "movespeedtodamage",
+  "id": "momentum",
+  "displayName": "动能转化",
+  "description": "移动速度将会提升攻击力",
+  "color": "Red",
+  "maxStack": 3,
+  "weight": 8,
+  "moveSpeedToDamageRatio": 0.5
+},
+{
+  "type": "dashpulse",
+  "id": "dash_pulse",
+  "displayName": "冲刺震荡",
+  "description": "冲刺起点释放半径 3 的震荡，造成 10 点基础伤害并眩晕 0.6 秒，享受伤害加成。独立冷却 2 秒；每次升级基础伤害 +10，最多 3 级。",
+  "color": "Blue",
+  "maxStack": 3,
+  "weight": 8,
+  "range": 3.0,
+  "damage": 10,
+  "cooldown": 2.0,
+  "dashPulseStunDuration": 0.6,
+  "effectPrefab": "Prefabs/Weapons/ExplosionEffect"
+},
+{
+  "type": "killfrenzy",
+  "id": "kill_frenzy",
+  "displayName": "连锁活化",
+  "description": "击杀叠加 1 层活化：每层攻速 +4%、移速 +2%，最多 5 层。击杀刷新 4 秒持续时间，超时全部清空。每次升级每层额外增加 4% 攻速和 2% 移速，最多 3 级。",
+  "color": "Red",
+  "maxStack": 3,
+  "weight": 8,
+  "frenzyDuration": 4.0,
+  "frenzyMaxCharges": 5,
+  "frenzyAttackSpeedPerCharge": 0.04,
+  "frenzyMoveSpeedPerCharge": 0.02
+},
+{
+  "type": "overheal",
+  "id": "overheal_barrier",
+  "displayName": "营养储备",
+  "description": "溢出治疗的 50% 转为护盾，仅填充至最大生命的 30%；保留其他来源的更高护盾，仍会正常衰减。每次升级转化率 +50%，最多 3 级。前置：自噬。",
+  "color": "Green",
+  "maxStack": 3,
+  "weight": 8,
+  "prerequisiteIds": ["heal_on_kill"],
+  "overhealShieldRatio": 0.5,
+  "overhealShieldCapPercent": 0.3
+},
+{
+  "type": "retaliation",
+  "id": "retaliation_burst",
+  "displayName": "应激散射",
+  "description": "实际损失生命且存活时，向四周发射 8 枚抗体，每枚基础伤害 12，享受伤害、弹速及贯穿加成。独立冷却 4 秒；每次升级每枚基础伤害 +12，最多 3 级。",
+  "color": "Blue",
+  "maxStack": 3,
+  "weight": 7,
+  "damage": 12,
+  "cooldown": 4.0,
+  "projectileCount": 8,
+  "projectilePrefab": "Prefabs/Weapons/PiercingBullet"
+},
+{
+  "type": "travelcharge",
+  "id": "travel_capacitor",
+  "displayName": "游走电容",
+  "description": "累计移动 8 米后，向最近敌人释放 5 枚扇形抗体，每枚基础伤害 6，继承伤害、弹速和贯穿加成。无目标时保留一轮蓄能。每次升级每枚基础伤害 +6，最多 3 级。",
+  "color": "Blue",
+  "maxStack": 3,
+  "weight": 8,
+  "travelDistance": 8.0,
+  "range": 12.0,
+  "damage": 6,
+  "projectileCount": 5,
+  "projectileSpread": 15.0,
+  "projectilePrefab": "Prefabs/Weapons/PiercingBullet"
+},
+{
+  "type": "shieldbreak",
+  "id": "shell_rupture",
+  "displayName": "裂壳反应",
+  "description": "护盾被伤害耗尽且存活时，释放半径 3.5 米的冲击，造成 20 点基础伤害并眩晕 1 秒。自然衰减不触发，独立冷却 6 秒。每次升级基础伤害 +20，最多 3 级。前置：补体沉积。",
+  "color": "Blue",
+  "maxStack": 3,
+  "weight": 7,
+  "prerequisiteIds": ["shield_on_kill"],
+  "range": 3.5,
+  "damage": 20,
+  "cooldown": 6.0,
+  "shieldBreakStunDuration": 1.0,
+  "effectPrefab": "Prefabs/Weapons/ExplosionEffect"
+},
+{
+  "type": "deathnova",
+  "id": "death_nova",
+  "displayName": "凋亡新星",
+  "description": "每击杀 5 个敌人，在最后一名敌人的死亡位置引爆半径 2.5 米的新星，造成 18 点基础伤害。新星击杀保留经验和击杀收益，但不积累下一次新星。每次升级基础伤害 +18，最多 3 级。",
+  "color": "Red",
+  "maxStack": 3,
+  "weight": 7,
+  "novaKillsRequired": 5,
+  "range": 2.5,
+  "damage": 18,
+  "effectPrefab": "Prefabs/Weapons/ExplosionEffect"
+},
+{
+  "type": "laststand",
+  "id": "last_molt",
+  "displayName": "绝境蜕生",
+  "description": "受到致命伤时保留 1 点生命，获得最大生命 35% 的护盾及至少 2 秒无敌。冷却 45 秒，最多 1 级；冷却期间再次受到致命伤仍会死亡。",
+  "color": "Green",
+  "maxStack": 1,
+  "weight": 3,
+  "cooldown": 45.0,
+  "lastStandShieldPercent": 0.35,
+  "lastStandInvincibility": 2.0,
+  "effectPrefab": "Prefabs/Weapons/ExplosionEffect"
 }
 ]

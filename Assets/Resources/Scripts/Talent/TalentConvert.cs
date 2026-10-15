@@ -124,6 +124,170 @@ public static class TalentConverter
                     attackSpeedMax = entry.stationaryAttackSpeedMax,
                     sizeMax = entry.stationarySizeMax
                 };
+            case "dashbuff":
+                return new DashBuffTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    duration = entry.dashBuffDuration,
+                    damageBonus = entry.dashBuffDamageBonus
+                };
+            case "movespeedtodamage":
+                return new MoveSpeedToDamageTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    ratio = entry.moveSpeedToDamageRatio
+                };
+            case "dashpulse":
+                return new DashPulseTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    radius = entry.range,
+                    damage = entry.damage,
+                    cooldown = entry.cooldown,
+                    stunDuration = entry.dashPulseStunDuration,
+                    effectPrefabPath = entry.effectPrefab
+                };
+            case "killfrenzy":
+                return new KillFrenzyTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    duration = entry.frenzyDuration,
+                    maxCharges = entry.frenzyMaxCharges,
+                    attackSpeedPerCharge = entry.frenzyAttackSpeedPerCharge,
+                    moveSpeedPerCharge = entry.frenzyMoveSpeedPerCharge
+                };
+            case "overheal":
+                return new OverhealTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    shieldRatio = entry.overhealShieldRatio,
+                    shieldCapPercent = entry.overhealShieldCapPercent
+                };
+            case "retaliation":
+                return new RetaliationTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    projectileCount = entry.projectileCount,
+                    damage = entry.damage,
+                    cooldown = entry.cooldown,
+                    projectilePrefabPath = entry.projectilePrefab
+                };
+            case "travelcharge":
+                return new TravelChargeTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    distance = entry.travelDistance,
+                    range = entry.range,
+                    projectileCount = entry.projectileCount,
+                    spread = entry.projectileSpread,
+                    damage = entry.damage,
+                    projectilePrefabPath = entry.projectilePrefab
+                };
+            case "shieldbreak":
+                return new ShieldBreakTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    radius = entry.range,
+                    damage = entry.damage,
+                    stunDuration = entry.shieldBreakStunDuration,
+                    cooldown = entry.cooldown,
+                    effectPrefabPath = entry.effectPrefab
+                };
+            case "deathnova":
+                return new DeathNovaTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    killsRequired = entry.novaKillsRequired,
+                    radius = entry.range,
+                    damage = entry.damage,
+                    effectPrefabPath = entry.effectPrefab
+                };
+            case "laststand":
+                return new LastStandTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    cooldown = entry.cooldown,
+                    shieldPercent = entry.lastStandShieldPercent,
+                    invincibility = entry.lastStandInvincibility,
+                    effectPrefabPath = entry.effectPrefab
+                };
+            case "compound":
+                return new CompoundTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    statModifiers = Array.ConvertAll(entry.statModifiers ?? Array.Empty<StatModifierJsonEntry>(),
+                        modifier => new StatModifier
+                        {
+                            statType = ParseEnum(modifier.statType, StatType.AttackDamage),
+                            value = modifier.value
+                        })
+                };
             default:
                 Debug.LogWarning($"未知天赋类型: {entry.type}");
                 return null;
