@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class BerserkerEnemy : Enemy
 {
-    public enum AttackState { Idle, Shooting, Charging, Slamming, Cooling }
+    public enum AttackState { Idle, Shooting, Charging, Cooling }
 
     [Header("检测")]
     [SerializeField] private float detectionRadius = 10f;
@@ -28,16 +28,6 @@ public class BerserkerEnemy : Enemy
     [SerializeField] private float chargeForce = 10f;
     [SerializeField] private float chargeDuration = 0.6f;
 
-    [Header("砸地")]
-    [SerializeField] private float slamJumpForce = 12f;
-    [SerializeField] private GameObject shockwavePrefab;
-    [SerializeField] private Vector2 shockwaveOffset = new Vector2(0.8f, 0f);
-    [SerializeField] private float shockwaveYOffset = -0.5f;
-
-    [Header("地面检测")]
-    [SerializeField] private LayerMask groundLayers;
-    [SerializeField] private float groundCheckDistance = 0.15f;
-
     [Header("半血狂暴")]
     [SerializeField] private float berserkThreshold = 0.5f;
 
@@ -56,7 +46,6 @@ public class BerserkerEnemy : Enemy
 
     private AttackState state = AttackState.Idle;
     private float stateTimer;
-    private bool hasLanded;
 
     private int remainingAttacks = 0;
     private AttackState queuedAttackType;
@@ -93,7 +82,6 @@ public class BerserkerEnemy : Enemy
             case AttackState.Idle:     UpdateIdle();     break;
             case AttackState.Shooting: UpdateShooting(); break;
             case AttackState.Charging: UpdateCharging(); break;
-            case AttackState.Slamming: UpdateSlamming(); break;
             case AttackState.Cooling:  UpdateCooling();  break;
         }
     }
@@ -123,17 +111,17 @@ public class BerserkerEnemy : Enemy
             transform.localScale = scale;
         }
     }
+
     private void UpdateIdle()
     {
         if (playerTarget == null) return;
 
-        int choice = Random.Range(0, 3);
+        int choice = Random.Range(0, 2);
         AttackState chosen;
         switch (choice)
         {
             case 0: chosen = AttackState.Shooting; break;
-            case 1: chosen = AttackState.Charging; break;
-            default: chosen = AttackState.Slamming; break;
+            default: chosen = AttackState.Charging; break;
         }
 
         remainingAttacks = IsBerserk ? 2 : 1;
@@ -148,7 +136,6 @@ public class BerserkerEnemy : Enemy
         {
             case AttackState.Shooting: StartShooting(); break;
             case AttackState.Charging: StartCharging(); break;
-            case AttackState.Slamming: StartSlamming(); break;
         }
     }
 
@@ -167,29 +154,6 @@ public class BerserkerEnemy : Enemy
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             FinishOneAttack();
         }
-    }
-
-    private void UpdateSlamming()
-    {
-        if (!hasLanded)
-        {
-            if (stateTimer > 0f)
-            {
-                stateTimer -= Time.deltaTime;
-                return;
-            }
-
-            if (IsGrounded())
-            {
-                hasLanded = true;
-                OnSlamLand();
-            }
-            return;
-        }
-
-        stateTimer -= Time.deltaTime;
-        if (stateTimer <= 0f)
-            FinishOneAttack();
     }
 
     private void UpdateCooling()
@@ -212,6 +176,7 @@ public class BerserkerEnemy : Enemy
             EnterCooling();
         }
     }
+
     private void StartShooting()
     {
         state = AttackState.Shooting;
@@ -245,44 +210,6 @@ public class BerserkerEnemy : Enemy
         if (animator != null) animator.SetTrigger("IsCharge");
     }
 
-    private void StartSlamming()
-    {
-        state = AttackState.Slamming;
-        hasLanded = false;
-        stateTimer = 0.2f;
-
-        rb.linearVelocity = new Vector2(0f, slamJumpForce * 0.4f);
-
-        if (animator != null) animator.SetTrigger("IsSlam");
-    }
-
-    private void OnSlamLand()
-    {
-        if (shockwavePrefab != null)
-            SpawnShockwavePair();
-
-        stateTimer = 0.4f;
-        if (animator != null) animator.SetTrigger("IsLand");
-    }
-
-    private void SpawnShockwavePair()
-    {
-        float offsetX = shockwaveOffset.x;
-        Vector2 basePos = (Vector2)transform.position + new Vector2(0f, shockwaveYOffset);
-
-        GameObject leftWave = Instantiate(
-            shockwavePrefab,
-            basePos + new Vector2(-offsetX, shockwaveOffset.y),
-            Quaternion.identity);
-        leftWave.GetComponent<Shockwave>()?.SetDirection(-1f);
-
-        GameObject rightWave = Instantiate(
-            shockwavePrefab,
-            basePos + new Vector2(offsetX, shockwaveOffset.y),
-            Quaternion.identity);
-        rightWave.GetComponent<Shockwave>()?.SetDirection(1f);
-    }
-
     private void EnterCooling()
     {
         state = AttackState.Cooling;
@@ -298,16 +225,6 @@ public class BerserkerEnemy : Enemy
             playerTarget = hit.transform;
             break;
         }
-    }
-
-    private bool IsGrounded()
-    {
-        Collider2D col = GetComponent<Collider2D>();
-        if (col == null) return false;
-
-        Vector2 origin = new Vector2(col.bounds.center.x, col.bounds.min.y);
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, groundCheckDistance, groundLayers);
-        return hit.collider != null;
     }
 
     private void ShootBullets(int count)
@@ -332,21 +249,5 @@ public class BerserkerEnemy : Enemy
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
-
-        if (shockwavePrefab != null)
-        {
-            Vector2 basePos = (Vector2)transform.position + new Vector2(0f, shockwaveYOffset);
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(basePos + new Vector2(-shockwaveOffset.x, shockwaveOffset.y), 0.3f);
-            Gizmos.DrawWireSphere(basePos + new Vector2(shockwaveOffset.x, shockwaveOffset.y), 0.3f);
-        }
-
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null)
-        {
-            Vector2 origin = new Vector2(col.bounds.center.x, col.bounds.min.y);
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(origin, origin + Vector2.down * groundCheckDistance);
-        }
     }
 }

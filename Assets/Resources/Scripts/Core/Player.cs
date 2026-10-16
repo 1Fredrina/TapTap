@@ -51,6 +51,9 @@ public class Player : MonoBehaviour
     public int KillFrenzyCharges => frenzyCharges;
     public float KillFrenzyTimeRemaining => frenzyTimer;
     public PlayerTalentEffects TalentEffects { get; private set; }
+    public DerivedTalentEffects DerivedEffects { get; private set; }
+    public AdvancedTalentEffects AdvancedEffects { get; private set; }
+    public SpecialTalentEffects SpecialEffects { get; private set; }
     internal LayerMask EnemyLayers => enemyLayers;
 
     // ===== 武器 =====
@@ -84,8 +87,17 @@ public class Player : MonoBehaviour
     {
         get
         {
+            return SpecialEffects != null && SpecialEffects.HasHealthLock ? 1f : UnlockedMaxHealth;
+        }
+    }
+
+    public float UnlockedMaxHealth
+    {
+        get
+        {
             float baseHp = data != null ? data.MaxHealth : 10f;
-            return baseHp * (1f + GetStatBonus(StatType.MaxHealth));
+            return baseHp * (1f + GetStatBonus(StatType.MaxHealth)) +
+                (SpecialEffects != null ? SpecialEffects.ConvertedMaxHealth : 0f);
         }
     }
 
@@ -130,6 +142,10 @@ public class Player : MonoBehaviour
         moveSpeedToDamageRatio = 0f;
         ResetReactiveTalents();
         TalentEffects = new PlayerTalentEffects(this);
+        DerivedEffects = new DerivedTalentEffects(this);
+        AdvancedEffects = new AdvancedTalentEffects(this);
+        SpecialEffects?.ClearVisual();
+        SpecialEffects = new SpecialTalentEffects(this);
         skill = null;
         damageBuff = null;
         doubleAction = null;
@@ -198,6 +214,7 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
+        SpecialEffects?.ClearVisual();
         if (activePlayer == this)
             activePlayer = null;
     }
@@ -209,6 +226,10 @@ public class Player : MonoBehaviour
         UpdateStationary();
         TickReactiveTalents(Time.deltaTime);
         TalentEffects?.Tick(Time.deltaTime);
+        DerivedEffects?.Tick(Time.deltaTime);
+        AdvancedEffects?.Tick(Time.deltaTime);
+        SpecialEffects?.Tick(Time.deltaTime);
+        TickHealthRegeneration(Time.deltaTime);
 
         if (dashBuffTimer > 0f)
             dashBuffTimer -= Time.deltaTime;
@@ -222,6 +243,7 @@ public class Player : MonoBehaviour
 
     private void UpdateShield()
     {
+        if (SpecialEffects != null && SpecialEffects.PreventShieldDecay) return;
         if (currentShield > 0f && data != null)
         {
             float decay = data.ShieldDecayRate * (1f + GetStatBonus(StatType.ShieldDecay));
@@ -395,6 +417,7 @@ public class Player : MonoBehaviour
             activePlayer.AddShield(shield);
 
         activePlayer.TalentEffects?.OnEnemyDefeated(defeatedEnemy);
+        activePlayer.AdvancedEffects?.OnEnemyDefeated(defeatedEnemy);
     }
 
     public void TakeDamage(int dmg)
@@ -402,10 +425,20 @@ public class Player : MonoBehaviour
         if (IsInvincible || dmg <= 0 || IsDead) return;
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
 
+        float dodge = Mathf.Clamp01(GetStatBonus(StatType.DodgeChance));
+        if (dodge > 0f && Random.value < dodge)
+        {
+            // 闪避不消耗护盾、不触发受伤天赋；沿用受击间隔，避免接触伤害逐帧重试。
+            StartInvincible();
+            DerivedEffects?.OnDodge();
+            return;
+        }
+
         float reduction = Mathf.Clamp(GetStatBonus(StatType.DamageReduction), 0f, 0.9f);
         float finalDmg = Mathf.Max(1f, dmg * (1f - reduction));
 
         float remaining = finalDmg;
+        bool shieldWasHit = currentShield > 0f;
         bool shieldBroken = currentShield > 0f && remaining >= currentShield;
         float rescueInvincibility = 0f;
 
@@ -421,7 +454,12 @@ public class Player : MonoBehaviour
             currentHealth = Mathf.Max(0f, currentHealth - remaining);
             if (currentHealth <= 0f)
             {
-                if (TalentEffects.TryPreventDeath(out float rescueShield, out rescueInvincibility))
+                if (AdvancedEffects.TryPreventDeath(out float advancedShield, out rescueInvincibility))
+                {
+                    currentHealth = Mathf.Min(1f, MaxHealth);
+                    AddShield(advancedShield);
+                }
+                else if (TalentEffects.TryPreventDeath(out float rescueShield, out rescueInvincibility))
                 {
                     currentHealth = Mathf.Min(1f, MaxHealth);
                     AddShield(rescueShield);
@@ -436,6 +474,8 @@ public class Player : MonoBehaviour
         if (shieldBroken && !IsDead)
             TalentEffects.OnShieldBroken();
 
+        AdvancedEffects?.OnDamageTaken(remaining, shieldWasHit);
+
         // 只有实际损失生命且存活时反击；护盾吸收和无敌帧不会触发。
         if (remaining > 0f && !IsDead)
             TryRetaliation();
@@ -444,12 +484,19 @@ public class Player : MonoBehaviour
     public void AddShield(float amount)
     {
         if (amount <= 0f) return;
+        if (SpecialEffects != null && SpecialEffects.ConvertShieldToHealth(amount)) return;
         currentShield += amount;
+    }
+
+    public void ClampHealthToMaximum()
+    {
+        currentHealth = Mathf.Min(currentHealth, MaxHealth);
     }
 
     public void Heal(float amount)
     {
         if (amount <= 0f || IsDead) return;
+        amount *= Mathf.Max(0f, 1f + GetStatBonus(StatType.HealingReceived));
         float restored = Mathf.Min(amount, Mathf.Max(0f, MaxHealth - currentHealth));
         currentHealth += restored;
 
@@ -460,12 +507,25 @@ public class Player : MonoBehaviour
             float room = Mathf.Max(0f, MaxHealth * overhealShieldCapPercent - currentShield);
             AddShield(Mathf.Min(overflow * overhealShieldRatio, room));
         }
+        DerivedEffects?.OnHealed(restored);
+        AdvancedEffects?.OnHealed(restored);
     }
 
     private void OnDeath()
     {
         GameManager.Instance?.OnPlayerDeath();
     }
+
+    private void TickHealthRegeneration(float deltaTime)
+    {
+        if (deltaTime <= 0f || !isActiveAndEnabled || IsDead) return;
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
+        float regeneration = GetStatBonus(StatType.HealthRegeneration);
+        if (regeneration > 0f) Heal(regeneration * deltaTime);
+    }
+
+    public float DashDistanceMultiplier => Mathf.Max(0.1f, 1f + GetStatBonus(StatType.DashDistance));
+    public float StunDurationMultiplier => 1f - Mathf.Clamp01(GetStatBonus(StatType.StunResistance));
 
     private void StartInvincible()
     {
@@ -530,6 +590,9 @@ public class Player : MonoBehaviour
             if (dashBuffTimer > 0f)
                 mult *= (1f + dashBuffDamageBonus);
 
+            if (SpecialEffects != null)
+                mult = SpecialEffects.ApplyDamageMultiplier(mult);
+
             return mult;
         }
     }
@@ -548,6 +611,9 @@ public class Player : MonoBehaviour
             float attackSpeedBonus = GetStatBonus(StatType.AttackSpeed) + GetStatBonus(StatType.StationaryAttackSpeed);
             attackSpeedBonus += frenzyCharges * frenzyAttackSpeedPerCharge;
             mult *= 1f / (1f + attackSpeedBonus);
+            mult /= Mathf.Max(1f, AdvancedEffects?.WeaponAttackSpeedMultiplier ?? 1f);
+            if (SpecialEffects != null)
+                mult *= SpecialEffects.WeaponCooldownSlowMultiplier;
 
             return mult;
         }
@@ -610,6 +676,8 @@ public class Player : MonoBehaviour
         if (dashBuffDuration > 0f)
             dashBuffTimer = dashBuffDuration;
         TryDashPulse();
+        DerivedEffects?.OnDash();
+        AdvancedEffects?.OnDash();
     }
 
     private void ResetReactiveTalents()
@@ -678,7 +746,7 @@ public class Player : MonoBehaviour
             if ((enemyLayers.value & (1 << enemy.gameObject.layer)) == 0) continue;
             if (((Vector2)enemy.transform.position - origin).sqrMagnitude > dashPulseRadius * dashPulseRadius) continue;
             enemy.Stun(dashPulseStunDuration);
-            enemy.TakeDamage(damage);
+            enemy.TakeDamageFrom(damage, transform.position);
         }
 
         if (dashPulseEffectPrefab != null)
@@ -705,12 +773,16 @@ public class Player : MonoBehaviour
         if (retaliationPrefab == null || retaliationTimer > 0f) return;
         retaliationTimer = retaliationCooldown;
         float damage = retaliationDamage * DamageMultiplier;
-        for (int i = 0; i < retaliationCount; i++)
+        int projectileCount = SpecialEffects != null
+            ? SpecialEffects.GetProjectileCount(retaliationCount)
+            : retaliationCount;
+        for (int i = 0; i < projectileCount; i++)
         {
-            float angle = i * Mathf.PI * 2f / retaliationCount;
+            float angle = i * Mathf.PI * 2f / projectileCount;
             Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             Vector3 position = transform.position + (Vector3)(direction * 0.5f);
             GameObject projectile = Instantiate(retaliationPrefab, position, Quaternion.identity);
+            projectile.GetComponent<PiercingBullet>().SetTalentOwner(this);
             projectile.GetComponent<PiercingBullet>().Init(direction, damage, ExtraPierce, BulletSpeedMultiplier);
         }
     }
@@ -752,6 +824,12 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void RefreshOrbitWeapons()
+    {
+        foreach (WeaponBase weapon in weapons)
+            if (weapon is OrbitWeapon orbit) orbit.Refresh(this);
+    }
+
     // ===== 天赋 =====
 
     public int GetColorCount(TalentColor color)
@@ -781,6 +859,7 @@ public class Player : MonoBehaviour
     {
         if (talent == null) return false;
         if (!CanAcquireColor(talent.color)) return false;
+        if (talent is SpecialTalent special && (SpecialEffects == null || !SpecialEffects.CanAcquire(special))) return false;
 
         var runtime = acquiredTalents.Find(t => t.data == talent);
         if (runtime == null)
@@ -837,6 +916,7 @@ public class Player : MonoBehaviour
         {
             if (talent == null) continue;
             if (!CanAcquireColor(talent.color)) continue;
+            if (talent is SpecialTalent special && (SpecialEffects == null || !SpecialEffects.CanAcquire(special))) continue;
 
             if (!HasPrerequisites(talent)) continue;
 
@@ -900,10 +980,13 @@ public class Player : MonoBehaviour
 
     public void ApplyStatTalent(StatType type, float value, int stack)
     {
+        float previousMaxHealth = UnlockedMaxHealth;
         statBonuses[type] = GetStatBonus(type) + value;
 
         if (type == StatType.SizeIncrease)
             ApplySize();
+        if (type == StatType.MaxHealth)
+            SpecialEffects?.OnMaxHealthIncreased(UnlockedMaxHealth - previousMaxHealth);
     }
     public void SetMoveSpeedToDamageRatio(float ratio)
     {

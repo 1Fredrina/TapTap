@@ -88,6 +88,21 @@ public class TalentJsonEntry
     public float lastStandInvincibility = 2f;
 
     public StatModifierJsonEntry[] statModifiers;
+
+    // derived：复用 value / damage / range / cooldown / effectPrefab。
+    public string derivedEffect;
+    public float effectThreshold;
+    public float effectDuration;
+
+    // advanced：基础事件天赋与终端组合天赋。
+    public string advancedEffect;
+    public bool terminal;
+    public float threshold;
+    public float effectWindow;
+    public float healingThreshold;
+
+    // special：不可升级的特殊天赋。
+    public string specialEffect;
 }
 
 [Serializable]

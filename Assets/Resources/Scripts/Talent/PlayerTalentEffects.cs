@@ -107,11 +107,17 @@ public sealed class PlayerTalentEffects
         if (aim.sqrMagnitude < 0.001f) aim = Vector2.right;
         float baseAngle = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
         float damage = travelDamage * owner.DamageMultiplier;
-        for (int i = 0; i < travelProjectileCount; i++)
+        int baseProjectileCount = travelProjectileCount;
+        int projectileCount = owner.SpecialEffects != null
+            ? owner.SpecialEffects.GetProjectileCount(baseProjectileCount)
+            : baseProjectileCount;
+        for (int i = 0; i < projectileCount; i++)
         {
-            float angle = (baseAngle + (i - (travelProjectileCount - 1) * 0.5f) * travelSpread) * Mathf.Deg2Rad;
+            int patternIndex = i % baseProjectileCount;
+            float angle = (baseAngle + (patternIndex - (baseProjectileCount - 1) * 0.5f) * travelSpread) * Mathf.Deg2Rad;
             Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             GameObject projectile = Spawn(travelProjectile, position + direction * 0.5f);
+            projectile.GetComponent<PiercingBullet>().SetTalentOwner(owner);
             projectile.GetComponent<PiercingBullet>().Init(direction, damage, owner.ExtraPierce, owner.BulletSpeedMultiplier);
         }
     }
@@ -166,7 +172,7 @@ public sealed class PlayerTalentEffects
             if (!owner.CanTargetEnemy(enemy)) continue;
             if (((Vector2)enemy.transform.position - origin).sqrMagnitude > radius * radius) continue;
             enemy.Stun(stun);
-            enemy.TakeDamage(damage);
+            enemy.TakeDamageFrom(damage, owner.transform.position);
         }
         ShowPulse(origin, radius, effect, color);
     }

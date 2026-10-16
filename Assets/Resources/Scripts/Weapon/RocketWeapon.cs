@@ -30,11 +30,12 @@ public class RocketWeapon : WeaponBase
             direction = Vector2.right;
 
         Vector3 spawnPos = player.transform.position + (Vector3)(direction * 0.5f);
-        GameObject rocket = Object.Instantiate(rocketPrefab, spawnPos, Quaternion.identity);
-
-        if (rocket.TryGetComponent<RocketProjectile>(out var rp))
+        int rocketCount = player.SpecialEffects != null ? player.SpecialEffects.ProjectileCountMultiplier : 1;
+        for (int i = 0; i < rocketCount; i++)
         {
-            rp.Init(player, direction, damage * player.DamageMultiplier, explosionRadius, rocketSpeed, explosionEffectPrefab);
+            GameObject rocket = Object.Instantiate(rocketPrefab, spawnPos, Quaternion.identity);
+            if (rocket.TryGetComponent<RocketProjectile>(out var rp))
+                rp.Init(player, direction, damage * player.DamageMultiplier, explosionRadius, rocketSpeed, explosionEffectPrefab);
         }
     }
 }

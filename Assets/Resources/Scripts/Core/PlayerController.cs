@@ -67,6 +67,11 @@ public class PlayerController : MonoBehaviour
         if (IsStunned)
         {
             stunTimer = Mathf.Max(0f, stunTimer - Time.fixedDeltaTime);
+            if (stunTimer <= 0f)
+            {
+                player?.DerivedEffects?.OnStunRecovered();
+                player?.AdvancedEffects?.OnStunRecovered();
+            }
             body.linearVelocity = Vector2.MoveTowards(body.linearVelocity, Vector2.zero, 20f * Time.fixedDeltaTime);
             UpdateAnimationParams();
             return;
@@ -90,7 +95,7 @@ public class PlayerController : MonoBehaviour
         if (dashRequested && dashTime <= 0f && dashCooldownTimer <= 0f)
         {
             dashDirection = lastMoveDirection;
-            dashTime = Mathf.Max(dashDuration, Time.fixedDeltaTime);
+            dashTime = Mathf.Max(dashDuration * (player != null ? player.DashDistanceMultiplier : 1f), Time.fixedDeltaTime);
 
             float cooldownMult = player != null ? player.DashCooldownMultiplier : 1f;
             dashCooldownTimer = playerData.DashCooldown * cooldownMult;
@@ -117,6 +122,8 @@ public class PlayerController : MonoBehaviour
     /// <summary>外部施加眩晕（比如敌人控制技能）。</summary>
     public void ApplyStun(float duration)
     {
+        duration *= player != null ? player.StunDurationMultiplier : 1f;
+        if (duration <= 0f) return;
         stunTimer = Mathf.Max(stunTimer, duration);
         dashTime = 0f;
         dashRequested = false;

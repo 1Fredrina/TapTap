@@ -25,7 +25,9 @@ public class UIManager
         RemoveDestroyedPanel(panelName);
         if (panelDic.ContainsKey(panelName))
         {
-            return panelDic[panelName] as T;
+            T existingPanel = panelDic[panelName] as T;
+            existingPanel?.ShowMe();
+            return existingPanel;
         }
         GameObject panelObj = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/UI/" + panelName));
         panelObj.transform.SetParent(canvasTrans, false);

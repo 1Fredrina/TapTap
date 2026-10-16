@@ -34,5 +34,15 @@ public enum StatType
     SizeIncrease,
     KillStackDamage,
     BulletSpeed,
-    StationaryAttackSpeed
+    StationaryAttackSpeed,
+    HealthRegeneration,
+    HealingReceived,
+    DodgeChance,
+    StunResistance,
+    DashDistance,
+    ProjectileCriticalChance,
+    ProjectileLifetime,
+    ProjectileSize,
+    ProjectileHoming,
+    ProjectileRicochet
 }

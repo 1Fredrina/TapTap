@@ -25,12 +25,16 @@ public class PiercingWeapon : WeaponBase
         direction = Vector2.right;
 
     Vector3 spawnPos = player.transform.position + (Vector3)(direction * 0.5f);
-    GameObject bullet = Object.Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
-
-    if (bullet.TryGetComponent<PiercingBullet>(out var pb))
+    int bulletCount = player.SpecialEffects != null ? player.SpecialEffects.ProjectileCountMultiplier : 1;
+    for (int i = 0; i < bulletCount; i++)
     {
-        int pierce = basePierce + extraPierce;
-        pb.Init(direction, damage * player.DamageMultiplier, pierce, player.BulletSpeedMultiplier);
+        GameObject bullet = Object.Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
+        if (bullet.TryGetComponent<PiercingBullet>(out var pb))
+        {
+            pb.SetTalentOwner(player);
+            int pierce = basePierce + extraPierce;
+            pb.Init(direction, damage * player.DamageMultiplier, pierce, player.BulletSpeedMultiplier);
+        }
     }
 }
 }

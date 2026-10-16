@@ -120,9 +120,15 @@ public class CharacterPanel : BasePanel
         btnSelect.onClick.AddListener(() =>
         {
             GameDataMgr.Instance.selectedCharacterId = selectedId;
-
+            UIManager.Instance.GetPanel<PreparePanel>()?.RefreshCharacterPortrait();
         });
 
-        btnC1.onClick.Invoke();
+        switch (GameDataMgr.Instance != null ? GameDataMgr.Instance.selectedCharacterId : 1)
+        {
+            case 2: btnC2.onClick.Invoke(); break;
+            case 3: btnC3.onClick.Invoke(); break;
+            case 4: btnC4.onClick.Invoke(); break;
+            default: btnC1.onClick.Invoke(); break;
+        }
     }
 }

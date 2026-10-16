@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class FirePit : MonoBehaviour
 {
+    private Player owner;
     public float damage;
     public float radius;
     public float lifetime = 3f;
@@ -10,8 +11,9 @@ public class FirePit : MonoBehaviour
     private float lifeTimer;
     private float damageTimer;
 
-    public void Init(float damage, float radius, float lifetime, float damageInterval)
+    public void Init(Player owner, float damage, float radius, float lifetime, float damageInterval)
     {
+        this.owner = owner;
         this.damage = damage;
         this.radius = radius;
         this.lifetime = lifetime;
@@ -53,7 +55,8 @@ public class FirePit : MonoBehaviour
             if (enemy == null || enemy.IsDead || !enemy.isActiveAndEnabled) continue;
             if (((Vector2)enemy.transform.position - origin).sqrMagnitude > rangeSqr) continue;
 
-            enemy.TakeDamage(dmg);
+            Vector2 source = owner != null ? (Vector2)owner.transform.position : origin;
+            enemy.TakeDamageFrom(dmg, source);
         }
     }
 }

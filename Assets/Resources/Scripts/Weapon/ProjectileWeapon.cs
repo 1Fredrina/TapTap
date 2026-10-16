@@ -24,16 +24,20 @@ public class ProjectileWeapon : WeaponBase
     if (baseDirection.sqrMagnitude < 0.001f)
         baseDirection = Vector2.right;
 
-    int perShot = Mathf.Max(1, projectileCount);
+    int baseShotCount = Mathf.Max(1, projectileCount);
+    int perShot = player.SpecialEffects != null
+        ? player.SpecialEffects.GetProjectileCount(baseShotCount)
+        : baseShotCount;
     int totalPierce = extraPierce + player.ExtraPierce;
     int dmg = Mathf.RoundToInt(damage * player.DamageMultiplier);
     float speedMult = player.BulletSpeedMultiplier;
 
     for (int i = 0; i < perShot; i++)
     {
-        float angle = perShot == 1
+        int patternIndex = i % baseShotCount;
+        float angle = baseShotCount == 1
             ? 0f
-            : (i - (perShot - 1) / 2f) * projectileSpread;
+            : (patternIndex - (baseShotCount - 1) / 2f) * projectileSpread;
 
         Vector2 direction = Quaternion.Euler(0f, 0f, angle) * baseDirection;
         Vector3 spawnPos = player.transform.position + (Vector3)(direction.normalized * 0.5f);
@@ -41,6 +45,7 @@ public class ProjectileWeapon : WeaponBase
         GameObject projectile = Object.Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
         if (projectile.TryGetComponent<Bullet>(out var bullet))
         {
+            bullet.SetTalentOwner(player);
             bullet.Init(direction, dmg, totalPierce, speedMult);
         }
     }

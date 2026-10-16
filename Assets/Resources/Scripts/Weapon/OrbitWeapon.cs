@@ -28,6 +28,8 @@ public class OrbitWeapon : WeaponBase
         }
 
         int count = Mathf.Max(1, orbitCount) + extraShots;
+        if (player.SpecialEffects != null)
+            count = player.SpecialEffects.GetProjectileCount(count);
 
         for (int i = 0; i < count; i++)
         {

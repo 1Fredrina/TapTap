@@ -18,7 +18,7 @@
     "skillCooldown": 25,
     "DashCooldown": 1,
     "ShieldDecayRate": 10,
-    "MaxLevel": 30,
+    "MaxLevel": 50,
     "startingWeaponId": "weapon_piercing"
   },
   {
@@ -40,7 +40,7 @@
     "skillCooldown": 30,
     "DashCooldown": 1,
     "ShieldDecayRate": 10,
-    "MaxLevel": 30,
+    "MaxLevel": 50,
     "startingWeaponId": "weapon_firebomb"
   },
   {
@@ -62,7 +62,7 @@
     "skillCooldown": 35,
     "DashCooldown": 1,
     "ShieldDecayRate": 10,
-    "MaxLevel": 30,
+    "MaxLevel": 50,
     "startingWeaponId": "weapon_orbit"
   },
   {
@@ -84,7 +84,7 @@
     "skillCooldown": 25,
     "DashCooldown": 1,
     "ShieldDecayRate": 10,
-    "MaxLevel": 30,
+    "MaxLevel": 50,
     "startingWeaponId": "weapon_rocket"
   }
 ]

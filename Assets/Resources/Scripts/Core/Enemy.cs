@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour
 
     private Rigidbody2D body;
     private float talentHealthMultiplier = 1f;
+    private bool suppressExperienceReward;
 
     public float MaxHealth => (data != null ? Mathf.Max(1f, data.MaxHealth) : 1f) * healthMultiplier * talentHealthMultiplier;
     public float MoveSpeedMultiplier => GameManager.Instance?.EnemyTalents.MoveSpeedMultiplier ?? 1f;
@@ -100,13 +101,28 @@ public class Enemy : MonoBehaviour
 
     public virtual void TakeDamage(int damage = 1)
     {
+        ApplyDamage(damage, null);
+    }
+
+    public void TakeDamageFrom(int damage, Vector2 sourcePosition)
+    {
+        ApplyDamage(damage, sourcePosition);
+    }
+
+    private void ApplyDamage(int damage, Vector2? sourcePosition)
+    {
         if (IsDead || damage <= 0) return;
 
         float damageTaken = GameManager.Instance?.EnemyTalents.DamageTakenMultiplier ?? 1f;
-        currentHealth = Mathf.Max(0f, currentHealth - damage * damageTaken);
+        float remainingDamage = AbsorbDamage(damage * damageTaken, sourcePosition);
+        if (remainingDamage <= 0f) return;
+
+        currentHealth = Mathf.Max(0f, currentHealth - remainingDamage);
         if (currentHealth <= 0f)
             Die();
     }
+
+    protected virtual float AbsorbDamage(float damage, Vector2? sourcePosition) => damage;
 
     public void Stun(float duration)
     {
@@ -166,6 +182,7 @@ public class Enemy : MonoBehaviour
         playerInRangeTimer = 0f;
         canFire = false;
         contactDamageTimer = 0f;
+        suppressExperienceReward = false;
         IsDead = false;
     }
 
@@ -177,7 +194,14 @@ public class Enemy : MonoBehaviour
         if (body != null)
             body.linearVelocity = Vector2.zero;
 
-        Player.NotifyEnemyDefeated(data != null ? data.ExperienceReward : 100, this);
+        Player.NotifyEnemyDefeated(suppressExperienceReward ? 0 : (data != null ? data.ExperienceReward : 100), this);
         Destroy(gameObject);
+    }
+
+    public void EliminateWithoutExperience()
+    {
+        if (IsDead) return;
+        suppressExperienceReward = true;
+        Die();
     }
 }

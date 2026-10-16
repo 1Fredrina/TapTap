@@ -43,7 +43,7 @@ public class AuraWeapon : WeaponBase
 
             if (((Vector2)enemy.transform.position - origin).sqrMagnitude > rangeSqr) continue;
 
-            enemy.TakeDamage(Mathf.RoundToInt(dmg));
+            enemy.TakeDamageFrom(Mathf.RoundToInt(dmg), origin);
         }
     }
 }

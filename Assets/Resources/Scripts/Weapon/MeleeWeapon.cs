@@ -40,7 +40,7 @@ public class MeleeWeapon : WeaponBase
             if (toEnemy.sqrMagnitude > rangeSqr) continue;
             if (Vector2.Angle(forward, toEnemy) > halfArc) continue;
 
-            enemy.TakeDamage(Mathf.RoundToInt(dmg));
+            enemy.TakeDamageFrom(Mathf.RoundToInt(dmg), origin);
         }
 
         EnemyBullet[] bullets = Object.FindObjectsByType<EnemyBullet>(FindObjectsSortMode.None);

@@ -55,7 +55,7 @@ public class FireBombProjectile : MonoBehaviour
             GameObject pit = Instantiate(firePitPrefab, transform.position, Quaternion.identity);
             if (pit.TryGetComponent<FirePit>(out var fp))
             {
-                fp.Init(damage, firePitRadius, firePitLifetime, firePitDamageInterval);
+                fp.Init(owner, damage, firePitRadius, firePitLifetime, firePitDamageInterval);
             }
         }
 

@@ -13,6 +13,7 @@ public class Attack : MonoBehaviour
         Enemy enemy = other.GetComponentInParent<Enemy>();
         if (enemy == null) return;
 
-        enemy.TakeDamage(currentDamage);
+        Vector2 source = Player.ActivePlayer != null ? (Vector2)Player.ActivePlayer.transform.position : transform.position;
+        enemy.TakeDamageFrom(currentDamage, source);
     }
 }

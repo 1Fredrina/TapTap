@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-public class ReactiveTalentTests
+public partial class ReactiveTalentTests
 {
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     private Scene scene, previousScene, otherScene;
@@ -117,6 +117,188 @@ public class ReactiveTalentTests
     }
 
     private object Effects => Value(player, "TalentEffects");
+
+    [TestCase("cell_repair", "HealthRegeneration", 1f)]
+    [TestCase("healing_affinity", "HealingReceived", 0.2f)]
+    [TestCase("membrane_dodge", "DodgeChance", 0.08f)]
+    [TestCase("neural_resilience", "StunResistance", 0.2f)]
+    [TestCase("dash_extension", "DashDistance", 0.25f)]
+    [TestCase("antibody_critical", "ProjectileCriticalChance", 0.1f)]
+    [TestCase("antibody_persistence", "ProjectileLifetime", 0.25f)]
+    [TestCase("antibody_size", "ProjectileSize", 0.2f)]
+    [TestCase("antibody_homing", "ProjectileHoming", 60f)]
+    [TestCase("antibody_ricochet", "ProjectileRicochet", 1f)]
+    public void FoundationTalentsStackUnlockPrerequisitesAndReset(string id, string stat, float amount)
+    {
+        object derived = Activator.CreateInstance(GameType("StatTalent"));
+        Set(derived, "prerequisiteIds", new[] { id });
+        Assert.That(Call(player, "HasPrerequisites", derived), Is.False);
+        Assert.That(Call(player, "HasPrerequisites", talents[id]), Is.True);
+        Acquire(id, 3);
+        object statType = Enum.Parse(GameType("StatType"), stat);
+        Assert.That((float)Call(player, "GetStatBonus", statType), Is.EqualTo(amount * 3).Within(0.001f));
+        Assert.That(Call(player, "HasPrerequisites", derived), Is.True);
+        Assert.That(Call(player, "TryAddTalent", talents[id]), Is.False);
+        Call(player, "Initialize", data);
+        Assert.That((float)Call(player, "GetStatBonus", statType), Is.Zero);
+        Assert.That(Call(player, "HasPrerequisites", derived), Is.False);
+    }
+
+    private void Regen(float seconds) => player.GetType().GetMethod("TickHealthRegeneration", Private)
+        .Invoke(player, new object[] { seconds });
+
+    [Test]
+    public void RegenerationAndHealingBonusRespectPauseDeathOverflowAndReset()
+    {
+        Acquire("cell_repair", 2);
+        Acquire("healing_affinity");
+        Call(player, "TakeDamage", 50);
+        Regen(0f);
+        Assert.That(Number("CurrentHealth"), Is.EqualTo(50f));
+        Regen(5f);
+        Assert.That(Number("CurrentHealth"), Is.EqualTo(62f).Within(0.001f));
+        Call(player, "Heal", 10f);
+        Assert.That(Number("CurrentHealth"), Is.EqualTo(74f).Within(0.001f));
+        Call(player, "AddShield", 10f);
+        Assert.That(Number("CurrentShield"), Is.EqualTo(10f));
+        Acquire("overheal_barrier");
+        Call(player, "Heal", 30f); // 36 治疗中溢出 10，转化 5 护盾。
+        Assert.That(Number("CurrentHealth"), Is.EqualTo(100f));
+        Assert.That(Number("CurrentShield"), Is.EqualTo(15f).Within(0.001f));
+        player.gameObject.SetActive(false);
+        Regen(10f);
+        Assert.That(Number("CurrentShield"), Is.EqualTo(15f).Within(0.001f));
+        player.gameObject.SetActive(true);
+        EndInvincibility();
+        Call(player, "TakeDamage", 1000);
+        Regen(10f);
+        Assert.That(Number("CurrentHealth"), Is.Zero);
+        Call(player, "Initialize", data);
+        EndInvincibility();
+        Call(player, "TakeDamage", 20);
+        Regen(10f);
+        Assert.That(Number("CurrentHealth"), Is.EqualTo(80f));
+    }
+
+    [Test]
+    public void DodgePreservesShieldAndDoesNotTriggerRetaliation()
+    {
+        Acquire("retaliation_burst");
+        Call(player, "ApplyStatTalent", Enum.Parse(GameType("StatType"), "DodgeChance"), 1f, 1);
+        Call(player, "AddShield", 10f);
+        Call(player, "TakeDamage", 1000);
+        Assert.That(Number("CurrentHealth"), Is.EqualTo(100f));
+        Assert.That(Number("CurrentShield"), Is.EqualTo(10f));
+        Assert.That(Value(player, "IsInvincible"), Is.True);
+        Assert.That(Bullets(), Is.Empty);
+        Call(player, "Initialize", data);
+        EndInvincibility();
+        Call(player, "TakeDamage", 10);
+        Assert.That(Number("CurrentHealth"), Is.EqualTo(90f));
+    }
+
+    [Test]
+    public void DashExtensionAndStunResistanceReachTheController()
+    {
+        Component controller = player.gameObject.AddComponent(GameType("PlayerController"));
+        Call(player, "Initialize", data);
+        Acquire("neural_resilience", 3);
+        Acquire("dash_extension", 2);
+        Call(controller, "ApplyStun", 2f);
+        Assert.That((float)controller.GetType().GetField("stunTimer", Private).GetValue(controller), Is.EqualTo(0.8f).Within(0.001f));
+        controller.GetType().GetField("stunTimer", Private).SetValue(controller, 0f);
+        controller.GetType().GetField("dashRequested", Private).SetValue(controller, true);
+        controller.GetType().GetMethod("FixedUpdate", Private).Invoke(controller, null);
+        Assert.That((float)controller.GetType().GetField("dashTime", Private).GetValue(controller),
+            Is.EqualTo(0.15f * 1.5f - Time.fixedDeltaTime).Within(0.001f));
+        Assert.That((float)controller.GetType().GetField("dashCooldownTimer", Private).GetValue(controller), Is.EqualTo(1f));
+    }
+
+    private Component FoundationBullet(string type, int pierce = 0)
+    {
+        Component bullet = new GameObject("Foundation Bullet").AddComponent(GameType(type));
+        Call(bullet, "SetTalentOwner", player);
+        if (type == "Bullet")
+        {
+            bullet.GetType().GetField("hitLayers", Private).SetValue(bullet, (LayerMask)(~0));
+            bullet.GetType().GetMethod("Init", new[] { typeof(Vector2), typeof(int), typeof(int), typeof(float) })
+                .Invoke(bullet, new object[] { Vector2.right, 10, pierce, 1f });
+        }
+        else Call(bullet, "Init", Vector2.right, 10f, pierce, 1f);
+        return bullet;
+    }
+
+    private void Hit(Component bullet, Component enemy)
+    {
+        Collider2D collider = enemy.GetComponent<Collider2D>();
+        if (collider == null) collider = enemy.gameObject.AddComponent<CircleCollider2D>();
+        bullet.GetType().GetMethod("OnTriggerEnter2D", Private).Invoke(bullet, new object[] { collider });
+    }
+
+    [TestCase("Bullet")]
+    [TestCase("PiercingBullet")]
+    public void ProjectileStatsSnapshotOwnerAndHomingTurnsWithoutHittingOtherScenes(string type)
+    {
+        Acquire("antibody_persistence", 2);
+        Acquire("antibody_size");
+        Acquire("antibody_homing");
+        Component bullet = FoundationBullet(type);
+        Assert.That(bullet.transform.localScale.x, Is.EqualTo(1.2f).Within(0.001f));
+        Assert.That((float)bullet.GetType().GetField("lifeTimer", Private).GetValue(bullet), Is.EqualTo(4.5f).Within(0.001f));
+        Component target = EnemyAt(new Vector2(0f, 3f));
+        Component ignored = EnemyAt(new Vector2(0f, -1f));
+        otherScene = SceneManager.CreateScene("Foundation Other " + Guid.NewGuid());
+        SceneManager.MoveGameObjectToScene(ignored.gameObject, otherScene);
+        object effects = bullet.GetType().GetField("talentEffects", Private).GetValue(bullet);
+        Vector2 paused = (Vector2)Call(effects, "Steer", Vector2.zero, Vector2.right, 0f);
+        Assert.That(paused, Is.EqualTo(Vector2.right));
+        Vector2 steered = (Vector2)Call(effects, "Steer", Vector2.zero, Vector2.right, 0.5f);
+        Assert.That(Vector2.Angle(Vector2.right, steered), Is.EqualTo(30f).Within(0.001f));
+        Assert.That(steered.y, Is.GreaterThan(0f));
+        Hit(bullet, ignored);
+        Assert.That(Value(ignored, "CurrentHealth"), Is.EqualTo(100f));
+        Call(player, "Initialize", data);
+        Component fresh = FoundationBullet(type);
+        Assert.That(fresh.transform.localScale.x, Is.EqualTo(1f));
+        Assert.That((float)fresh.GetType().GetField("lifeTimer", Private).GetValue(fresh), Is.EqualTo(3f));
+        Assert.That((float)Value(effects, "LifetimeMultiplier"), Is.EqualTo(1.5f));
+    }
+
+    [TestCase("Bullet")]
+    [TestCase("PiercingBullet")]
+    public void RicochetFollowsPierceAndNeverHitsTheSameEnemyTwice(string type)
+    {
+        Acquire("antibody_ricochet");
+        Call(player, "ApplyStatTalent", Enum.Parse(GameType("StatType"), "ProjectileCriticalChance"), 1f, 1);
+        Component bullet = FoundationBullet(type, 1);
+        Component first = EnemyAt(new Vector2(1f, 0f));
+        Component second = EnemyAt(new Vector2(0f, 2f));
+        Component third = EnemyAt(new Vector2(0f, 3f));
+        Hit(bullet, first);
+        Hit(bullet, first);
+        Assert.That(Value(first, "CurrentHealth"), Is.EqualTo(80f));
+        Assert.That((Vector2)bullet.GetType().GetField("direction", Private).GetValue(bullet), Is.EqualTo(Vector2.right));
+        Hit(bullet, second);
+        Vector2 direction = (Vector2)bullet.GetType().GetField("direction", Private).GetValue(bullet);
+        Assert.That(direction.y, Is.EqualTo(1f).Within(0.001f));
+        Assert.That((bool)bullet.GetType().GetField("spent", Private).GetValue(bullet), Is.False);
+        Hit(bullet, third);
+        Assert.That((bool)bullet.GetType().GetField("spent", Private).GetValue(bullet), Is.True);
+        Assert.That(Value(third, "CurrentHealth"), Is.EqualTo(80f));
+    }
+
+    [TestCase("Bullet")]
+    [TestCase("PiercingBullet")]
+    public void RicochetWithoutAnAvailableTargetStillExpires(string type)
+    {
+        Acquire("antibody_ricochet");
+        Component bullet = FoundationBullet(type);
+        Component onlyTarget = EnemyAt(Vector2.right);
+        EnemyAt(new Vector2(20f, 0f));
+        Hit(bullet, onlyTarget);
+        Assert.That((bool)bullet.GetType().GetField("spent", Private).GetValue(bullet), Is.True);
+        Assert.That(Value(onlyTarget, "CurrentHealth"), Is.EqualTo(90f));
+    }
 
     [Test]
     public void LevelDamageGrowthStacksWithTalentsAndUpdatesExistingOrbit()

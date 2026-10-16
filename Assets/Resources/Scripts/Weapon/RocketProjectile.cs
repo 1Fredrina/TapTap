@@ -55,7 +55,7 @@ public class RocketProjectile : MonoBehaviour
             if (enemy == null || enemy.IsDead || !enemy.isActiveAndEnabled) continue;
             if (((Vector2)enemy.transform.position - origin).sqrMagnitude > rangeSqr) continue;
 
-            enemy.TakeDamage(Mathf.RoundToInt(damage));
+            enemy.TakeDamageFrom(Mathf.RoundToInt(damage), owner != null ? (Vector2)owner.transform.position : origin);
         }
 
         if (explosionEffectPrefab != null)

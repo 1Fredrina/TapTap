@@ -271,6 +271,77 @@ public static class TalentConverter
                     invincibility = entry.lastStandInvincibility,
                     effectPrefabPath = entry.effectPrefab
                 };
+            case "derived":
+                if (!Enum.TryParse(entry.derivedEffect, true, out DerivedEffect derivedEffect) ||
+                    !Enum.IsDefined(typeof(DerivedEffect), derivedEffect))
+                {
+                    Debug.LogWarning($"未知衍生天赋效果: {entry.derivedEffect}");
+                    return null;
+                }
+                return new DerivedTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = 1,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    effect = derivedEffect,
+                    value = entry.value,
+                    threshold = entry.effectThreshold,
+                    duration = entry.effectDuration,
+                    damage = entry.damage,
+                    range = entry.range,
+                    cooldown = entry.cooldown,
+                    effectPrefabPath = entry.effectPrefab
+                };
+            case "advanced":
+                if (!Enum.TryParse(entry.advancedEffect, true, out AdvancedEffect advancedEffect) ||
+                    !Enum.IsDefined(typeof(AdvancedEffect), advancedEffect))
+                {
+                    Debug.LogWarning($"未知高级天赋效果: {entry.advancedEffect}");
+                    return null;
+                }
+                return new AdvancedTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = entry.terminal ? 1 : entry.maxStack,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    effect = advancedEffect,
+                    value = entry.value,
+                    threshold = entry.threshold,
+                    duration = entry.effectDuration,
+                    damage = entry.damage,
+                    range = entry.range,
+                    cooldown = entry.cooldown,
+                    window = entry.effectWindow,
+                    healingThreshold = entry.healingThreshold,
+                    terminal = entry.terminal,
+                    effectPrefabPath = entry.effectPrefab
+                };
+            case "special":
+                if (!Enum.TryParse(entry.specialEffect, true, out SpecialEffect specialEffect) ||
+                    !Enum.IsDefined(typeof(SpecialEffect), specialEffect))
+                {
+                    Debug.LogWarning($"未知特殊天赋效果: {entry.specialEffect}");
+                    return null;
+                }
+                return new SpecialTalent
+                {
+                    id = entry.id,
+                    displayName = entry.displayName,
+                    description = entry.description,
+                    color = color,
+                    maxStack = 1,
+                    weight = entry.weight,
+                    prerequisiteIds = entry.prerequisiteIds,
+                    effect = specialEffect
+                };
             case "compound":
                 return new CompoundTalent
                 {
