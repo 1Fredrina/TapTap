@@ -240,7 +240,10 @@ MonoBehaviour:
   spawnCountIncreasePerWave: 0.06
   spawnRadius: 0.5
   maxAlive: 50
-  healthGrowthPerWave: 0.2
+  maxHealthMultiplier: 6
+  growthCurveSteepness: 6
+  growthCurveMidPoint: 0.5
+  growthCurveScale: 30
 --- !u!212 &369189522
 SpriteRenderer:
   serializedVersion: 3
@@ -498,7 +501,10 @@ MonoBehaviour:
   enemyPrefabPaths:
   - Prefabs/Enemy/1
   - Prefabs/Enemy/2
+  - Prefabs/Enemy/3
+  - Prefabs/Enemy/4
   - Prefabs/Enemy/5
+  - Prefabs/Enemy/6
   baseSpawnInterval: 6
   minSpawnInterval: 1
   intervalDecreasePerWave: 0.08
@@ -507,7 +513,10 @@ MonoBehaviour:
   spawnCountIncreasePerWave: 0.06
   spawnRadius: 0.5
   maxAlive: 50
-  healthGrowthPerWave: 0.2
+  maxHealthMultiplier: 6
+  growthCurveSteepness: 6
+  growthCurveMidPoint: 0.5
+  growthCurveScale: 30
 --- !u!212 &877740673
 SpriteRenderer:
   serializedVersion: 3
@@ -625,7 +634,10 @@ MonoBehaviour:
   spawnCountIncreasePerWave: 0.06
   spawnRadius: 0.5
   maxAlive: 50
-  healthGrowthPerWave: 0.2
+  maxHealthMultiplier: 6
+  growthCurveSteepness: 6
+  growthCurveMidPoint: 0.5
+  growthCurveScale: 30
 --- !u!212 &1157169067
 SpriteRenderer:
   serializedVersion: 3
@@ -743,7 +755,10 @@ MonoBehaviour:
   spawnCountIncreasePerWave: 0.06
   spawnRadius: 0.5
   maxAlive: 50
-  healthGrowthPerWave: 0.2
+  maxHealthMultiplier: 6
+  growthCurveSteepness: 6
+  growthCurveMidPoint: 0.5
+  growthCurveScale: 30
 --- !u!212 &1352442389
 SpriteRenderer:
   serializedVersion: 3
