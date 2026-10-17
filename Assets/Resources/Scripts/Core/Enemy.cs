@@ -113,6 +113,8 @@ public class Enemy : MonoBehaviour
     {
         if (IsDead || damage <= 0) return;
 
+        AudioManager.Instance?.PlaySound(AudioManager.HitSoundPath);
+
         float damageTaken = GameManager.Instance?.EnemyTalents.DamageTakenMultiplier ?? 1f;
         float remainingDamage = AbsorbDamage(damage * damageTaken, sourcePosition);
         if (remainingDamage <= 0f) return;
@@ -188,7 +190,9 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Die()
     {
+        if (IsDead) return;
         IsDead = true;
+        AudioManager.Instance?.PlaySound(AudioManager.EnemyDeathSoundPath);
         stunTimer = 0f;
 
         if (body != null)

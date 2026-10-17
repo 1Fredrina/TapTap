@@ -382,6 +382,7 @@ public class Player : MonoBehaviour
 
             experience -= ExperienceToNextLevel;
             level++;
+            GameManager.Instance?.RecordAchievementLevel(this);
 
             SendMessage("OnLevelUp", level, SendMessageOptions.DontRequireReceiver);
             RollTalentChoices();
@@ -399,6 +400,7 @@ public class Player : MonoBehaviour
         if (activePlayer == null || activePlayer.IsDead) return;
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
 
+        GameManager.Instance?.RecordAchievementKill(activePlayer);
         activePlayer.AddExperience(reward);
         activePlayer.RegisterFrenzyKill();
 
@@ -883,7 +885,10 @@ public class Player : MonoBehaviour
 
         bool success = TryAddTalent(talent);
         if (success)
+        {
             pendingChoices.Clear();
+            GameManager.Instance?.RecordAchievementTalent(this);
+        }
 
         return success;
     }

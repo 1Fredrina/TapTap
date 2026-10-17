@@ -21,6 +21,28 @@ public class CharacterPanel : BasePanel
 
     private int selectedId = 1;
 
+    private void OnEnable()
+    {
+        AudioManager.EnsureInstance().BeginCharacterSelection(this);
+    }
+
+    public override void ShowMe()
+    {
+        base.ShowMe();
+        AudioManager.EnsureInstance().BeginCharacterSelection(this);
+    }
+
+    public override void HideMe(UnityEngine.Events.UnityAction callback)
+    {
+        AudioManager.Instance?.EndCharacterSelection(this);
+        base.HideMe(callback);
+    }
+
+    private void OnDisable()
+    {
+        AudioManager.Instance?.EndCharacterSelection(this);
+    }
+
     public override void Init()
     {
         btnExit.onClick.AddListener(() =>

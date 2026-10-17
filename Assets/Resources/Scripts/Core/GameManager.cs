@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     public EnemyTalentRuntime EnemyTalents { get; private set; } = new EnemyTalentRuntime();
 
     private float skillCooldownTimer;
+    private AchievementProgress achievementProgress;
+    private float achievementSaveTimer;
     private float teamDoubleActionTimer;
     private float teamMoveSpeedBonus;
     private float teamWeaponCooldownMultiplier = 1f;
@@ -73,6 +75,12 @@ public class GameManager : MonoBehaviour
         Player.Initialize(playerData);
 
     PlayerObject.name = playerData.name;
+    if (Player != null)
+    {
+        achievementProgress = AchievementProgress.Instance;
+        achievementProgress.BeginRun();
+        achievementProgress.RecordLevel(Player.Level);
+    }
     }
 
     private void Update()
@@ -103,6 +111,13 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameOver || Player == null || Player.IsDead || Time.timeScale <= 0f) return;
         EnemyTalents.Tick(deltaTime);
+        achievementProgress?.RecordSurvival(EnemyTalents.ElapsedTime);
+        achievementSaveTimer += deltaTime;
+        if (achievementSaveTimer >= 5f)
+        {
+            achievementProgress?.Save();
+            achievementSaveTimer = 0f;
+        }
         // 胜利优先于 20 分钟的敌人异变选择，共用有效游玩时间（不计暂停）。
         if (EnemyTalents.ElapsedTime >= VictoryTime)
         {
@@ -138,11 +153,37 @@ public class GameManager : MonoBehaviour
     private void OnDestroy()
     {
         if (instance != this) return;
+        achievementProgress?.Save();
         CloseEnemyTalentPanel();
         UIManager.Instance.HidePanel<OverPanel>(false);
         TalentPanelPause.Release(this);
         instance = null;
     }
+
+    public void RecordAchievementKill(Player source)
+    {
+        if (!IsGameOver && source != null && source == Player)
+            achievementProgress?.RecordKill();
+    }
+
+    public void RecordAchievementLevel(Player source)
+    {
+        if (!IsGameOver && source != null && source == Player)
+            achievementProgress?.RecordLevel(source.Level);
+    }
+
+    public void RecordAchievementTalent(Player source)
+    {
+        if (!IsGameOver && source != null && source == Player)
+            achievementProgress?.RecordTalentChoice();
+    }
+
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused) achievementProgress?.Save();
+    }
+
+    private void OnApplicationQuit() => achievementProgress?.Save();
 
     private void UpdateSkillCooldown()
     {
@@ -164,6 +205,8 @@ public class GameManager : MonoBehaviour
         if (IsGameOver) return;
         IsVictory = true;
         IsGameOver = true;
+        achievementProgress?.RecordVictory();
+        achievementProgress?.Save();
         TalentPanelPause.Acquire(this);
         CloseEnemyTalentPanel();
         if (Player != null && Player.Controller != null)
@@ -177,6 +220,7 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameOver) return;
         IsGameOver = true;
+        achievementProgress?.Save();
         TalentPanelPause.Acquire(this);
         CloseEnemyTalentPanel();
 

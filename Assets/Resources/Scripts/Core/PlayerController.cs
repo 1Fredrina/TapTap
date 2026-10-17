@@ -100,6 +100,8 @@ public class PlayerController : MonoBehaviour
             float cooldownMult = player != null ? player.DashCooldownMultiplier : 1f;
             dashCooldownTimer = playerData.DashCooldown * cooldownMult;
 
+            AudioManager.Instance?.PlaySound(AudioManager.DashSoundPath);
+
             if (animator != null)
                 animator.SetTrigger("IsDash");
 

@@ -14,12 +14,12 @@
     "type": "stat",
     "id": "atk_speed",
     "displayName": "克隆扩增",
-    "description": "攻击速度 +8%",
+    "description": "攻击速度 +20%",
     "color": "Red",
     "maxStack": 5,
     "weight": 10,
     "statType": "AttackSpeed",
-    "value": 0.08
+    "value": 0.2
   },
   {
     "type": "stat",
@@ -36,23 +36,23 @@
     "type": "stat",
     "id": "move_speed",
     "displayName": "淋巴回流",
-    "description": "移动速度 +10%",
+    "description": "移动速度 +20%",
     "color": "Blue",
     "maxStack": 5,
     "weight": 10,
     "statType": "MoveSpeed",
-    "value": 0.1
+    "value": 0.2
   },
   {
     "type": "stat",
     "id": "max_health",
     "displayName": "黏膜屏障",
-    "description": "最大生命 +15%",
+    "description": "最大生命 +25%",
     "color": "Blue",
     "maxStack": 5,
     "weight": 10,
     "statType": "MaxHealth",
-    "value": 0.15
+    "value": 0.25
   },
   {
     "type": "stat",
@@ -91,34 +91,34 @@
     "type": "stat",
     "id": "exp_gain",
     "displayName": "抗原呈递",
-    "description": "经验获取 +15%",
+    "description": "经验获取 +35%",
     "color": "Green",
     "maxStack": 5,
     "weight": 8,
     "statType": "ExperienceGain",
-    "value": 0.15
+    "value": 0.35
   },
   {
     "type": "stat",
     "id": "skill_cd",
     "displayName": "记忆巩固",
-    "description": "技能冷却 -10%",
+    "description": "技能冷却 -30%",
     "color": "Green",
     "maxStack": 3,
     "weight": 6,
     "statType": "SkillCooldown",
-    "value": -0.1
+    "value": -0.3
   },
   {
     "type": "stat",
     "id": "heal_on_kill",
     "displayName": "自噬",
-    "description": "击杀回复 3 点生命",
+    "description": "击杀回复 1 点生命",
     "color": "Green",
     "maxStack": 3,
     "weight": 6,
     "statType": "HealOnKill",
-    "value": 3
+    "value": 1
   },
   {
     "type": "stat",
@@ -129,7 +129,7 @@
     "maxStack": 3,
     "weight": 6,
     "statType": "ShieldOnKill",
-    "value": 10
+    "value": 3
   },
   {
     "type": "weapon",
@@ -270,7 +270,7 @@
   "weight": 10,
   "weaponType": "Orbit",
   "cooldown": 1.0,
-  "damage": 10,
+  "damage": 2,
   "range": 5.0,
   "orbitCount": 2,
   "orbitRadius": 4.0,
@@ -317,12 +317,12 @@
   "type": "stat",
   "id": "extra_pierce",
   "displayName": "穿孔能力",
-  "description": "所有子弹 +1 贯穿",
+  "description": "所有子弹 +2 贯穿",
   "color": "Red",
   "maxStack": 3,
   "weight": 8,
   "statType": "ExtraPierce",
-  "value": 1
+  "value": 2
 },
 {
   "type": "weapon",
@@ -345,36 +345,36 @@
   "type": "compound",
   "id": "double_edge_damage",
   "displayName": "过度激活",
-  "description": "伤害 +50%，但<color=#FF4444>体积 +15%</color>",
+  "description": "伤害 +50%，但<color=#FF4444>体积 +30%</color>",
   "color": "Red",
   "maxStack": 1,
   "weight": 10,
   "statModifiers": [
     { "statType": "AttackDamage", "value": 0.5 },
-    { "statType": "SizeIncrease", "value": 0.15 }
+    { "statType": "SizeIncrease", "value": 0.3 }
   ]
 },
 {
   "type": "killstack",
   "id": "kill_growth",
   "displayName": "杀意累积",
-  "description": "<color=#FF4444>攻击力立刻减半</color>，每击杀一个敌人伤害 +1%",
+  "description": "<color=#FF4444>攻击力立刻减半</color>，每击杀一个敌人伤害 +0.1%",
   "color": "Red",
   "maxStack": 1,
   "weight": 10,
   "initialDamageMultiplier": 0.5,
-  "damagePerKill": 0.01
+  "damagePerKill": 0.001
 },
 {
   "type": "stat",
   "id": "bullet_speed",
   "displayName": "快速投射",
-  "description": "子弹飞行速度 +15%",
+  "description": "子弹飞行速度 +25%",
   "color": "Red",
   "maxStack": 5,
   "weight": 10,
   "statType": "BulletSpeed",
-  "value": 0.15
+  "value": 0.25
 },
 {
   "type": "stationary",
@@ -434,7 +434,7 @@
   "color": "Red",
   "maxStack": 3,
   "weight": 8,
-  "moveSpeedToDamageRatio": 0.5
+  "moveSpeedToDamageRatio": 1
 },
 {
   "type": "dashpulse",
@@ -470,7 +470,7 @@
   "description": "溢出治疗的 50% 转为护盾，仅填充至最大生命的 30%；保留其他来源的更高护盾，仍会正常衰减。每次升级转化率 +50%，最多 3 级。前置：自噬。",
   "color": "Green",
   "maxStack": 3,
-  "weight": 8,
+  "weight": 0,
   "prerequisiteIds": ["heal_on_kill"],
   "overhealShieldRatio": 0.5,
   "overhealShieldCapPercent": 0.3

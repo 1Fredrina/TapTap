@@ -510,7 +510,8 @@ MonoBehaviour:
     name: 
     MaxHealth: 35
     MoveSpeed: 2
-    AttackDamage: 1
+    AttackDamage: 20
+    ExperienceReward: 1000
     AttackInterval: 1
   fireDelay: 0.2
   contactDamageCooldown: 1

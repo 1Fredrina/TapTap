@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3819644349214997198}
   - component: {fileID: 3595533592199046035}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u80BF\u7624\u5DE6\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5355813992262186787}
   - component: {fileID: 6691896676084910994}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u80BF\u7624\u4F53\u5185\u788E\u7247"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -197,7 +197,7 @@ GameObject:
   - component: {fileID: 7511425953102745826}
   - component: {fileID: 7857335823564068203}
   - component: {fileID: 3735266218762453901}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: 6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265,7 +265,7 @@ MonoBehaviour:
     MaxHealth: 40
     MoveSpeed: 1
     AttackDamage: 20
-    ExperienceReward: 100
+    ExperienceReward: 1000
     AttackInterval: 1
   fireDelay: 0.5
   contactDamageCooldown: 20
@@ -344,7 +344,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2356502965523663816}
   - component: {fileID: 2887453854123970630}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u80BF\u7624\u5DE6\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -436,7 +436,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8564452675038698190}
   - component: {fileID: 8056280774309989072}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u80BF\u7624\u53F3\u817F"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -528,7 +528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 465497082033023561}
   - component: {fileID: 7426025451923981903}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u80BF\u7624\u8EAB\u4F53"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -627,7 +627,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6021838846314234578}
   - component: {fileID: 3835161157965494584}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u80BF\u7624\u53F3\u81C2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -719,7 +719,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4233894409290328993}
   - component: {fileID: 3924036275735676340}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u80BF\u7624\u7EC6\u80DE\u6838"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -811,7 +811,7 @@ GameObject:
   m_Component:
   - component: {fileID: 738871330692095510}
   - component: {fileID: 3526071835550325553}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\u53D8\u80BF\u7624\u773C\u775B"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
