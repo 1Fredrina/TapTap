@@ -198,6 +198,12 @@ public class Enemy : MonoBehaviour
         if (body != null)
             body.linearVelocity = Vector2.zero;
 
+        //直接使用 int id，无需额外字段
+        if (data != null && data.id > 0)
+        {
+            CodexSaveManager.RecordKill(data.id);
+        }
+
         Player.NotifyEnemyDefeated(suppressExperienceReward ? 0 : (data != null ? data.ExperienceReward : 100), this);
         Destroy(gameObject);
     }

@@ -981,6 +981,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2550292866538085411}
   - component: {fileID: 3258712052093941683}
+  - component: {fileID: 5301859204086855090}
   m_Layer: 5
   m_Name: PreparePanel
   m_TagString: Untagged
@@ -1043,6 +1044,19 @@ MonoBehaviour:
   btnAchievement: {fileID: 3055062070311722294}
   btnCharacter: {fileID: 6732795876311639202}
   btnBook: {fileID: 1744073552938864726}
+--- !u!114 &5301859204086855090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6986263914415195865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d7b38309b711a9438b1b6063f6d42cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMenuUI
+  codexButton: {fileID: 1744073552938864726}
 --- !u!1 &7553918118513057738
 GameObject:
   m_ObjectHideFlags: 0
@@ -1596,4 +1610,16 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 685037156913007824}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9212911928261521090}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
