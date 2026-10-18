@@ -164,6 +164,20 @@ public class WeaponTalent : TalentBase
                     bulletSpeed = piercingBulletSpeed
                 };
 
+            case WeaponType.Shotgun:
+                return new ShotgunWeapon
+                {
+                    id = id,
+                    displayName = displayName,
+                    cooldown = cooldown,
+                    damage = damage,
+                    range = range,
+                    stackUpMode = stackUpMode,
+                    projectilePrefab = LoadPrefab(projectilePrefabPath),
+                    projectileCount = projectileCount,
+                    projectileSpread = projectileSpread
+                };
+
             default:
                 return null;
         }
@@ -185,5 +199,6 @@ public enum WeaponType
     Rocket,
     FireBomb,
     Piercing,
+    Shotgun,
 
 }

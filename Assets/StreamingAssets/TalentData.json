@@ -232,6 +232,22 @@
 },
 {
   "type": "weapon",
+  "id": "weapon_shotgun",
+  "displayName": "抗原散弹枪",
+  "description": "一次向扇形区域喷射 6 枚抗原弹丸。每次升级增加一次散射齐射。",
+  "color": "Red",
+  "maxStack": 3,
+  "weight": 8,
+  "weaponType": "Shotgun",
+  "cooldown": 1.8,
+  "damage": 8,
+  "range": 10,
+  "projectileCount": 6,
+  "projectileSpread": 8.4,
+  "projectilePrefab": "Prefabs/Eff/1"
+},
+{
+  "type": "weapon",
   "id": "weapon_melee",
   "displayName": "补体冲击",
   "description": "获得近战挥砍武器",
@@ -1080,5 +1096,20 @@
   "maxStack": 1,
   "weight": 2,
   "specialEffect": "ShieldPower"
+},
+{
+  "type": "special",
+  "id": "special_brimstone",
+  "displayName": "硫磺火",
+  "description": "基础间隔 4 秒，自动瞄准附近敌人释放贯穿长直激光，无目标时朝角色面向释放，无需蓄力。受攻击力、攻速和范围加成影响。特殊天赋，只能获得一次。",
+  "color": "Red",
+  "maxStack": 1,
+  "weight": 2,
+  "specialEffect": "Brimstone",
+  "brimstoneCooldown": 4.0,
+  "brimstoneDamage": 30,
+  "brimstoneRange": 18.0,
+  "brimstoneWidth": 0.75,
+  "brimstoneDuration": 0.16
 }
 ]

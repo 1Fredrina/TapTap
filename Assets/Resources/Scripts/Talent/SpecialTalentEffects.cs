@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public sealed class SpecialTalentEffects
 {
     private readonly Player owner;
-    private readonly bool[] acquired = new bool[7];
+    private readonly bool[] acquired = new bool[System.Enum.GetValues(typeof(SpecialEffect)).Length];
     private float convertedMaxHealth;
     private float pentagramCooldown;
     private float pentagramVisibleTime;
@@ -52,6 +52,20 @@ public sealed class SpecialTalentEffects
         else if (talent.effect == SpecialEffect.EchoForm)
         {
             owner.RefreshOrbitWeapons();
+        }
+        else if (talent.effect == SpecialEffect.Brimstone)
+        {
+            owner.AddOrUpgradeWeapon(new BrimstoneWeapon
+            {
+                id = talent.id,
+                displayName = talent.displayName,
+                cooldown = Mathf.Max(0.05f, talent.brimstoneCooldown),
+                damage = Mathf.Max(0, talent.brimstoneDamage),
+                range = Mathf.Max(0.1f, talent.brimstoneRange),
+                beamWidth = Mathf.Max(0.05f, talent.brimstoneWidth),
+                beamDuration = Mathf.Max(0.01f, talent.brimstoneDuration),
+                stackUpMode = StackUpMode.ExtraShot
+            }, 1);
         }
     }
 

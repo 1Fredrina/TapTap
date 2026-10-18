@@ -340,7 +340,12 @@ public static class TalentConverter
                     maxStack = 1,
                     weight = entry.weight,
                     prerequisiteIds = entry.prerequisiteIds,
-                    effect = specialEffect
+                    effect = specialEffect,
+                    brimstoneCooldown = entry.brimstoneCooldown,
+                    brimstoneDamage = entry.brimstoneDamage,
+                    brimstoneRange = entry.brimstoneRange,
+                    brimstoneWidth = entry.brimstoneWidth,
+                    brimstoneDuration = entry.brimstoneDuration
                 };
             case "compound":
                 return new CompoundTalent
