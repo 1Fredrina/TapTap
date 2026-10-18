@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79c7201adbd4393448fe4f54169ae84b, type: 3}
   m_Name: 1
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCodexData
-  enemyID: 1
+  id: 1
   displayName: "\u666E\u901A\u611F\u67D3\u7EC6\u80DE"
   icon: {fileID: -28053233028341834, guid: b09833d306ea58b4ca741d45879e33de, type: 3}
-  desc: 
+  desc: "\u88AB\u611F\u67D3\u7684\u6B63\u5E38\u8EAB\u4F53\u7EC6\u80DE"
