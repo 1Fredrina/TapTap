@@ -103,6 +103,11 @@ public class TalentJsonEntry
 
     // special：不可升级的特殊天赋。
     public string specialEffect;
+    public float brimstoneCooldown = 4f;
+    public int brimstoneDamage = 30;
+    public float brimstoneRange = 18f;
+    public float brimstoneWidth = 0.75f;
+    public float brimstoneDuration = 0.16f;
 }
 
 [Serializable]
