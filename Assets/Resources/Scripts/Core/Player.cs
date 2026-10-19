@@ -214,6 +214,7 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
+        SpecialEffects?.CancelPendingShots();
         SpecialEffects?.ClearVisual();
         if (activePlayer == this)
             activePlayer = null;
@@ -221,6 +222,8 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        // 先处理上一帧待发射的回响，再允许本帧的新攻击排队。
+        SpecialEffects?.Tick(Time.deltaTime);
         UpdateInvincible();
         UpdateShield();
         UpdateStationary();
@@ -228,7 +231,6 @@ public class Player : MonoBehaviour
         TalentEffects?.Tick(Time.deltaTime);
         DerivedEffects?.Tick(Time.deltaTime);
         AdvancedEffects?.Tick(Time.deltaTime);
-        SpecialEffects?.Tick(Time.deltaTime);
         TickHealthRegeneration(Time.deltaTime);
 
         if (dashBuffTimer > 0f)
@@ -527,7 +529,6 @@ public class Player : MonoBehaviour
     }
 
     public float DashDistanceMultiplier => Mathf.Max(0.1f, 1f + GetStatBonus(StatType.DashDistance));
-    public float StunDurationMultiplier => 1f - Mathf.Clamp01(GetStatBonus(StatType.StunResistance));
 
     private void StartInvincible()
     {
@@ -775,18 +776,19 @@ public class Player : MonoBehaviour
         if (retaliationPrefab == null || retaliationTimer > 0f) return;
         retaliationTimer = retaliationCooldown;
         float damage = retaliationDamage * DamageMultiplier;
-        int projectileCount = SpecialEffects != null
-            ? SpecialEffects.GetProjectileCount(retaliationCount)
-            : retaliationCount;
-        for (int i = 0; i < projectileCount; i++)
+        int projectileCount = retaliationCount;
+        SpecialEffects.FireProjectileVolley(() =>
         {
-            float angle = i * Mathf.PI * 2f / projectileCount;
-            Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-            Vector3 position = transform.position + (Vector3)(direction * 0.5f);
-            GameObject projectile = Instantiate(retaliationPrefab, position, Quaternion.identity);
-            projectile.GetComponent<PiercingBullet>().SetTalentOwner(this);
-            projectile.GetComponent<PiercingBullet>().Init(direction, damage, ExtraPierce, BulletSpeedMultiplier);
-        }
+            for (int i = 0; i < projectileCount; i++)
+            {
+                float angle = i * Mathf.PI * 2f / projectileCount;
+                Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                Vector3 position = transform.position + (Vector3)(direction * 0.5f);
+                GameObject projectile = Instantiate(retaliationPrefab, position, Quaternion.identity);
+                projectile.GetComponent<PiercingBullet>().SetTalentOwner(this);
+                projectile.GetComponent<PiercingBullet>().Init(direction, damage, ExtraPierce, BulletSpeedMultiplier);
+            }
+        });
     }
 
     private void ApplySize()

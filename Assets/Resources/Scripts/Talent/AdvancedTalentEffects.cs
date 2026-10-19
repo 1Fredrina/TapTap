@@ -12,7 +12,7 @@ public sealed class AdvancedTalentEffects
     private float dashPulseTimer, thornsTimer, apexCooldown, singularityCooldown, deathTimer, overdriveTimer, overdriveCooldown;
     private float singularityHealing;
     private int bankKills, apexKills, singularityKills, ammoHits, overdriveKills, huntKills, huntCharges;
-    private bool echoReady, lowHealthReady, phaseReady, stunReady, dashReady, resolving;
+    private bool echoReady, lowHealthReady, phaseReady, dashReady, resolving;
     private bool ammoBurstReady;
 
     private bool CanAct => owner != null && owner.AdvancedEffects == this && owner.isActiveAndEnabled &&
@@ -66,10 +66,6 @@ public sealed class AdvancedTalentEffects
                 configured.threshold = Mathf.Max(0.5f, configured.threshold - 0.5f * extraRanks);
                 break;
             case AdvancedEffect.LowHealthBurst: configured.value += 0.2f * extraRanks; break;
-            case AdvancedEffect.StunBattery:
-                configured.value += 0.25f * extraRanks;
-                configured.duration += 0.25f * extraRanks;
-                break;
             case AdvancedEffect.ShieldThorns:
                 configured.damage *= Mathf.Max(1, stack);
                 configured.range += 0.25f * extraRanks;
@@ -262,11 +258,6 @@ public sealed class AdvancedTalentEffects
         finally { resolving = false; }
     }
 
-    public void OnStunRecovered()
-    {
-        if (CanAct && Get(AdvancedEffect.StunBattery) != null) stunReady = true;
-    }
-
     public bool TryPreventDeath(out float shield, out float invincibility)
     {
         shield = invincibility = 0f;
@@ -311,13 +302,6 @@ public sealed class AdvancedTalentEffects
         {
             if (state.SetBurst(lowHealth, lowHealth.value)) lowHealthReady = false;
         }
-        if (stunReady)
-        {
-            var stun = Get(AdvancedEffect.StunBattery);
-            state.damageMultiplier *= Mathf.Max(1f, stun.value);
-            state.stunDuration = Mathf.Max(0f, stun.duration);
-            stunReady = false;
-        }
         var arsenal = Get(AdvancedEffect.ArsenalOverdrive);
         if (arsenal != null && overdriveTimer > 0f) state.damageMultiplier *= Mathf.Max(1f, arsenal.value);
         var hunt = Get(AdvancedEffect.PerfectHunt);
@@ -359,7 +343,6 @@ public sealed class AdvancedTalentEffects
     public void OnProjectileResolved(Enemy enemy, ProjectileAugmentState state, int damage)
     {
         if (!CanAct || enemy == null) return;
-        if (state.stunDuration > 0f) enemy.Stun(state.stunDuration);
         if (!state.BurstTriggered && state.burstRatio > 0f && state.burstTalent != null)
         {
             state.BurstTriggered = true;
@@ -393,7 +376,6 @@ public sealed class ProjectileAugmentState
 {
     public float damageMultiplier = 1f;
     public float burstRatio;
-    public float stunDuration;
     public int bonusPierce;
     public bool guaranteedCritical;
     public bool BurstTriggered;

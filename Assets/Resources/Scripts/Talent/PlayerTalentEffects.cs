@@ -108,18 +108,17 @@ public sealed class PlayerTalentEffects
         float baseAngle = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
         float damage = travelDamage * owner.DamageMultiplier;
         int baseProjectileCount = travelProjectileCount;
-        int projectileCount = owner.SpecialEffects != null
-            ? owner.SpecialEffects.GetProjectileCount(baseProjectileCount)
-            : baseProjectileCount;
-        for (int i = 0; i < projectileCount; i++)
+        owner.SpecialEffects.FireProjectileVolley(() =>
         {
-            int patternIndex = i % baseProjectileCount;
-            float angle = (baseAngle + (patternIndex - (baseProjectileCount - 1) * 0.5f) * travelSpread) * Mathf.Deg2Rad;
-            Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-            GameObject projectile = Spawn(travelProjectile, position + direction * 0.5f);
-            projectile.GetComponent<PiercingBullet>().SetTalentOwner(owner);
-            projectile.GetComponent<PiercingBullet>().Init(direction, damage, owner.ExtraPierce, owner.BulletSpeedMultiplier);
-        }
+            for (int i = 0; i < baseProjectileCount; i++)
+            {
+                float angle = (baseAngle + (i - (baseProjectileCount - 1) * 0.5f) * travelSpread) * Mathf.Deg2Rad;
+                Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                GameObject projectile = Spawn(travelProjectile, (Vector2)owner.transform.position + direction * 0.5f);
+                projectile.GetComponent<PiercingBullet>().SetTalentOwner(owner);
+                projectile.GetComponent<PiercingBullet>().Init(direction, damage, owner.ExtraPierce, owner.BulletSpeedMultiplier);
+            }
+        });
     }
 
     public void OnShieldBroken()

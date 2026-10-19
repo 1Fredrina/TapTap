@@ -11,7 +11,6 @@ public partial class ReactiveTalentTests
     [TestCase("regeneration_pulse", "cell_repair", "healing_affinity")]
     [TestCase("dodge_insight", "membrane_dodge", "antibody_critical")]
     [TestCase("dash_repair", "dash_extension", "cell_repair")]
-    [TestCase("recovery_shock", "neural_resilience", "damage_reduction")]
     [TestCase("critical_leech", "antibody_critical", "healing_affinity")]
     [TestCase("ricochet_hunt", "antibody_ricochet", "antibody_homing")]
     [TestCase("mature_explosion", "antibody_persistence", "antibody_size")]
@@ -113,34 +112,6 @@ public partial class ReactiveTalentTests
         Assert.That(Number("CurrentHealth"), Is.EqualTo(61.28f).Within(0.001f));
     }
 
-    [Test]
-    public void RecoveryShockTriggersOnlyAtNaturalStunEndAndRespectsCooldown()
-    {
-        Component controller = player.gameObject.AddComponent(GameType("PlayerController"));
-        Call(player, "Initialize", data);
-        Acquire("recovery_shock");
-        Component enemy = EnemyAt(Vector2.right);
-        Call(controller, "ApplyStun", Time.fixedDeltaTime * 2f);
-        var step = controller.GetType().GetMethod("FixedUpdate", Private);
-        step.Invoke(controller, null);
-        Assert.That(Value(enemy, "CurrentHealth"), Is.EqualTo(100f));
-        step.Invoke(controller, null);
-        Assert.That(Value(enemy, "CurrentHealth"), Is.EqualTo(80f));
-        Assert.That(Value(enemy, "IsStunned"), Is.True);
-        Call(controller, "ApplyStun", Time.fixedDeltaTime);
-        step.Invoke(controller, null);
-        Assert.That(Value(enemy, "CurrentHealth"), Is.EqualTo(80f));
-        TickDerived(6f);
-        Call(controller, "ApplyStun", 2f);
-        ((Behaviour)controller).enabled = false;
-        ((Behaviour)controller).enabled = true;
-        step.Invoke(controller, null);
-        Assert.That(Value(enemy, "CurrentHealth"), Is.EqualTo(80f));
-        Call(controller, "ApplyStun", Time.fixedDeltaTime);
-        step.Invoke(controller, null);
-        Assert.That(Value(enemy, "CurrentHealth"), Is.EqualTo(60f));
-    }
-
     [TestCase("Bullet")]
     [TestCase("PiercingBullet")]
     public void CriticalLeechSharesCooldownAcrossProjectilesAndBenefitsFromHealing(string type)
@@ -224,24 +195,32 @@ public partial class ReactiveTalentTests
     [Test]
     public void DerivedPulsesRespectLayersScenesDisabledOwnerAndDeath()
     {
-        Acquire("recovery_shock");
+        Acquire("regeneration_pulse");
         player.GetType().GetField("enemyLayers", Private).SetValue(player, (LayerMask)(1 << 7));
         Component normal = EnemyAt(Vector2.right);
         Component excluded = EnemyAt(Vector2.right, 0);
         Component elsewhere = EnemyAt(Vector2.right);
         otherScene = SceneManager.CreateScene("Derived Other");
         SceneManager.MoveGameObjectToScene(elsewhere.gameObject, otherScene);
+        // 预先存满一次治疗脉冲，再验证禁用、死亡和敌人筛选。
+        Call(player, "TakeDamage", 40);
+        Call(Derived, "OnHealed", 20f);
+        EndInvincibility();
+        foreach (Component enemy in new[] { normal, excluded, elsewhere })
+            enemy.GetType().GetField("currentHealth", Private).SetValue(enemy, 100f);
+        Call(Derived, "OnHealed", 20f);
         player.gameObject.SetActive(false);
-        Call(Derived, "OnStunRecovered");
+        TickDerived(6f);
         Assert.That(Value(normal, "CurrentHealth"), Is.EqualTo(100f));
         player.gameObject.SetActive(true);
-        Call(Derived, "OnStunRecovered");
-        Assert.That(Value(normal, "CurrentHealth"), Is.EqualTo(80f));
+        TickDerived(6f);
+        Assert.That(Value(normal, "CurrentHealth"), Is.EqualTo(70f));
         Assert.That(Value(excluded, "CurrentHealth"), Is.EqualTo(100f));
         Assert.That(Value(elsewhere, "CurrentHealth"), Is.EqualTo(100f));
         TickDerived(6f);
         Call(player, "TakeDamage", 1000);
-        Call(Derived, "OnStunRecovered");
-        Assert.That(Value(normal, "CurrentHealth"), Is.EqualTo(80f));
+        Call(Derived, "OnHealed", 20f);
+        TickDerived(6f);
+        Assert.That(Value(normal, "CurrentHealth"), Is.EqualTo(70f));
     }
 }

@@ -38,8 +38,8 @@ public enum StatType
     HealthRegeneration,
     HealingReceived,
     DodgeChance,
-    StunResistance,
-    DashDistance,
+    // 23 为已移除的抗晕属性保留，避免已有序列化枚举值错位。
+    DashDistance = 24,
     ProjectileCriticalChance,
     ProjectileLifetime,
     ProjectileSize,

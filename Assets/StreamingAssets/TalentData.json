@@ -80,12 +80,12 @@
   "type": "stat",
   "id": "damage_reduction",
   "displayName": "Fc受体",
-  "description": "受到伤害 -10%",
+  "description": "受到伤害 -20%",
   "color": "Blue",
   "maxStack": 3,
   "weight": 8,
   "statType": "DamageReduction",
-  "value": 0.1
+  "value": 0.2
   },
   {
     "type": "stat",
@@ -240,7 +240,7 @@
   "weight": 8,
   "weaponType": "Shotgun",
   "cooldown": 1.8,
-  "damage": 8,
+  "damage": 5,
   "range": 10,
   "projectileCount": 6,
   "projectileSpread": 8.4,
@@ -361,13 +361,13 @@
   "type": "compound",
   "id": "double_edge_damage",
   "displayName": "过度激活",
-  "description": "伤害 +50%，但<color=#FF4444>体积 +30%</color>",
+  "description": "伤害 +50%，但<color=#FF4444>体积 +50%</color>",
   "color": "Red",
   "maxStack": 1,
   "weight": 10,
   "statModifiers": [
     { "statType": "AttackDamage", "value": 0.5 },
-    { "statType": "SizeIncrease", "value": 0.3 }
+    { "statType": "SizeIncrease", "value": 0.5 }
   ]
 },
 {
@@ -470,13 +470,13 @@
   "type": "killfrenzy",
   "id": "kill_frenzy",
   "displayName": "连锁活化",
-  "description": "击杀叠加 1 层活化：每层攻速 +4%、移速 +2%，最多 5 层。击杀刷新 4 秒持续时间，超时全部清空。每次升级每层额外增加 4% 攻速和 2% 移速，最多 3 级。",
+  "description": "击杀叠加 1 层活化：每层攻速 +6%、移速 +2%，最多 5 层。击杀刷新 4 秒持续时间，超时全部清空。每次升级每层额外增加 4% 攻速和 2% 移速，最多 3 级。",
   "color": "Red",
   "maxStack": 3,
   "weight": 8,
   "frenzyDuration": 4.0,
   "frenzyMaxCharges": 5,
-  "frenzyAttackSpeedPerCharge": 0.04,
+  "frenzyAttackSpeedPerCharge": 0.06,
   "frenzyMoveSpeedPerCharge": 0.02
 },
 {
@@ -586,23 +586,12 @@
   "type": "stat",
   "id": "membrane_dodge",
   "displayName": "膜面滑移",
-  "description": "受到伤害时有 8% 概率完全闪避，不消耗生命或护盾。每级增加上述效果。最多 3 级。",
+  "description": "受到伤害时有 15% 概率完全闪避，不消耗生命或护盾。每级增加上述效果。最多 3 级。",
   "color": "Blue",
   "maxStack": 3,
   "weight": 10,
   "statType": "DodgeChance",
-  "value": 0.08
-},
-{
-  "type": "stat",
-  "id": "neural_resilience",
-  "displayName": "神经韧性",
-  "description": "受到的眩晕持续时间 -20%。每级增加上述效果。最多 3 级。",
-  "color": "Blue",
-  "maxStack": 3,
-  "weight": 10,
-  "statType": "StunResistance",
-  "value": 0.2
+  "value": 0.15
 },
 {
   "type": "stat",
@@ -619,12 +608,12 @@
   "type": "stat",
   "id": "antibody_critical",
   "displayName": "弱点识别",
-  "description": "普通及贯穿抗体命中时暴击率 +10%，暴击造成双倍伤害。每级增加上述效果。最多 3 级。",
+  "description": "普通及贯穿抗体命中时暴击率 +20%，暴击造成双倍伤害。每级增加上述效果。最多 3 级。",
   "color": "Red",
   "maxStack": 3,
   "weight": 10,
   "statType": "ProjectileCriticalChance",
-  "value": 0.1
+  "value": 0.2
 },
 {
   "type": "stat",
@@ -641,12 +630,12 @@
   "type": "stat",
   "id": "antibody_size",
   "displayName": "抗体聚合",
-  "description": "普通及贯穿抗体的尺寸 +20%，同时扩大命中判定。每级增加上述效果。最多 3 级。",
+  "description": "普通及贯穿抗体的尺寸 +30%，同时扩大命中判定。每级增加上述效果。最多 3 级。",
   "color": "Red",
   "maxStack": 3,
   "weight": 10,
   "statType": "ProjectileSize",
-  "value": 0.2
+  "value": 0.3
 },
 {
   "type": "stat",
@@ -720,25 +709,6 @@
   "derivedEffect": "DashRepair",
   "value": 0.1,
   "cooldown": 4
-},
-{
-  "type": "derived",
-  "maxStack": 1,
-  "weight": 10,
-  "id": "recovery_shock",
-  "displayName": "解控反震",
-  "description": "自身眩晕自然结束时，震击半径 3 米内敌人，造成 20 点基础伤害并眩晕 1 秒。冷却 6 秒；禁用或切换角色不触发。最多 1 级。",
-  "color": "Blue",
-  "prerequisiteIds": [
-    "neural_resilience",
-    "damage_reduction"
-  ],
-  "derivedEffect": "RecoveryShock",
-  "range": 3,
-  "damage": 20,
-  "effectDuration": 1,
-  "cooldown": 6,
-  "effectPrefab": "Prefabs/Weapons/ExplosionEffect"
 },
 {
   "type": "derived",
@@ -819,13 +789,13 @@
   "type": "advanced",
   "id": "kill_bank",
   "displayName": "击杀储能",
-  "description": "8 秒内连续击杀 5 名敌人，获得最大生命 15% 的护盾；计时结束则清空连杀。最多 3 级。",
+  "description": "8 秒内连续击杀 10 名敌人，获得最大生命 5% 的护盾；计时结束则清空连杀。最多 3 级。",
   "color": "Green",
   "maxStack": 3,
   "weight": 9,
   "advancedEffect": "KillBank",
-  "value": 0.15,
-  "threshold": 5,
+  "value": 0.05,
+  "threshold": 10,
   "effectWindow": 8
 },
 {
@@ -854,18 +824,6 @@
   "range": 2,
   "cooldown": 1,
   "effectPrefab": "Prefabs/Weapons/ExplosionEffect"
-},
-{
-  "type": "advanced",
-  "id": "stun_battery",
-  "displayName": "解控蓄电",
-  "description": "眩晕自然结束后，下一枚抗体伤害提高 25% 并使命中敌人眩晕 1.5 秒。禁用或切换角色不触发。最多 3 级。",
-  "color": "Blue",
-  "maxStack": 3,
-  "weight": 9,
-  "advancedEffect": "StunBattery",
-  "value": 1.25,
-  "effectDuration": 1.5
 },
 {
   "type": "advanced",
@@ -1031,7 +989,7 @@
   "type": "special",
   "id": "special_cursed_blade",
   "displayName": "诅咒之刃",
-  "description": "最终攻击伤害乘以 3，生命上限永久锁定为 1。最多 1 级。",
+  "description": "最终攻击伤害乘以 3，生命上限永久锁定为 1。 --死亡细胞也是细胞",
   "color": "Red",
   "maxStack": 1,
   "weight": 3,
@@ -1041,8 +999,8 @@
   "type": "special",
   "id": "special_echo_form",
   "displayName": "回响形态",
-  "description": "所有投射物攻击的发射数量翻倍，武器冷却时间翻倍（射速减半）。最多 1 级。",
-  "color": "Red",
+  "description": "投射物攻击在0.15秒后追加一轮齐射，环绕物数量翻倍；武器冷却时间翻倍（射速减半）。 --我已启动",
+  "color": "Blue",
   "maxStack": 1,
   "weight": 3,
   "specialEffect": "EchoForm"
@@ -1051,8 +1009,8 @@
   "type": "special",
   "id": "special_pentagram",
   "displayName": "五芒星",
-  "description": "每 90 秒在屏幕上显现全屏五芒星，消灭屏幕内所有敌人且不给予经验。最多 1 级。",
-  "color": "Blue",
+  "description": "每 90 秒在屏幕上显现全屏五芒星，消灭屏幕内所有敌人且不给予经验。 --似曾相识",
+  "color": "Green",
   "maxStack": 1,
   "weight": 2,
   "specialEffect": "Pentagram"
@@ -1091,7 +1049,7 @@
   "type": "special",
   "id": "special_shield_power",
   "displayName": "护盾共鸣",
-  "description": "当前每有 1 点护盾，伤害提高 1%。最多 1 级。",
+  "description": "当前每有 50 点护盾，伤害提高 1%（不足 50 点按比例计算）。最多 1 级。",
   "color": "Green",
   "maxStack": 1,
   "weight": 2,
@@ -1101,7 +1059,7 @@
   "type": "special",
   "id": "special_brimstone",
   "displayName": "硫磺火",
-  "description": "基础间隔 4 秒，自动瞄准附近敌人释放贯穿长直激光，无目标时朝角色面向释放，无需蓄力。受攻击力、攻速和范围加成影响。特殊天赋，只能获得一次。",
+  "description": "自动瞄准附近敌人释放贯穿长直激光。--怎么没有神秘舞蹈？",
   "color": "Red",
   "maxStack": 1,
   "weight": 2,
@@ -1109,7 +1067,7 @@
   "brimstoneCooldown": 4.0,
   "brimstoneDamage": 30,
   "brimstoneRange": 18.0,
-  "brimstoneWidth": 0.75,
+  "brimstoneWidth": 2.75,
   "brimstoneDuration": 0.16
 }
 ]

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,6 +13,18 @@ public sealed class SpecialTalentEffects
     private float pentagramVisibleTime;
     private GameObject pentagramCanvas;
     private Image pentagramImage;
+    public const float EchoShotDelay = 0.15f;
+    private readonly List<PendingEcho> pendingEchoes = new();
+
+    private sealed class PendingEcho
+    {
+        public float remaining = EchoShotDelay;
+        public System.Action fire;
+    }
+
+    private bool CanFire => owner != null && owner.SpecialEffects == this &&
+        owner.isActiveAndEnabled && !owner.IsDead &&
+        (GameManager.Instance == null || !GameManager.Instance.IsGameOver);
 
     public SpecialTalentEffects(Player owner) => this.owner = owner;
 
@@ -87,7 +100,7 @@ public sealed class SpecialTalentEffects
         if (Has(SpecialEffect.VitalityPower))
             multiplier *= 1f + Mathf.Max(0f, owner.CurrentHealth) * 0.01f;
         if (Has(SpecialEffect.ShieldPower))
-            multiplier *= 1f + Mathf.Max(0f, owner.CurrentShield) * 0.01f;
+            multiplier *= 1f + Mathf.Max(0f, owner.CurrentShield) / 50f * 0.01f;
         if (Has(SpecialEffect.CursedBlade))
             multiplier *= 3f;
         return multiplier;
@@ -95,8 +108,41 @@ public sealed class SpecialTalentEffects
 
     public int GetProjectileCount(int count) => Mathf.Max(0, count) * ProjectileCountMultiplier;
 
+    // 复制整轮齐射，方向由调用者捕获；第二轮从角色当前所在位置发出。
+    // 每轮独立排队，不会被武器下一次开火或连射覆盖。
+    public void FireProjectileVolley(System.Action fire)
+    {
+        if (fire == null || !CanFire) return;
+        bool echo = Has(SpecialEffect.EchoForm);
+        fire();
+        if (echo && CanFire)
+            pendingEchoes.Add(new PendingEcho { fire = fire });
+    }
+
+    public void CancelPendingShots() => pendingEchoes.Clear();
+
+    private void TickEchoes(float deltaTime)
+    {
+        if (!CanFire)
+        {
+            CancelPendingShots();
+            return;
+        }
+        if (deltaTime <= 0f) return;
+        if (owner.Controller != null && (!owner.Controller.enabled || owner.Controller.IsStunned)) return;
+        for (int i = pendingEchoes.Count - 1; i >= 0; i--)
+        {
+            PendingEcho echo = pendingEchoes[i];
+            echo.remaining -= deltaTime;
+            if (echo.remaining > 0f) continue;
+            pendingEchoes.RemoveAt(i);
+            echo.fire();
+        }
+    }
+
     public void Tick(float deltaTime)
     {
+        TickEchoes(deltaTime);
         if (deltaTime <= 0f) return;
 
         if (pentagramVisibleTime > 0f)

@@ -30,17 +30,17 @@ public class FireBombWeapon : WeaponBase
         if (direction.sqrMagnitude < 0.001f)
             direction = Vector2.right;
 
-        Vector3 spawnPos = player.transform.position + (Vector3)(direction * 0.5f);
-        int bombCount = player.SpecialEffects != null ? player.SpecialEffects.ProjectileCountMultiplier : 1;
-        for (int i = 0; i < bombCount; i++)
+        float shotDamage = damage * player.DamageMultiplier;
+        player.SpecialEffects.FireProjectileVolley(() =>
         {
+            Vector3 spawnPos = player.transform.position + (Vector3)(direction * 0.5f);
             GameObject bomb = Object.Instantiate(bombPrefab, spawnPos, Quaternion.identity);
             if (bomb.TryGetComponent<FireBombProjectile>(out var fb))
             {
                 fb.Init(
                     player,
                     direction,
-                    damage * player.DamageMultiplier,
+                    shotDamage,
                     firePitRadius,
                     firePitLifetime,
                     firePitDamageInterval,
@@ -48,6 +48,6 @@ public class FireBombWeapon : WeaponBase
                     Resources.Load<GameObject>("Prefabs/Weapons/FirePit")
                 );
             }
-        }
+        });
     }
 }

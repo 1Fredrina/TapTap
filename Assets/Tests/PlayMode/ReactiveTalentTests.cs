@@ -121,7 +121,6 @@ public partial class ReactiveTalentTests
     [TestCase("cell_repair", "HealthRegeneration", 1f)]
     [TestCase("healing_affinity", "HealingReceived", 0.2f)]
     [TestCase("membrane_dodge", "DodgeChance", 0.08f)]
-    [TestCase("neural_resilience", "StunResistance", 0.2f)]
     [TestCase("dash_extension", "DashDistance", 0.25f)]
     [TestCase("antibody_critical", "ProjectileCriticalChance", 0.1f)]
     [TestCase("antibody_persistence", "ProjectileLifetime", 0.25f)]
@@ -198,15 +197,11 @@ public partial class ReactiveTalentTests
     }
 
     [Test]
-    public void DashExtensionAndStunResistanceReachTheController()
+    public void DashExtensionReachesTheController()
     {
         Component controller = player.gameObject.AddComponent(GameType("PlayerController"));
         Call(player, "Initialize", data);
-        Acquire("neural_resilience", 3);
         Acquire("dash_extension", 2);
-        Call(controller, "ApplyStun", 2f);
-        Assert.That((float)controller.GetType().GetField("stunTimer", Private).GetValue(controller), Is.EqualTo(0.8f).Within(0.001f));
-        controller.GetType().GetField("stunTimer", Private).SetValue(controller, 0f);
         controller.GetType().GetField("dashRequested", Private).SetValue(controller, true);
         controller.GetType().GetMethod("FixedUpdate", Private).Invoke(controller, null);
         Assert.That((float)controller.GetType().GetField("dashTime", Private).GetValue(controller),

@@ -47,31 +47,94 @@ public partial class ReactiveTalentTests
         Assert.That(Number("DamageMultiplier"), Is.EqualTo(3f));
     }
 
-[Test]
-    public void EchoFormDoublesProjectileWeaponShotsAndHalvesFireRate()
+    [TestCase("ProjectileWeapon", "Bullet", "projectilePrefab", 1)]
+    [TestCase("ShotgunWeapon", "Bullet", "projectilePrefab", 5)]
+    [TestCase("PiercingWeapon", "PiercingBullet", "bulletPrefab", 1)]
+    [TestCase("RocketWeapon", "RocketProjectile", "rocketPrefab", 1)]
+    [TestCase("FireBombWeapon", "FireBombProjectile", "bombPrefab", 1)]
+    public void EchoFormRepeatsWholeVolleyAfterDelayAndHalvesFireRate(
+        string weaponType, string projectileType, string prefabField, int volleySize)
     {
         Acquire("special_echo_form");
         Assert.That(Number("WeaponCooldownMultiplier"), Is.EqualTo(2f));
 
         var prefab = new GameObject("Echo Test Bullet Prefab");
-        prefab.AddComponent(GameType("Bullet"));
-        object weapon = Activator.CreateInstance(GameType("ProjectileWeapon"));
-        Set(weapon, "projectilePrefab", prefab);
-        Set(weapon, "projectileCount", 1);
+        prefab.AddComponent(GameType(projectileType));
+        object weapon = Activator.CreateInstance(GameType(weaponType));
+        Set(weapon, prefabField, prefab);
+        if (prefabField == "projectilePrefab") Set(weapon, "projectileCount", volleySize);
         Set(weapon, "damage", 10);
 
         Component target = EnemyAt(Vector2.right);
         Call(weapon, "Fire", player, target);
         Call(weapon, "Tick", 0.1f);
 
-        Component[] spawned = Object.FindObjectsByType(GameType("Bullet"), FindObjectsSortMode.None)
+        Component[] Spawned() => Object.FindObjectsByType(GameType(projectileType), FindObjectsSortMode.None)
             .OfType<Component>()
-            .Where(bullet => bullet.gameObject != prefab)
+            .Where(bullet => bullet.gameObject != prefab && bullet.gameObject.scene == scene)
             .ToArray();
-        Assert.That(spawned.Length, Is.EqualTo(2));
+        Assert.That(Spawned().Length, Is.EqualTo(volleySize));
+        object effects = Value(player, "SpecialEffects");
+        Call(effects, "Tick", 0f);
+        Assert.That(Spawned().Length, Is.EqualTo(volleySize), "暂停不应发出回响。");
+        Call(effects, "Tick", 0.1f);
+        Assert.That(Spawned().Length, Is.EqualTo(volleySize));
+        Component[] firstVolley = Spawned();
+        player.transform.position = new Vector3(3f, 2f, 0f);
+        Call(effects, "Tick", 0.06f);
+        Component[] spawned = Spawned();
+        Assert.That(spawned.Length, Is.EqualTo(volleySize * 2));
+        Assert.That(spawned.Except(firstVolley).All(bullet =>
+            Vector3.Distance(bullet.transform.position, player.transform.position) < 0.6f), Is.True,
+            "回响应从角色移动后的位置发射。");
+        Call(effects, "Tick", 1f);
+        Assert.That(Spawned().Length, Is.EqualTo(volleySize * 2), "回响不能继续复制自身。");
         Assert.That(spawned.All(bullet =>
             !float.IsNaN(bullet.transform.position.y) && !float.IsInfinity(bullet.transform.position.y)), Is.True);
         Assert.That(Number("DamageMultiplier"), Is.EqualTo(1f));
+    }
+
+    [Test]
+    public void EchoQueueKeepsOverlappingVolleysAndDoesNotRepeatWithoutTalent()
+    {
+        object effects = Value(player, "SpecialEffects");
+        int shots = 0;
+        Action fire = () => shots++;
+        Call(effects, "FireProjectileVolley", fire);
+        Call(effects, "Tick", 1f);
+        Assert.That(shots, Is.EqualTo(1));
+
+        Acquire("special_echo_form");
+        Call(effects, "FireProjectileVolley", fire);
+        Call(effects, "Tick", 0.1f);
+        Call(effects, "FireProjectileVolley", fire);
+        Assert.That(shots, Is.EqualTo(3));
+        Call(effects, "Tick", 0.06f);
+        Assert.That(shots, Is.EqualTo(4));
+        Call(effects, "Tick", 0.1f);
+        Assert.That(shots, Is.EqualTo(5));
+        Call(effects, "Tick", 1f);
+        Assert.That(shots, Is.EqualTo(5));
+    }
+
+    [TestCase("disable")]
+    [TestCase("death")]
+    [TestCase("initialize")]
+    public void EchoQueueCancelsWhenOwnerStopsPlaying(string reason)
+    {
+        Acquire("special_echo_form");
+        object effects = Value(player, "SpecialEffects");
+        int shots = 0;
+        Call(effects, "FireProjectileVolley", (Action)(() => shots++));
+        if (reason == "disable")
+        {
+            player.gameObject.SetActive(false);
+            player.gameObject.SetActive(true);
+        }
+        else if (reason == "death") Call(player, "TakeDamage", 1000);
+        else Call(player, "Initialize", data);
+        Call(effects, "Tick", 1f);
+        Assert.That(shots, Is.EqualTo(1));
     }
 
     [Test]
@@ -114,11 +177,14 @@ public partial class ReactiveTalentTests
 
         Call(player, "Initialize", data);
         Acquire("special_shield_power");
-        Call(player, "AddShield", 20f);
-        Assert.That(Number("DamageMultiplier"), Is.EqualTo(1.2f));
+        Call(player, "AddShield", 100f);
+        Assert.That(Number("DamageMultiplier"), Is.EqualTo(1.02f).Within(0.00001f));
         EndInvincibility();
-        Call(player, "TakeDamage", 10);
-        Assert.That(Number("DamageMultiplier"), Is.EqualTo(1.1f));
+        Call(player, "TakeDamage", 50);
+        Assert.That(Number("DamageMultiplier"), Is.EqualTo(1.01f).Within(0.00001f));
+        EndInvincibility();
+        Call(player, "TakeDamage", 25);
+        Assert.That(Number("DamageMultiplier"), Is.EqualTo(1.005f).Within(0.00001f));
     }
 
     [UnityTest]

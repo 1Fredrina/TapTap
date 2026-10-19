@@ -10,6 +10,9 @@ public class TalentPanel : BasePanel
     public Button[] buttons;
     public Text[] intrTexts;
 
+    [Header("天赋背景资源路径")]
+    public string talentBgPath = "UI/TalentBg/"; // 根据你的实际路径修改
+
     private List<TalentBase> currentChoices;
     private Action<TalentBase> onChosen;
 
@@ -42,7 +45,23 @@ public class TalentPanel : BasePanel
             intrTexts[i].text = talent.description;
 
             if (images[i] != null)
-                images[i].color = GetColor(talent.color);
+            {
+                // 动态加载图片
+                string spriteName = GetSpriteName(talent.color);
+                Sprite loadedSprite = Resources.Load<Sprite>(talentBgPath + spriteName);
+                
+                if (loadedSprite != null)
+                {
+                    images[i].sprite = loadedSprite;
+                    images[i].color = Color.white; // 恢复默认颜色，防止之前被染红/蓝/绿
+                }
+                else
+                {
+                    // 如果没找到资源，回退到纯色染色逻辑
+                    Debug.LogWarning($"[TalentPanel] 找不到资源: {talentBgPath + spriteName}");
+                    images[i].color = GetFallbackColor(talent.color);
+                }
+            }
         }
     }
 
@@ -56,7 +75,19 @@ public class TalentPanel : BasePanel
         TalentPanelPause.Release(this);
     }
 
-    private Color GetColor(TalentColor color)
+    private string GetSpriteName(TalentColor color)
+    {
+        switch (color)
+        {
+            case TalentColor.Red:   return "Red";
+            case TalentColor.Blue:  return "Blue";
+            case TalentColor.Green: return "Green";
+            default:                return "Red";
+        }
+    }
+
+    // 后备方案，防止资源丢失时看不见
+    private Color GetFallbackColor(TalentColor color)
     {
         switch (color)
         {

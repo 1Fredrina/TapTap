@@ -13,12 +13,12 @@ public partial class ReactiveTalentTests
     }
 
     [Test]
-    public void TenMechanicAndFiveTerminalTalentsLoadAndUnlockFromTheirConfiguredPrerequisites()
+    public void NineMechanicAndFiveTerminalTalentsLoadAndUnlockFromTheirConfiguredPrerequisites()
     {
         string[] foundationIds =
         {
             "damage_echo", "dash_bloom", "kill_bank", "stillness_charge", "low_health_burst",
-            "stun_battery", "shield_thorns", "phase_shift", "execution_mark", "ammo_cycle"
+            "shield_thorns", "phase_shift", "execution_mark", "ammo_cycle"
         };
         string[] terminalIds =
         {
@@ -133,20 +133,6 @@ public partial class ReactiveTalentTests
         Call(lowHealthEnemy, "TakeDamage", 80);
         Hit(FoundationBullet("Bullet"), lowHealthEnemy);
         Assert.That(Value(lowHealthEnemy, "CurrentHealth"), Is.Zero);
-    }
-
-    [Test]
-    public void NaturalStunRecoveryEmpowersOneAntibodyAndStunsItsVictim()
-    {
-        Acquire("stun_battery");
-        Call(Advanced, "OnStunRecovered");
-        Component target = EnemyAt(Vector2.right);
-        Hit(FoundationBullet("Bullet"), target);
-        Assert.That((float)Value(target, "CurrentHealth"), Is.InRange(87f, 88f));
-        Assert.That(Value(target, "IsStunned"), Is.True);
-        Component next = EnemyAt(Vector2.up);
-        Hit(FoundationBullet("Bullet"), next);
-        Assert.That(Value(next, "CurrentHealth"), Is.EqualTo(90f));
     }
 
     [Test]

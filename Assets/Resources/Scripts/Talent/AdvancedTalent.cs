@@ -3,7 +3,8 @@ using UnityEngine;
 public enum AdvancedEffect
 {
     DamageEcho, DashBloom, KillBank, StillnessCharge, LowHealthBurst,
-    StunBattery, ShieldThorns, PhaseShift, ExecutionMark, AmmoCycle,
+    // 保留已删除效果的数值空位，避免已有序列化配置错位。
+    ShieldThorns = 6, PhaseShift, ExecutionMark, AmmoCycle,
     ApexProtocol, BioSingularity, ImmortalCycle, ArsenalOverdrive, PerfectHunt
 }
 

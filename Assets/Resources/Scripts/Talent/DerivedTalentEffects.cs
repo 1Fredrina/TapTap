@@ -8,7 +8,7 @@ public sealed class DerivedTalentEffects
     private readonly Player owner;
     private readonly Dictionary<DerivedEffect, DerivedTalent> configs = new();
     private readonly Dictionary<DerivedEffect, GameObject> visuals = new();
-    private float healed, pulseTimer, dashTimer, recoveryTimer, leechTimer, insightTimer;
+    private float healed, pulseTimer, dashTimer, leechTimer, insightTimer;
     private int insightCharges;
     private bool resolvingPulse;
 
@@ -33,7 +33,6 @@ public sealed class DerivedTalentEffects
         if (!CanAct || deltaTime <= 0f) return;
         pulseTimer = Mathf.Max(0f, pulseTimer - deltaTime);
         dashTimer = Mathf.Max(0f, dashTimer - deltaTime);
-        recoveryTimer = Mathf.Max(0f, recoveryTimer - deltaTime);
         leechTimer = Mathf.Max(0f, leechTimer - deltaTime);
         insightTimer = Mathf.Max(0f, insightTimer - deltaTime);
         if (insightTimer <= 0f) insightCharges = 0;
@@ -83,14 +82,6 @@ public sealed class DerivedTalentEffects
         owner.Heal(Mathf.Max(0f, owner.MaxHealth - owner.CurrentHealth) * Mathf.Clamp01(config.value));
     }
 
-    public void OnStunRecovered()
-    {
-        var config = GetConfig(DerivedEffect.RecoveryShock);
-        if (!CanAct || config == null || recoveryTimer > 0f) return;
-        recoveryTimer = Mathf.Max(0.05f, config.cooldown);
-        Pulse(config, owner.transform.position, Mathf.RoundToInt(config.damage * owner.DamageMultiplier), null, config.duration);
-    }
-
     public void OnProjectileCritical()
     {
         var config = GetConfig(DerivedEffect.CriticalLeech);
@@ -106,14 +97,13 @@ public sealed class DerivedTalentEffects
         Pulse(config, position, Mathf.RoundToInt(hitDamage * Mathf.Max(0f, config.value)), directVictim);
     }
 
-    private void Pulse(DerivedTalent config, Vector2 origin, int damage, Enemy excluded = null, float stun = 0f)
+    private void Pulse(DerivedTalent config, Vector2 origin, int damage, Enemy excluded = null)
     {
         float radius = Mathf.Max(0f, config.range);
         foreach (Enemy enemy in Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None))
         {
             if (enemy == excluded || !owner.CanTargetEnemy(enemy)) continue;
             if (((Vector2)enemy.transform.position - origin).sqrMagnitude > radius * radius) continue;
-            if (stun > 0f) enemy.Stun(stun);
             if (damage > 0) enemy.TakeDamageFrom(damage, owner.transform.position);
         }
         if (!visuals.TryGetValue(config.effect, out var prefab) || prefab == null) return;

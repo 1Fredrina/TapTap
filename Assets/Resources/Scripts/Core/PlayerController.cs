@@ -67,11 +67,6 @@ public class PlayerController : MonoBehaviour
         if (IsStunned)
         {
             stunTimer = Mathf.Max(0f, stunTimer - Time.fixedDeltaTime);
-            if (stunTimer <= 0f)
-            {
-                player?.DerivedEffects?.OnStunRecovered();
-                player?.AdvancedEffects?.OnStunRecovered();
-            }
             body.linearVelocity = Vector2.MoveTowards(body.linearVelocity, Vector2.zero, 20f * Time.fixedDeltaTime);
             UpdateAnimationParams();
             return;
@@ -124,7 +119,6 @@ public class PlayerController : MonoBehaviour
     /// <summary>外部施加眩晕（比如敌人控制技能）。</summary>
     public void ApplyStun(float duration)
     {
-        duration *= player != null ? player.StunDurationMultiplier : 1f;
         if (duration <= 0f) return;
         stunTimer = Mathf.Max(stunTimer, duration);
         dashTime = 0f;
