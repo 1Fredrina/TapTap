@@ -37,7 +37,6 @@ public class LevelPanel : BasePanel
         }
 
         btnC1.onClick.AddListener(() => { L1.SetActive(true); L2.SetActive(false); });
-        btnC2.onClick.AddListener(() => { L1.SetActive(false); L2.SetActive(true); });
         btnExit.onClick.AddListener(() =>
         {
             UIManager.Instance.HidePanel<LevelPanel>();
