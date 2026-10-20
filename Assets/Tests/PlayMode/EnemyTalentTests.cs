@@ -110,22 +110,22 @@ public class EnemyTalentTests
     }
 
     [Test]
-    public void TimerOffersUniqueChoicesEveryFiveMinutesAndRejectsDoubleSelection()
+    public void TimerOffersUniqueChoicesEveryThreeMinutesAndRejectsDoubleSelection()
     {
-        Call(Runtime, "Tick", 299f);
+        Call(Runtime, "Tick", 179f);
         Assert.That(((IList)Call(Runtime, "RollChoices", pool, 3)).Count, Is.Zero);
         Call(Runtime, "Tick", 1f);
         var choices = (IList)Call(Runtime, "RollChoices", pool, 3);
         Assert.That(choices.Count, Is.EqualTo(3));
         Assert.That(choices.Cast<object>().Distinct().Count(), Is.EqualTo(3));
-        Call(Runtime, "Tick", 900f);
-        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(300f));
+        Call(Runtime, "Tick", 540f);
+        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(180f));
         Assert.That(Call(Runtime, "Choose", Activator.CreateInstance(GameType("EnemyTalentData"))), Is.False);
         Assert.That(Call(Runtime, "Choose", choices[0]), Is.True);
         Assert.That(Call(Runtime, "Choose", choices[0]), Is.False);
         Assert.That(Value(Runtime, "UpgradeCount"), Is.EqualTo(1));
-        Assert.That(Number(Runtime, "NextChoiceTime"), Is.EqualTo(600f));
-        Call(Runtime, "Tick", 299f);
+        Assert.That(Number(Runtime, "NextChoiceTime"), Is.EqualTo(360f));
+        Call(Runtime, "Tick", 179f);
         Assert.That(Value(Runtime, "IsChoiceDue"), Is.False);
         Call(Runtime, "Tick", 1f);
         Assert.That(Value(Runtime, "IsChoiceDue"), Is.True);
@@ -134,11 +134,11 @@ public class EnemyTalentTests
     [UnityTest]
     public IEnumerator RealPanelPausesShowsThreeChoicesAndResumesAfterOneClick()
     {
-        Advance(299f);
+        Advance(179f);
         Assert.That(Panel("GetPanel", "EnemyTalentPanel"), Is.Null);
         Time.timeScale = 0f;
         Advance(60f);
-        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(299f));
+        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(179f));
         Time.timeScale = 1f;
         Advance(1f);
         var panel = (Component)Panel("GetPanel", "EnemyTalentPanel");
@@ -155,7 +155,7 @@ public class EnemyTalentTests
         Assert.That(Value(Runtime, "UpgradeCount"), Is.EqualTo(1));
         yield return null; // UIManager 的 Destroy 在帧末释放暂停。
         Assert.That(Time.timeScale, Is.EqualTo(1f));
-        Advance(299f);
+        Advance(179f);
         Assert.That(Panel("GetPanel", "EnemyTalentPanel"), Is.Null);
         Advance(1f);
         Assert.That(Panel("GetPanel", "EnemyTalentPanel"), Is.Not.Null);
@@ -166,7 +166,7 @@ public class EnemyTalentTests
     {
         Time.timeScale = 0.5f;
         var playerPanel = (Component)Panel("ShowPanel", "TalentPanel");
-        Advance(300f);
+        Advance(180f);
         Assert.That(Number(Runtime, "ElapsedTime"), Is.Zero);
         var enemyPanel = (Component)Panel("ShowPanel", "EnemyTalentPanel");
         playerPanel.gameObject.SetActive(false);
@@ -178,7 +178,7 @@ public class EnemyTalentTests
     [Test]
     public void GameOverStopsTimerAndClosesPendingPanel()
     {
-        Advance(300f);
+        Advance(180f);
         Assert.That(Value(Runtime, "IsChoosing"), Is.True);
         Call(manager, "OnPlayerDeath");
         Assert.That(Value(Runtime, "IsChoosing"), Is.False);
@@ -187,8 +187,8 @@ public class EnemyTalentTests
         Assert.That(overPanel, Is.Not.Null);
         Assert.That(((Text)overPanel.GetType().GetField("txtOver").GetValue(overPanel)).text, Is.EqualTo("失败"));
         Assert.That(Time.timeScale, Is.Zero);
-        Advance(600f);
-        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(300f));
+        Advance(360f);
+        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(180f));
     }
 
     [Test]
@@ -222,6 +222,91 @@ public class EnemyTalentTests
         Apply("enemy_armor");
         Call(enemy, "TakeDamage", 1);
         Assert.That(Number(enemy, "CurrentHealth"), Is.EqualTo(99.25f));
+    }
+
+    private Component CreateSpawner()
+    {
+        Component spawner = new GameObject("Timed Growth Test Spawner").AddComponent(GameType("EnemySpawner"));
+        ((Behaviour)spawner).enabled = false;
+        spawner.GetType().GetField("baseSpawnInterval", Private).SetValue(spawner, 6f);
+        return spawner;
+    }
+
+    private float SpawnerValue(Component spawner, string method) =>
+        Convert.ToSingle(spawner.GetType().GetMethod(method, Private).Invoke(spawner, null));
+
+    [TestCase(0f, 1f, 6f, 1)]
+    [TestCase(180f, 1.7457f, 4.3333f, 2)]
+    [TestCase(360f, 3.5f, 2.6667f, 3)]
+    [TestCase(540f, 5.2543f, 1f, 4)]
+    [TestCase(720f, 6f, 1f, 4)]
+    [TestCase(900f, 6f, 1f, 4)]
+    public void SpawnerGrowthMatchesTwelveMinuteMilestonesAndClampsAtEnd(
+        float seconds, float health, float interval, int count)
+    {
+        Call(Runtime, "Tick", seconds);
+        Component spawner = CreateSpawner();
+        Assert.That(SpawnerValue(spawner, "GetHealthMultiplier"), Is.EqualTo(health).Within(0.001f));
+        Assert.That(SpawnerValue(spawner, "GetSpawnInterval"), Is.EqualTo(interval).Within(0.001f));
+        Assert.That(SpawnerValue(spawner, "GetSpawnPerWave"), Is.EqualTo(count));
+    }
+
+    [Test]
+    public void SpawnersShareMonotonicGrowthRegardlessOfSpawnTimingOrAliveCap()
+    {
+        Component first = CreateSpawner();
+        Component second = CreateSpawner();
+        first.GetType().GetField("aliveCount", Private).SetValue(first, 60);
+        first.GetType().GetField("elapsedTime", Private).SetValue(first, 720f);
+        float previousHealth = 1f, previousInterval = 6f, previousCount = 1f;
+        for (int secondIndex = 0; secondIndex < 720; secondIndex++)
+        {
+            Call(Runtime, "Tick", 1f);
+            float health = SpawnerValue(first, "GetHealthMultiplier");
+            float interval = SpawnerValue(first, "GetSpawnInterval");
+            float count = SpawnerValue(first, "GetSpawnPerWave");
+            Assert.That(health, Is.InRange(previousHealth, 6f));
+            Assert.That(interval, Is.InRange(1f, previousInterval));
+            Assert.That(count, Is.InRange(previousCount, 4f));
+            Assert.That(health, Is.EqualTo(SpawnerValue(second, "GetHealthMultiplier")));
+            Assert.That(interval, Is.EqualTo(SpawnerValue(second, "GetSpawnInterval")));
+            Assert.That(count, Is.EqualTo(SpawnerValue(second, "GetSpawnPerWave")));
+            previousHealth = health;
+            previousInterval = interval;
+            previousCount = count;
+        }
+    }
+
+    [Test]
+    public void PausingChoosingAndGameOverFreezeSpawnerGrowthAndSpawning()
+    {
+        Component spawner = CreateSpawner();
+        FieldInfo timer = spawner.GetType().GetField("timer", Private);
+        MethodInfo update = spawner.GetType().GetMethod("Update", Private);
+        timer.SetValue(spawner, -1f);
+        Advance(179f);
+        float health = SpawnerValue(spawner, "GetHealthMultiplier");
+        Time.timeScale = 0f;
+        Advance(60f);
+        update.Invoke(spawner, null);
+        Assert.That(SpawnerValue(spawner, "GetHealthMultiplier"), Is.EqualTo(health));
+        Assert.That(timer.GetValue(spawner), Is.EqualTo(-1f));
+
+        Time.timeScale = 1f;
+        Advance(1f);
+        Assert.That(Value(Runtime, "IsChoosing"), Is.True);
+        health = SpawnerValue(spawner, "GetHealthMultiplier");
+        Advance(60f);
+        update.Invoke(spawner, null);
+        Assert.That(SpawnerValue(spawner, "GetHealthMultiplier"), Is.EqualTo(health));
+        Assert.That(timer.GetValue(spawner), Is.EqualTo(-1f));
+
+        Call(manager, "OnPlayerDeath");
+        Time.timeScale = 1f;
+        Advance(720f);
+        update.Invoke(spawner, null);
+        Assert.That(SpawnerValue(spawner, "GetHealthMultiplier"), Is.EqualTo(health));
+        Assert.That(timer.GetValue(spawner), Is.EqualTo(-1f));
     }
 
     [TestCase("Enemy")]
@@ -273,7 +358,7 @@ public class EnemyTalentTests
         manager = new GameObject("New Run Manager").AddComponent(GameType("GameManager"));
         ((Behaviour)manager).enabled = false;
         Assert.That(Number(Runtime, "ElapsedTime"), Is.Zero);
-        Assert.That(Number(Runtime, "NextChoiceTime"), Is.EqualTo(300f));
+        Assert.That(Number(Runtime, "NextChoiceTime"), Is.EqualTo(180f));
         foreach (string stat in new[] { "HealthMultiplier", "DamageMultiplier", "MoveSpeedMultiplier", "DamageTakenMultiplier" })
             Assert.That(Number(Runtime, stat), Is.EqualTo(1f));
         Assert.That(Value(Runtime, "UpgradeCount"), Is.Zero);
@@ -283,7 +368,7 @@ public class EnemyTalentTests
     [Test]
     public void ShutdownHandlesPanelDestroyedBeforeManagerAndAllowsReopening()
     {
-        Advance(300f);
+        Advance(180f);
         var panel = (Component)Panel("GetPanel", "EnemyTalentPanel");
         Object.DestroyImmediate(panel.gameObject);
         Assert.DoesNotThrow(() => Object.DestroyImmediate(manager.gameObject));
@@ -296,24 +381,24 @@ public class EnemyTalentTests
     }
 
     [UnityTest]
-    public IEnumerator TwentyMinutesWinsInsteadOfOpeningFourthEnemyUpgrade()
+    public IEnumerator TwelveMinutesWinsInsteadOfOpeningFourthEnemyUpgrade()
     {
         var controller = (Behaviour)player.gameObject.AddComponent(GameType("PlayerController"));
         player.GetType().GetField("controller", Private).SetValue(player, controller);
         for (int i = 0; i < 3; i++)
         {
-            Advance(300f);
+            Advance(180f);
             var panel = (Component)Panel("GetPanel", "EnemyTalentPanel");
             Assert.That(panel, Is.Not.Null);
             ((Button[])panel.GetType().GetField("buttons").GetValue(panel))[0].onClick.Invoke();
             yield return null;
         }
 
-        Advance(299f);
+        Advance(179f);
         Assert.That(Value(manager, "IsVictory"), Is.False);
         Time.timeScale = 0f;
         Advance(100f);
-        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(1199f));
+        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(719f));
         Time.timeScale = 1f;
         Advance(1f);
         Assert.That(Value(manager, "IsVictory"), Is.True);
@@ -335,7 +420,7 @@ public class EnemyTalentTests
         Advance(100f);
         Assert.That(Number(player, "CurrentHealth"), Is.EqualTo(health));
         Assert.That(Value(player, "Experience"), Is.EqualTo(experience));
-        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(1200f));
+        Assert.That(Number(Runtime, "ElapsedTime"), Is.EqualTo(720f));
         Assert.That(Value(manager, "IsVictory"), Is.True);
     }
 
@@ -343,13 +428,13 @@ public class EnemyTalentTests
     public void DefeatCannotBecomeVictoryAndNewRunReleasesVictoryPause()
     {
         Call(manager, "OnPlayerDeath");
-        Advance(1200f);
+        Advance(720f);
         Assert.That(Value(manager, "IsVictory"), Is.False);
         Object.DestroyImmediate(manager.gameObject);
         manager = new GameObject("Victory Test Manager").AddComponent(GameType("GameManager"));
         ((Behaviour)manager).enabled = false;
         manager.GetType().GetProperty("Player").SetValue(manager, player);
-        Advance(1200f);
+        Advance(720f);
         Assert.That(Value(manager, "IsVictory"), Is.True);
         Assert.That(Time.timeScale, Is.Zero);
         Object.DestroyImmediate(manager.gameObject);

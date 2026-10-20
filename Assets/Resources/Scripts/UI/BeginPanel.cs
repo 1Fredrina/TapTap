@@ -6,6 +6,7 @@ public class BeginPanel : BasePanel //游戏开始界面，点击开始按钮后
     public Button btnStart;
     public Button btnSetting;
     public Button btnExit;
+    public Button btnHelp;
     public override void Init()
     {
         btnStart.onClick.AddListener(() =>
@@ -20,6 +21,10 @@ public class BeginPanel : BasePanel //游戏开始界面，点击开始按钮后
         btnExit.onClick.AddListener(() =>
         {
             Application.Quit();
+        });
+        btnHelp.onClick.AddListener(() =>
+        {
+            UIManager.Instance.ShowPanel<HelpPanel>();  
         });
     }
 }

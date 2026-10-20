@@ -134,8 +134,8 @@ TextureImporter:
       name: "\u8F85t Q\u7248_0"
       rect:
         serializedVersion: 2
-        x: 1225
-        y: 421
+        x: 55
+        y: 38
         width: 468
         height: 657
       alignment: 0
@@ -156,8 +156,8 @@ TextureImporter:
       name: "\u8F85t Q\u7248_1"
       rect:
         serializedVersion: 2
-        x: 1654
-        y: 545
+        x: 484
+        y: 162
         width: 65
         height: 50
       alignment: 0
