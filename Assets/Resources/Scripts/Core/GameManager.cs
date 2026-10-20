@@ -206,6 +206,9 @@ public class GameManager : MonoBehaviour
         if (IsGameOver) return;
         IsVictory = true;
         IsGameOver = true;
+        // 在暂停和显示结算界面之前落盘，避免返回菜单或退出游戏丢失解锁。
+        if (TryGetComponent<LevelController>(out var level))
+            level.CompleteLevel();
         achievementProgress?.RecordVictory();
         achievementProgress?.Save();
         TalentPanelPause.Acquire(this);

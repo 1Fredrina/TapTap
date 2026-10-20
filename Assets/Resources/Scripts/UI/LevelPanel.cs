@@ -11,49 +11,63 @@ public class LevelPanel : BasePanel
     public GameObject L2;
     public Button[] btnLevels;
 
+    private bool initialized;
+
     public override void Init()
     {
+        if (!initialized)
+        {
+            initialized = true;
+            if (btnLevels != null)
+                for (int i = 0; i < btnLevels.Length; i++)
+                {
+                    int levelId = i + 1;
+                    if (btnLevels[i] != null)
+                        btnLevels[i].onClick.AddListener(() => LoadLevel(levelId));
+                }
+
+            if (btnC1 != null)
+                btnC1.onClick.AddListener(() => { L1.SetActive(true); L2.SetActive(false); });
+            if (btnExit != null)
+                btnExit.onClick.AddListener(() =>
+                {
+                    UIManager.Instance.HidePanel<LevelPanel>();
+                    UIManager.Instance.ShowPanel<PreparePanel>();
+                });
+        }
+
+        RefreshUnlockState();
+    }
+
+    public override void ShowMe()
+    {
+        base.ShowMe();
+        Init();
+    }
+
+    public void RefreshUnlockState()
+    {
+        if (btnLevels == null) return;
         for (int i = 0; i < btnLevels.Length; i++)
         {
-            int index = i;
             Button btn = btnLevels[i];
-
+            if (btn == null) continue;
             int levelId = i + 1;
-            bool unlocked = IsLevelUnlocked(levelId);
-
+            bool unlocked = LevelsMgr.Instance.IsLevelUnlocked(levelId) &&
+                            Application.CanStreamedLevelBeLoaded("Level" + levelId);
             btn.interactable = unlocked;
             Image img = btn.GetComponent<Image>();
             if (img != null)
                 img.color = unlocked ? Color.white : new Color(0.5f, 0.5f, 0.5f, 1f);
-
-            if (unlocked)
-            {
-                btn.onClick.AddListener(() =>
-                {
-                    SceneManager.LoadScene("Level" + levelId);
-                    UIManager.Instance.HidePanel<LevelPanel>();
-                });
-            }
         }
-
-        btnC1.onClick.AddListener(() => { L1.SetActive(true); L2.SetActive(false); });
-        btnExit.onClick.AddListener(() =>
-        {
-            UIManager.Instance.HidePanel<LevelPanel>();
-            UIManager.Instance.ShowPanel<PreparePanel>();
-        });
     }
 
-    private bool IsLevelUnlocked(int levelId)
+    private void LoadLevel(int levelId)
     {
-        var list = LevelsMgr.Instance.levelsDatas;
-        if (list == null) return false;
+        if (!LevelsMgr.Instance.IsLevelUnlocked(levelId) ||
+            !Application.CanStreamedLevelBeLoaded("Level" + levelId)) return;
 
-        foreach (var data in list)
-        {
-            if (data.LevelsID == levelId)
-                return data.IsUnlock;
-        }
-        return false;
+        SceneManager.LoadScene("Level" + levelId);
+        UIManager.Instance.HidePanel<LevelPanel>();
     }
 }
