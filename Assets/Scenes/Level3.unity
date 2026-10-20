@@ -375,16 +375,14 @@ MonoBehaviour:
   - Prefabs/Enemy/4
   baseSpawnInterval: 6
   minSpawnInterval: 1
-  intervalDecreasePerWave: 0.08
   baseSpawnPerWave: 1
   maxSpawnPerWave: 4
-  spawnCountIncreasePerWave: 0.06
+  spawnRampEndProgress: 0.75
   spawnRadius: 0.5
   maxAlive: 50
   maxHealthMultiplier: 6
   growthCurveSteepness: 6
   growthCurveMidPoint: 0.5
-  growthCurveScale: 30
 --- !u!212 &369189522
 SpriteRenderer:
   serializedVersion: 3
@@ -602,16 +600,14 @@ MonoBehaviour:
   - Prefabs/Enemy/4
   baseSpawnInterval: 6
   minSpawnInterval: 1
-  intervalDecreasePerWave: 0.08
   baseSpawnPerWave: 1
   maxSpawnPerWave: 4
-  spawnCountIncreasePerWave: 0.06
+  spawnRampEndProgress: 0.75
   spawnRadius: 0.5
   maxAlive: 50
   maxHealthMultiplier: 6
   growthCurveSteepness: 6
   growthCurveMidPoint: 0.5
-  growthCurveScale: 30
 --- !u!212 &877740673
 SpriteRenderer:
   serializedVersion: 3
@@ -817,16 +813,14 @@ MonoBehaviour:
   - Prefabs/Enemy/4
   baseSpawnInterval: 6
   minSpawnInterval: 1
-  intervalDecreasePerWave: 0.08
   baseSpawnPerWave: 1
   maxSpawnPerWave: 4
-  spawnCountIncreasePerWave: 0.06
+  spawnRampEndProgress: 0.75
   spawnRadius: 0.5
   maxAlive: 50
   maxHealthMultiplier: 6
   growthCurveSteepness: 6
   growthCurveMidPoint: 0.5
-  growthCurveScale: 30
 --- !u!212 &1157169067
 SpriteRenderer:
   serializedVersion: 3
@@ -1079,16 +1073,14 @@ MonoBehaviour:
   - Prefabs/Enemy/4
   baseSpawnInterval: 6
   minSpawnInterval: 1
-  intervalDecreasePerWave: 0.08
   baseSpawnPerWave: 1
   maxSpawnPerWave: 4
-  spawnCountIncreasePerWave: 0.06
+  spawnRampEndProgress: 0.75
   spawnRadius: 0.5
   maxAlive: 50
   maxHealthMultiplier: 6
   growthCurveSteepness: 6
   growthCurveMidPoint: 0.5
-  growthCurveScale: 30
 --- !u!212 &1352442389
 SpriteRenderer:
   serializedVersion: 3
@@ -1759,7 +1751,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5c7db31265ae1469a0ee0ca29998b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  enemyTalentInterval: 300
+  enemyTalentInterval: 180
 --- !u!114 &1918575836
 MonoBehaviour:
   m_ObjectHideFlags: 0

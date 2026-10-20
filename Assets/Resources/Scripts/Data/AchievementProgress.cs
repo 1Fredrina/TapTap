@@ -36,7 +36,7 @@ public sealed class AchievementProgress
         new AchievementDefinition("first_kill", "初战告捷", "累计击败 1 个敌人", AchievementStat.Kills, 1),
         new AchievementDefinition("kills_50", "小试身手", "累计击败 50 个敌人", AchievementStat.Kills, 50),
         new AchievementDefinition("kills_200", "清扫能手", "累计击败 200 个敌人", AchievementStat.Kills, 200),
-        new AchievementDefinition("first_win", "坚守到底", "存活 20 分钟，获得一次胜利", AchievementStat.Victories, 1),
+        new AchievementDefinition("first_win", "坚守到底", $"存活 {GameManager.VictoryTime / 60f:0} 分钟，获得一次胜利", AchievementStat.Victories, 1),
         new AchievementDefinition("level_5", "渐入佳境", "单局达到 5 级", AchievementStat.Level, 5),
         new AchievementDefinition("level_10", "成长新星", "单局达到 10 级", AchievementStat.Level, 10),
         new AchievementDefinition("first_talent", "天赋初现", "首次在升级面板选择天赋", AchievementStat.TalentChoices, 1),

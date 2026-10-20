@@ -8,7 +8,7 @@ public sealed class EnemyTalentRuntime
     private readonly List<EnemyTalentData> pendingChoices = new();
     private readonly Dictionary<string, int> stacks = new();
 
-    public EnemyTalentRuntime(float interval = 300f)
+    public EnemyTalentRuntime(float interval = GameManager.EnemyTalentInterval)
     {
         this.interval = Mathf.Max(1f, interval);
         NextChoiceTime = this.interval;

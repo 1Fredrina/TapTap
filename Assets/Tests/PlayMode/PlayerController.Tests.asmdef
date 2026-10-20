@@ -1,6 +1,0 @@
-{
-    "name": "PlayerController.Tests",
-    "references": [],
-    "includePlatforms": [],
-    "optionalUnityReferences": ["TestAssemblies"]
-}

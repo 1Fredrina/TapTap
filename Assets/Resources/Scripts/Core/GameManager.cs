@@ -9,10 +9,11 @@ public class GameManager : MonoBehaviour
     public Player Player { get; private set; }
     public bool IsGameOver { get; private set; }
     public bool IsVictory { get; private set; }
-    private const float VictoryTime = 20f * 60f;
+    public const float VictoryTime = 12f * 60f;
+    public const float EnemyTalentInterval = 3f * 60f;
 
     [Header("敌人异变")]
-    [SerializeField, Min(1f)] private float enemyTalentInterval = 300f;
+    [SerializeField, Min(1f)] private float enemyTalentInterval = EnemyTalentInterval;
     public EnemyTalentRuntime EnemyTalents { get; private set; } = new EnemyTalentRuntime();
 
     private float skillCooldownTimer;
@@ -118,7 +119,7 @@ public class GameManager : MonoBehaviour
             achievementProgress?.Save();
             achievementSaveTimer = 0f;
         }
-        // 胜利优先于 20 分钟的敌人异变选择，共用有效游玩时间（不计暂停）。
+        // 胜利优先于终点的敌人异变选择，共用有效游玩时间（不计暂停）。
         if (EnemyTalents.ElapsedTime >= VictoryTime)
         {
             OnVictory();
@@ -205,6 +206,9 @@ public class GameManager : MonoBehaviour
         if (IsGameOver) return;
         IsVictory = true;
         IsGameOver = true;
+        // 在暂停和显示结算界面之前落盘，避免返回菜单或退出游戏丢失解锁。
+        if (TryGetComponent<LevelController>(out var level))
+            level.CompleteLevel();
         achievementProgress?.RecordVictory();
         achievementProgress?.Save();
         TalentPanelPause.Acquire(this);
@@ -212,7 +216,7 @@ public class GameManager : MonoBehaviour
         if (Player != null && Player.Controller != null)
             Player.Controller.enabled = false;
 
-        Debug.Log("Victory: survived 20 minutes.");
+        Debug.Log($"Victory: survived {VictoryTime / 60f:0} minutes.");
         ShowOverPanel(true);
     }
 

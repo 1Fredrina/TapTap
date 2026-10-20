@@ -26,6 +26,11 @@ public class MeleeWeapon : WeaponBase
             GameObject fx = Object.Instantiate(effectPrefab, origin, Quaternion.Euler(0, 0, angle));
             Object.Destroy(fx, effectLifetime);
         }
+        else
+        {
+            WeaponRangeVisual.Create(player, range, arcAngle, forward,
+                new Color(0.3f, 0.9f, 1f, 1f), Mathf.Max(0.01f, effectLifetime));
+        }
 
         float halfArc = arcAngle * 0.5f;
         float rangeSqr = range * range;
